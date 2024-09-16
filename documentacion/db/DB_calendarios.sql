@@ -34,7 +34,7 @@ CREATE TABLE Calendario(
     INDEX (id_actividad),
     CONSTRAINT fk_actividad
 		FOREIGN KEY (id_actividad)
-		REFERENCES actividad(id)
+		REFERENCES Actividad(id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
 )ENGINE=InnoDB;
