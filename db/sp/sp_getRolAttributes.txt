@@ -1,0 +1,19 @@
+CREATE PROCEDURE sp_getRolAttributes(IN rolId INT)
+BEGIN
+	/****************************************************************************************************
+	Especificación:
+		Procedimiento para traer los atributos de un rol
+		Creado por: Andrés Marentes
+		Fecha: 27 de septiembre de 2024
+	****************************************************************************************************
+	Modificación:
+	****************************************************************************************************/
+    -- Selecciona los atributos del registro de la tabla 'rol' correspondiente al ID ingresado
+    SELECT
+        *
+    FROM rol
+    WHERE id = rolId;
+END;
+
+-- Llamar al procedimiento para que me traiga los roles
+CALL sp_getRolAttributes(1);
