@@ -48,7 +48,7 @@ function eliminar($conexion, $id){
         $sql = "call calendarios.sp_periodo('eliminar', $id, null, null, null, null)";
         $resultado= $conexion->query($sql);
     
-        if($resultado){
+        if($resultado){ 
             echo json_encode(array('mensaje'=>'periodo eliminado'));
     
         }else{
