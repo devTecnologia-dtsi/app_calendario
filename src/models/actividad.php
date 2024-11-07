@@ -2,11 +2,11 @@
 
 include_once __DIR__ . "/../../config/dbCalendario.php";
 
-class crudperiodo {
+class crudactividad {
 
-    public function consultarperiodo($conexion, $id){
+    public function consultaractividad($conexion, $id){
 
-        $sql = ($id==null) ? "call calendarios.sp_periodo('ver', null,  null, null, null, null)" : "call calendarios.sp_periodo('ver', '$id',  null, null, null, null);" ;
+        $sql = ($id==null) ? "call calendarios.sp_actividad('ver', null, 'null', 'null', null);" : "call calendarios.sp_actividad('ver', '$id', 'null', 'null', null);" ;
 
         $resultado = $conexion->query($sql);
 
@@ -15,17 +15,16 @@ class crudperiodo {
         $datos = array();
         
         while($fila= $resultado ->fetch_assoc()){
-            $datos[]= $fila;    
-            #var_dump($fila);
+            $datos[]= $fila;        
+            
         }
-    
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($datos);
     
         }
     }
     
-    public function insertarperiodo($conexion, $dato){
+    public function insertaractividad($conexion, $dato){
         
         $anio = isset($dato['anio']) ? $dato['anio'] : null;
         $periocidad = isset($dato['periocidad']) ? $dato['periocidad'] : null;
@@ -46,7 +45,7 @@ class crudperiodo {
     
     }
     
-    public function eliminarperiodo($conexion, $id){
+    public function eliminaractividad($conexion, $id){
       
         $sql = "call calendarios.sp_periodo('eliminar', $id, null, null, null, null)";
         $resultado= $conexion->query($sql);
@@ -60,7 +59,7 @@ class crudperiodo {
     }
 
     
-    public function actualizarperiodo($conexion, $id, $dato){
+    public function actualizaractividad($conexion, $id, $dato){
         $id = $dato['id'];
         $anio = $dato['anio'];
         $periocidad = $dato['periocidad'];
