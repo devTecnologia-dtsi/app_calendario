@@ -3,8 +3,6 @@ include_once __DIR__ . "/../controllers/controller.php";
 include_once __DIR__ . "/../../config/dbCalendario.php";
 
 
-header("Content-Type: application/json");
-
 $metodo= $_SERVER['REQUEST_METHOD'];
 $path= isset($_SERVER['PATH_INFO'])?$_SERVER['PATH_INFO']:'/';
 $buscarid =explode('/', $path);
@@ -29,6 +27,7 @@ switch($metodo){
         echo " Metodo no permitido";
         break;
 }
+
 
 
 ?>

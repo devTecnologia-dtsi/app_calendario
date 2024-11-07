@@ -1,6 +1,7 @@
 <?php
 
 
+
 class crudperiodo {
 function consultar($conexion, $id){
 
@@ -13,7 +14,7 @@ function consultar($conexion, $id){
         $datos = array();
         
         while($fila= $resultado ->fetch_assoc()){
-            $datos[]= $fila;
+            $datos[]= $fila;    
             #var_dump($fila);
         }
     
@@ -81,4 +82,5 @@ function actualizar($conexion, $id, $dato){
     
 
 }
+
 ?>
