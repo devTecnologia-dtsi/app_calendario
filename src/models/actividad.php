@@ -1,15 +1,18 @@
 <?php
 
-include_once __DIR__ . "/../../config/dbCalendario.php";
+include_once __DIR__ . "/../../config/conexion.php";
+
 
 class crudactividad {
 
-    public function consultaractividad($conexion, $id){
+    public function consultaractividad($id){
 
         $sql = ($id==null) ? "call calendarios.sp_actividad('ver', null, 'null', 'null', null);" : "call calendarios.sp_actividad('ver', '$id', 'null', 'null', null);" ;
 
-        $resultado = $conexion->query($sql);
 
+        $conexion = new conexion;
+
+        $resultado = $conexion->obtenerDatos($sql);
     
         if($resultado){
         $datos = array();
@@ -26,32 +29,37 @@ class crudactividad {
     
     public function insertaractividad($conexion, $dato){
         
-        $anio = isset($dato['anio']) ? $dato['anio'] : null;
-        $periocidad = isset($dato['periocidad']) ? $dato['periocidad'] : null;
-        $modalidad = isset($dato['modalidad']) ? $dato['modalidad'] : null;
-        $sede_id = isset($dato['sede_id']) ? $dato['sede_id'] : null;  
+        $id_calendario = isset($dato['id_calendario']) ? $dato['id_calendario'] : null;
+        $nombre = isset($dato['nombre']) ? $dato['nombre'] : null;
+        $estado = isset($dato['estado']) ? $dato['estado'] : null;
        
-        $sql = "call sp_periodo('insertar', null, '$anio', '$periocidad', '$modalidad', '$sede_id')";
+
+        
+        $sql = "call sp_actividad('insertar', null, '$id_calendario', '$nombre', '$estado');";
         $resultado= $conexion->query($sql);
        
+        
     
         if($resultado){
-            $dato['id'] = $conexion -> insert_id;
+            $dato['id'] = $conexion -> getInsertId();
             echo json_encode($dato);
     
         }else{
-            echo json_encode(array('error'=>'Error en la insercion de datos'));
+            echo json_encode(array('exito'=>'dato insertado correctamente'));
         }
     
     }
     
-    public function eliminaractividad($conexion, $id){
+    public function eliminaractividad($id){
+    
+
+        $conexion = new conexion;
       
-        $sql = "call calendarios.sp_periodo('eliminar', $id, null, null, null, null)";
-        $resultado= $conexion->query($sql);
+        $sql = "call calendarios.sp_actividad('eliminar', $id, 'null', 'null', null);";
+        $resultado= $conexion->nonQuery($sql);
     
         if($resultado){ 
-            echo json_encode(array('mensaje'=>'periodo eliminado'));
+            echo json_encode(array('mensaje'=>'actividad eliminada'));
     
         }else{
             echo json_encode(array('error'=>'No se elimino el registro'));
@@ -59,19 +67,21 @@ class crudactividad {
     }
 
     
-    public function actualizaractividad($conexion, $id, $dato){
+    public function actualizaractividad($id, $dato){
+
+        $conexion = new conexion;
         $id = $dato['id'];
-        $anio = $dato['anio'];
-        $periocidad = $dato['periocidad'];
-        $modalidad = $dato['modalidad'];
-        $sede_id = $dato['sede_id'];
+        $id_calendario = $dato['id_calendario'];
+        $nombre = $dato['nombre'];
+        $estado = $dato['estado'];
+       
     
-        echo "El id a editar es ".$id. "con los datos".$anio. ", " .$periocidad. ", " .$modalidad. ", " .$sede_id;
+        echo "El id a editar es ".$id. "con los datos".$id_calendario. ", " .$nombre. ", " .$estado;
 
-        $sql = "call sp_periodo('actualizar', '$id' , '$anio', '$periocidad', '$modalidad', '$sede_id')";
-        
+        $sql = "call sp_actividad('actualizar', '$id' , '$id_calendario', '$nombre', '$estado')";
+        //call calendarios.sp_actividad('actualizar', 13, '1', 'actividadedit', 1);
 
-        $resultado= $conexion->query($sql);
+        $resultado= $conexion->nonQuery($sql);
         if($resultado){
             echo json_encode(array('mensaje'=>'Periodo actualizado'));
     

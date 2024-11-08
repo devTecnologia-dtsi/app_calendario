@@ -1,14 +1,19 @@
 <?php
 
-include_once __DIR__ . "/../../config/dbCalendario.php";
+include_once __DIR__ . "/../../config/conexion.php";
+
 
 class crudperiodo {
 
-    public function consultarperiodo($conexion, $id){
+    public function consultarperiodo($id){
+        
 
         $sql = ($id==null) ? "call calendarios.sp_periodo('ver', null,  null, null, null, null)" : "call calendarios.sp_periodo('ver', '$id',  null, null, null, null);" ;
 
-        $resultado = $conexion->query($sql);
+
+        $conexion = new conexion;
+
+        $resultado = $conexion->obtenerDatos($sql);
 
     
         if($resultado){
@@ -33,23 +38,28 @@ class crudperiodo {
         $sede_id = isset($dato['sede_id']) ? $dato['sede_id'] : null;  
        
         $sql = "call sp_periodo('insertar', null, '$anio', '$periocidad', '$modalidad', '$sede_id')";
-        $resultado= $conexion->query($sql);
-       
+        $resultado= $conexion->nonQuery($sql);
+        $resultado= $conexion->nonQueryId($sql);
+        var_dump($resultado);
+        // if($resultado){
+        //     $dato['id'] = $conexion -> insert_id;
+        //     var_dump($resultado);
+        //     echo json_encode($dato);
     
-        if($resultado){
-            $dato['id'] = $conexion -> insert_id;
-            echo json_encode($dato);
-    
-        }else{
-            echo json_encode(array('error'=>'Error en la insercion de datos'));
-        }
+        // }else{
+        //     echo json_encode(array('error'=>'Error en la insercion de datos'));
+        // }
     
     }
     
-    public function eliminarperiodo($conexion, $id){
+    public function eliminarperiodo($id){
       
         $sql = "call calendarios.sp_periodo('eliminar', $id, null, null, null, null)";
-        $resultado= $conexion->query($sql);
+
+        $conexion = new conexion;
+
+        $resultado= $conexion->obtenerDatos($sql);
+
     
         if($resultado){ 
             echo json_encode(array('mensaje'=>'periodo eliminado'));
@@ -60,7 +70,7 @@ class crudperiodo {
     }
 
     
-    public function actualizarperiodo($conexion, $id, $dato){
+    public function actualizarperiodo($id, $dato){
         $id = $dato['id'];
         $anio = $dato['anio'];
         $periocidad = $dato['periocidad'];
@@ -71,8 +81,10 @@ class crudperiodo {
 
         $sql = "call sp_periodo('actualizar', '$id' , '$anio', '$periocidad', '$modalidad', '$sede_id')";
         
+        $conexion = new conexion;
 
-        $resultado= $conexion->query($sql);
+
+        $resultado= $conexion->obtenerDatos($sql);
         if($resultado){
             echo json_encode(array('mensaje'=>'Periodo actualizado'));
     
