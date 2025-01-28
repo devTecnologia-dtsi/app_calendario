@@ -1,0 +1,43 @@
+<h2>Crear usuario</h2>
+
+<form (submit)="guardarCambios()" [formGroup]="form">
+    <mat-form-field appearance="outline">
+        <mat-label>Correo</mat-label>
+        <input matInput [formControl]="form.controls.correo">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Rectoría</mat-label>
+        <mat-select [formControl]="form.controls.id_rectoria">
+            <mat-option [value]="1">R BOGOTÁ REGIÓN</mat-option>
+            <mat-option [value]="2">R SOACHA</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Sede</mat-label>
+        <mat-select [formControl]="form.controls.id_sede">
+            <mat-option [value]="1">Sede Principal Bogotá</mat-option>
+            <mat-option [value]="2">Ciudad Bolívar presencial</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Rol</mat-label>
+        <mat-select [formControl]="form.controls.id_rol">
+            <mat-option [value]="1">Administrador</mat-option>
+            <mat-option [value]="2">Financiero</mat-option>
+            <mat-option [value]="3">Académico</mat-option>
+            <mat-option [value]="4">Grados</mat-option>
+        </mat-select>
+    </mat-form-field>
+
+
+</form>
+
+<div>
+    <button mat-flat-button type="button" (click)="guardarCambios()"
+    [disabled]="form.invalid"
+    >Guardar cambios</button>
+    <a mat-stroked-button routerLink="/sedes">Cancelar</a>
+</div>
