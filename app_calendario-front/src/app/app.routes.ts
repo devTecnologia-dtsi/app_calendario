@@ -32,12 +32,12 @@ export const routes: Routes = [
   { path: 'sedes', component: IndiceSedesComponent },
   { path: 'sedes/crear', component: CrearSedeComponent },
   { path: 'sedes/editar/:id', component: EditarSedeComponent  },
-  { path: 'calendario', component: IndiceCalendariosComponent },
-  { path: 'calendarios/crear', component: CrearCalendariosComponent},
-  { path: 'calendarios/editar/:id', component: EditarCalendariosComponent },
-  { path: 'calendarios/academico', component: AcademicoComponent },
-  { path: 'calendarios/financiero', component: FinancieroComponent },
-  { path: 'calendarios/grados', component: GradosComponent },
+  // { path: 'calendario', component: IndiceCalendariosComponent },
+  // { path: 'calendarios/crear', component: CrearCalendariosComponent},
+  // { path: 'calendarios/editar/:id', component: EditarCalendariosComponent },
+  // { path: 'calendarios/academico', component: AcademicoComponent },
+  // { path: 'calendarios/financiero', component: FinancieroComponent },
+  // { path: 'calendarios/grados', component: GradosComponent },
   { path: '**', redirectTo: '/login' }
 ];
 

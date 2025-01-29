@@ -1,0 +1,32 @@
+<form (submit)="guardarCambios()" [formGroup]="form">
+    <mat-form-field appearance="outline">
+        <mat-label>Código sede</mat-label>
+        <input matInput [formControl]="form.controls.codigo">
+        <mat-error>{{obtenerErrorCampoCodigo()}}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Nombre sede</mat-label>
+        <input matInput [formControl]="form.controls.nombre">
+        <mat-error>{{obtenerErrorCampoNombre()}}</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+        <mat-label>Rectoría</mat-label>
+        <mat-select formControlName="id_rectoria">
+            <mat-option [value]="1">R BOGOTÁ REGIÓN</mat-option>
+            <mat-option [value]="2">R SOACHA</mat-option>
+        </mat-select>
+        <mat-error>{{obtenerErrorCampoRectoria()}}</mat-error>
+    </mat-form-field>
+
+    <div class="contenedor-botones">
+        <button mat-flat-button type="submit"
+        [disabled]="form.invalid"
+        >Guardar cambios</button>
+        <a mat-stroked-button routerLink="/sedes">Cancelar</a>
+    </div>
+</form>
+
+
+

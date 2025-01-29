@@ -1,14 +1,14 @@
-export interface SedeDTO
-{
+//Creación
+export interface SedeCreacionDTO {
     codigo: string;
     nombre: string;
-    estado: boolean;
+    id_rectoria: string;
 }
 
-export interface SedeCreacionDTO
-{
+//Lectura
+export interface SedeDTO {
     id: number;
     codigo: string;
     nombre: string;
-    estado: boolean;
+    id_rectoria: string;
 }
