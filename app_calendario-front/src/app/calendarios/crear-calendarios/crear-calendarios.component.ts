@@ -7,6 +7,7 @@ import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { CalendarioCreacionDTO } from '../calendarios';
+import { FormularioCalendariosComponent } from "../formulario-calendarios/formulario-calendarios.component";
 
 @Component({
   selector: 'app-crear-calendarios',
@@ -17,8 +18,9 @@ import { CalendarioCreacionDTO } from '../calendarios';
     MatNativeDateModule,
     //RouterLink, //Boton de cancelacion
     ReactiveFormsModule,
-    MatInputModule  
-  ],
+    MatInputModule,
+    FormularioCalendariosComponent
+],
   templateUrl: './crear-calendarios.component.html',
   styleUrls: ['./crear-calendarios.component.css']
 })

@@ -5,6 +5,24 @@
         <mat-error></mat-error>
     </mat-form-field>
     <mat-form-field appearance="outline">
-        <mat-label></mat-label>
+        <mat-label>Nombre sub actividad</mat-label>
+        <input matInput [formControl]="form.controls.nombreSubActividad" >
+        <mat-error></mat-error>
     </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Fecha inicio</mat-label>
+        <input matInput [matDatepicker]="pickerFechaInicio" [formControl]="form.controls.fechaInicio">
+        <mat-datepicker #pickerFechaInicio></mat-datepicker>
+        <mat-datepicker-toggle matSuffix [for]="pickerFechaInicio"></mat-datepicker-toggle>
+    </mat-form-field>
+    <mat-form-field appearance="outline">
+        <mat-label>Fecha fin</mat-label>
+        <input matInput [matDatepicker]="pickerFechaFin" [formControl]="form.controls.fechaInicio">
+        <mat-datepicker #pickerFechaFin></mat-datepicker>
+        <mat-datepicker-toggle matSuffix [for]="pickerFechaFin"></mat-datepicker-toggle>
+    </mat-form-field>
+    <div class="contenedor-botones">
+        <button type="submit" mat-flat-button [disabled]="form.invalid">Guardar cambios</button>
+        <a mat-stroked-button>Cancelar</a>
+    </div>
 </form>

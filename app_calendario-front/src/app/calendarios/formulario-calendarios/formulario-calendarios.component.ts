@@ -13,6 +13,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './formulario-calendarios.component.html',
   styleUrl: './formulario-calendarios.component.css'
 })
+
 export class FormularioCalendariosComponent {
 
   private formBuilder = inject(FormBuilder);
@@ -32,9 +33,9 @@ export class FormularioCalendariosComponent {
 
     fechaFin: new FormControl<Date | null>(null),
 
-    fechaCreacionSubActividad: ['', {validators: [Validators.required]}],
+    fechaCreacionSubActividad: new FormControl<Date | null>(null),
 
-    tipo: ['', {validators: [Validators.required]}],
+    tipo: ['Academico'],
 
   })
 
