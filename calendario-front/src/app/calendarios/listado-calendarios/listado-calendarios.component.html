@@ -1,0 +1,58 @@
+<!-- <app-listado-generico [listado]="calendarios">
+  <ng-container contenido>
+    @for (calendario of calendarios; track $index) {
+      <div class="contenedor-calendario">
+        <div style="display: flex; flex-direction: row; gap: 10px;">
+          <div>
+            <img [src]="calendario.imagen" width="169" height="250">
+          </div>
+          <div>
+            <p>Tipo de calendario: {{calendario.tipoCalendario}}</p>
+            <p>Usuario: {{calendario.usuario}}</p>
+            <p>Rectoría: {{calendario.rectoria}}</p>
+            <p>Sede: {{calendario.sede}}</p>
+            <p>{{$index}} Nombre Actividad: {{calendario.nombreActividad}}</p>
+            <p>Nombre subactividad: {{calendario.nombreSubactividad}}</p>
+            <p>Fecha inicio: {{calendario.fechaInicio | date: "dd-MMMM-yyyy"}}</p>
+            <p>Fecha fin: {{calendario.fechaFin | date: "dd-MMMM-yyyy"}}</p>
+            <p>Fecha de creación actividad: {{calendario.fechaCreacionActividad | date: "dd-MMMM-yyyy"}}</p>
+            <p>Fecha de creación subactividad: {{calendario.FechaCreacionSubactividad | date: "dd-MMMM-yyyy"}}</p>
+            <p>Estado actividad: {{calendario.estadoActividad}}</p>
+            <p>Estado subactividad: {{calendario.estadoSubActividad}}</p>
+            
+          </div>
+        </div>
+      </div>
+    }
+  </ng-container>
+</app-listado-generico> -->
+
+<app-listado-generico [listado]="calendarios">
+  <ng-container contenido>
+    <div class="calendarios-contenedor">
+      @for (calendario of calendarios; track $index) {
+        <div class="calendario-contenedor">
+          <a>
+            @if(calendario.imagen){
+              <img [src]="calendario.imagen" width="169" height="250">
+            } @else {
+              <img [src]="" width="169" height="250">
+            }
+          </a>
+          <p>
+            <a>{{calendario.tipoCalendario}}</a>
+          </p>
+          <div>
+            <a mat-flat-button>Editar</a>
+            <button mat-flat-button type="button" color="warm">Borrar</button>
+          </div>
+        </div>
+      }
+    </div>
+  </ng-container>
+</app-listado-generico>
+
+
+
+  
+  
