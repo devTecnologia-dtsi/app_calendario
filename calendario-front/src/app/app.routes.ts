@@ -10,6 +10,8 @@ import { IndiceRolComponent } from './rol/indice-rol/indice-rol.component';
 import { CrearRolComponent } from './rol/crear-rol/crear-rol.component';
 import { IndiceUsuariosComponent } from './usuarios/indice-usuarios/indice-usuarios.component';
 import { CrearUsuariosComponent } from './usuarios/crear-usuarios/crear-usuarios.component';
+import { EditarRolComponent } from './rol/editar-rol/editar-rol.component';
+import { EditarUsuariosComponent } from './usuarios/editar-usuarios/editar-usuarios.component';
 
 export const routes: Routes = [
     {path: '', component: LandingPageComponent},
@@ -21,6 +23,9 @@ export const routes: Routes = [
     {path: 'periodos/crear', component: CrearPeriodosComponent},
     {path: 'rol', component: IndiceRolComponent},
     {path: 'rol/crear', component: CrearRolComponent},
+    {path: 'rol/editar/:id', component: EditarRolComponent},
     {path: 'usuarios', component: IndiceUsuariosComponent},
-    {path: 'usuarios/crear', component: CrearUsuariosComponent}
+    {path: 'usuarios/crear', component: CrearUsuariosComponent},
+    {path: 'usuarios/editar/:id', component: EditarUsuariosComponent},
+    {path: '**', component: LandingPageComponent}
 ];
