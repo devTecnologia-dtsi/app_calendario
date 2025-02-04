@@ -27,5 +27,5 @@ export const routes: Routes = [
     {path: 'usuarios', component: IndiceUsuariosComponent},
     {path: 'usuarios/crear', component: CrearUsuariosComponent},
     {path: 'usuarios/editar/:id', component: EditarUsuariosComponent},
-    {path: '**', component: LandingPageComponent}
+    {path: '**', redirectTo: ''},
 ];
