@@ -10,7 +10,14 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 
 @Component({
   selector: 'app-formulario-usuarios',
-  imports: [MatButtonModule, RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule, MatSelectModule, MatDatepickerModule],
+  imports: [
+    MatButtonModule, 
+    RouterLink, 
+    MatFormFieldModule, 
+    ReactiveFormsModule, 
+    MatInputModule, 
+    MatSelectModule, 
+    MatDatepickerModule],
   templateUrl: './formulario-usuarios.component.html',
   styleUrl: './formulario-usuarios.component.css'
 })
@@ -35,11 +42,12 @@ export class FormularioUsuariosComponent implements OnInit {
   form = this.formbuilder.group({
     correo: ['', {validators: [Validators.email, Validators.required]}],
     estado: 1,
-    id_rectoria: [null as number | null], 
-    id_sede: [null as number | null],    
-    fecha_ingreso: new FormControl<Date | null>(null),
+    id_rol: [null as number | null, {validators: [Validators.required]}],
+    id_rectoria: [null as number | null, {validators: [Validators.required]}], 
+    id_sede: [null as number | null, {validators: [Validators.required]}],    
+    // fecha_ingreso: new FormControl<Date | null>(null),
+    fecha_ingreso: new Date(),
     fecha_creacion: new Date(),
-    id_rol: [null as number | null]
   })
 
   obtenerErrorCampoCorreo(): string {
@@ -53,6 +61,34 @@ export class FormularioUsuariosComponent implements OnInit {
       return "El campo Correo es requerido";
     }
 
+    return "";
+  }
+
+  obtenerErrorSelectRol(): string {
+    let rol = this.form.controls.id_rol;
+
+    if(rol.hasError('required')){
+      return "Debe seleccionar algún valor del campo Rol";
+    }
+
+    return "";
+  }
+
+  obtenerErrorSelectRectoria(): string{
+    let rectoria = this.form.controls.id_rectoria;
+
+    if(rectoria.hasError('required')){
+      return "Debe seleccionar algún valor del campo Rectoria";
+    }
+    return "";
+  }
+
+  obtenerErrorSelectSede(): string{
+    let sede = this.form.controls.id_sede;
+
+    if(sede.hasError('required')){
+      return "Debe seleccionar algún valor del campo Sede";
+    }
     return "";
   }
 

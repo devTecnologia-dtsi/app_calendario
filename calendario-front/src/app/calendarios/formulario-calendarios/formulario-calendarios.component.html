@@ -1,0 +1,14 @@
+<form [formGroup]="form">
+    
+    <mat-form-field appearance="outline">
+        <mat-label>Usuario</mat-label>
+        <mat-select [formControl]="form.controls.id_usuarios">
+          <mat-option value= 1 >Jeyson Triana</mat-option>
+          <mat-option value= 2>Alejandra Rueda</mat-option>
+          <mat-option value= 3>Michell Rojas</mat-option>
+          <mat-option value= 4>Stiven Muñoz</mat-option>
+        </mat-select>
+        <mat-error></mat-error>
+    </mat-form-field>
+
+</form>

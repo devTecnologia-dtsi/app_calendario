@@ -1,26 +1,25 @@
 import { Routes } from '@angular/router';
 import { LandingPageComponent } from './landing-page/landing-page.component';
-import { IndiceRectoriasComponent } from './rectorias/indice-rectorias/indice-rectorias.component';
-import { CrearRectoriasComponent } from './rectorias/crear-rectorias/crear-rectorias.component';
-import { IndiceSedesComponent } from './sedes/indice-sedes/indice-sedes.component';
-import { CrearSedesComponent } from './sedes/crear-sedes/crear-sedes.component';
-import { IndicePeriodosComponent } from './periodos/indice-periodos/indice-periodos.component';
-import { CrearPeriodosComponent } from './periodos/crear-periodos/crear-periodos.component';
-import { IndiceRolComponent } from './rol/indice-rol/indice-rol.component';
 import { CrearRolComponent } from './rol/crear-rol/crear-rol.component';
 import { IndiceUsuariosComponent } from './usuarios/indice-usuarios/indice-usuarios.component';
 import { CrearUsuariosComponent } from './usuarios/crear-usuarios/crear-usuarios.component';
 import { EditarRolComponent } from './rol/editar-rol/editar-rol.component';
 import { EditarUsuariosComponent } from './usuarios/editar-usuarios/editar-usuarios.component';
+import { CrearCalendariosComponent } from './calendarios/crear-calendarios/crear-calendarios.component';
+import { IndiceCalendariosComponent } from './calendarios/indice-calendarios/indice-calendarios.component';
+import { EditarCalendariosComponent } from './calendarios/editar-calendarios/editar-calendarios.component';
+import { AcademicoComponent } from './calendarios/academico/academico.component';
+import { FinancieroComponent } from './calendarios/financiero/financiero.component';
+import { GradosComponent } from './calendarios/grados/grados.component';
+import { IndiceRolComponent } from './rol/indice-rol/indice-rol.component';
 
 export const routes: Routes = [
     {path: '', component: LandingPageComponent},
-    {path: 'rectorias', component: IndiceRectoriasComponent},
-    {path: 'rectorias/crear', component: CrearRectoriasComponent},
-    {path: 'sedes', component: IndiceSedesComponent},
-    {path: 'sedes/crear', component: CrearSedesComponent},
-    {path: 'periodos', component: IndicePeriodosComponent},
-    {path: 'periodos/crear', component: CrearPeriodosComponent},
+    {path: 'calendarios/crear', component: CrearCalendariosComponent},
+    {path: 'calendarios/editar/:id', component: EditarCalendariosComponent},
+    {path: 'calendarios/crear/academico', component: AcademicoComponent},
+    {path: 'calendarios/crear/financiero', component: FinancieroComponent},
+    {path: 'calendarios/crear/grado', component: GradosComponent},
     {path: 'rol', component: IndiceRolComponent},
     {path: 'rol/crear', component: CrearRolComponent},
     {path: 'rol/editar/:id', component: EditarRolComponent},

@@ -14,7 +14,16 @@ export class EditarUsuariosComponent {
   @Input({transform: numberAttribute})
   id!: number;
 
-  usuario: UsuarioDTO = {id: 1, correo: 'jeyson@uniminuto', estado: 1 , id_rectoria: 1 , id_sede: 2, fecha_ingreso: new Date(), fecha_creacion: new Date(), id_rol: 3}
+  usuario: UsuarioDTO = {
+    id: 1, 
+    correo: 'jeyson@uniminuto', 
+    estado: 1 , 
+    id_rectoria: 1 , 
+    id_sede: 2, 
+    fecha_ingreso: new Date(), 
+    fecha_creacion: new Date(), 
+    id_rol: 3
+  }
 
   guardarCambios(usaurio: UsuarioCreacionDTO){
     console.log('editando el usuario', usaurio)

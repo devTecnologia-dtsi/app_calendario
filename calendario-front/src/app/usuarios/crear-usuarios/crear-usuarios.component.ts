@@ -10,7 +10,14 @@ import { UsuarioCreacionDTO } from '../usuario';
 
 @Component({
   selector: 'app-crear-usuarios',
-  imports: [MatButtonModule, RouterLink, MatFormFieldModule, ReactiveFormsModule, MatInputModule, MatSelectModule, FormularioUsuariosComponent],
+  imports: [
+    MatButtonModule, 
+    RouterLink, 
+    MatFormFieldModule, 
+    ReactiveFormsModule, 
+    MatInputModule, 
+    MatSelectModule, 
+    FormularioUsuariosComponent],
   templateUrl: './crear-usuarios.component.html',
   styleUrl: './crear-usuarios.component.css'
 })
