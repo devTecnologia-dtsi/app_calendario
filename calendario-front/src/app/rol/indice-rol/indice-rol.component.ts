@@ -1,4 +1,4 @@
-import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, inject, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -7,8 +7,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 import { RolCreacionDTO, RolDTO } from '../rol';
-import { MatPaginatorModule } from '@angular/material/paginator';
-import { MatTableModule } from '@angular/material/table';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+
 
 @Component({
   selector: 'app-indice-rol',
@@ -21,16 +23,21 @@ import { MatTableModule } from '@angular/material/table';
     MatSelectModule, 
     MatDatepickerModule,
     MatTableModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatCheckboxModule
   ],
   templateUrl: './indice-rol.component.html',
   styleUrl: './indice-rol.component.css'
 })
-export class IndiceRolComponent implements OnInit {
-  ngOnInit(): void {
-    if (this.modeloRol !== undefined){
-      this.form.patchValue(this.modeloRol);
-    }
+export class IndiceRolComponent implements AfterViewInit {
+
+  columnasMostradas: string[] = ['Crear', 'Leer', 'Actualizar', 'Borrar', 'Actividad', 'Subactividad', 'Calendario', 'Sistema', 'Nombre'];
+  fuenteDatos = new MatTableDataSource<RolCreacionDTO>(DATOS_PRUEBA);
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  
+  ngAfterViewInit() {
+    this.fuenteDatos.paginator = this.paginator;
   }
 
   // Para editar el formulario de Rol
@@ -44,15 +51,17 @@ export class IndiceRolComponent implements OnInit {
   private formbuilder = inject(FormBuilder);
 
   form = this.formbuilder.group({
-    crear: [null as number | null],
-    leer: [null as number | null],
-    actualizar: [null as number | null],
-    borrar: [null as number | null],
-    actividad: [null as number | null],
-    subactividad: [null as number | null],
-    calendario: [null as number | null],
-    sistema: [null as number | null],
-    nombre: ['']
+    nombre: [''],
+    // Por defecto, sin permiso (0)
+    crear: [0], 
+    leer: [0],
+    actualizar: [0],
+    borrar: [0],
+    actividad: [0],
+    subactividad: [0],
+    calendario: [0],
+    sistema: [0]
+    
   })
 
   guardarCambios(){
@@ -66,3 +75,10 @@ export class IndiceRolComponent implements OnInit {
   }
 
 }
+
+const DATOS_PRUEBA: RolCreacionDTO[] = [
+  { nombre: 'Admin', crear: 0, leer: 0, actualizar: 0, borrar: 0, actividad: 0, subactividad: 0, calendario: 0, sistema:0 },
+  { nombre: 'Financiero', crear: 0, leer: 0, actualizar: 0, borrar: 0, actividad: 0, subactividad: 0, calendario: 0, sistema:0 },
+  { nombre: 'Academico', crear: 0, leer: 0, actualizar: 0, borrar: 0, actividad: 0, subactividad: 0, calendario: 0, sistema:0 },
+  { nombre: 'Grados', crear: 0, leer: 0, actualizar: 0, borrar: 0, actividad: 0, subactividad: 0, calendario: 0, sistema:0 }
+];

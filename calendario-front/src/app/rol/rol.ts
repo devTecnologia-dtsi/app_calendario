@@ -14,13 +14,15 @@ export interface RolCreacionDTO {
 //Lectura
 export interface RolDTO{
     id: number;
-    crear: number;
+    nombre: string;
+    // 0 = No tiene permiso, 1 = Tiene permiso
     leer: number;
+    crear: number; 
     actualizar: number;
     borrar: number;
     actividad: number;
     subactividad: number;
     calendario: number;
     sistema: number;
-    nombre: string;
+    
 }
