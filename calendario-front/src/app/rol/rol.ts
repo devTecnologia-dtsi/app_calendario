@@ -1,4 +1,4 @@
-//Creación
+// Creación
 export interface RolCreacionDTO {
     crear: number;
     leer: number;
@@ -9,6 +9,7 @@ export interface RolCreacionDTO {
     calendario: number;
     sistema: number;
     nombre: string;
+    [key: string]: number | string;
 }
 
 //Lectura
@@ -26,3 +27,17 @@ export interface RolDTO{
     sistema: number;
     
 }
+
+
+// export interface RolCreacionDTO 
+// {
+//     nombre: string;
+//     leer: boolean;
+//     crear: boolean;
+//     actualizar: boolean;
+//     borrar: boolean;
+//     actividad: boolean;
+//     subactividad: boolean;
+//     calendario: boolean;
+//     sistema: boolean;
+// }
