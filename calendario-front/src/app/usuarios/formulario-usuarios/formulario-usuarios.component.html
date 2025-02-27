@@ -8,7 +8,7 @@
     <mat-form-field appearance="outline">
         <mat-label>Rol</mat-label>
         <mat-select [formControl]="form.controls.id_rol">
-          <mat-option value= 1 >Administrador</mat-option>
+          <mat-option value="1">Administrador</mat-option>
           <mat-option value="2">Académico</mat-option>
           <mat-option value="3">Financiero</mat-option>
           <mat-option value="4">Grados</mat-option>
@@ -16,34 +16,56 @@
         <mat-error>{{obtenerErrorSelectRol()}}</mat-error>
       </mat-form-field>
 
+      <!-- <mat-form-field appearance="outline">
+        <mat-label>Rectoría</mat-label>
+        <mat-select [formControl]="form.controls.id_rectoria">
+          <mat-option *ngFor="let rectoria of rectorias" [value]="rectoria.id">{{rectoria.nombre}}</mat-option>
+        </mat-select>
+      <mat-error>{{obtenerErrorSelectRectoria()}}</mat-error>
+      </mat-form-field> -->
+
       <mat-form-field appearance="outline">
         <mat-label>Rectoría</mat-label>
         <mat-select [formControl]="form.controls.id_rectoria">
-          <mat-option value= 1 >Bogotá</mat-option>
-          <mat-option value="2">Soacha</mat-option>
-          <mat-option value="3">Madrid</mat-option>
-          <mat-option value="4">Cundinamarca</mat-option>
+          @for (rectoria of rectorias; track rectoria.id) {
+            <mat-option [value]="rectoria.id">{{ rectoria.nombre }}</mat-option>
+          }
         </mat-select>
-      <mat-error>{{obtenerErrorSelectRectoria()}}</mat-error>
+        <mat-error>{{ obtenerErrorSelectRectoria() }}</mat-error>
       </mat-form-field>
+
+      <!-- <mat-form-field appearance="outline">
+        <mat-label>Sede</mat-label>
+        <mat-select [formControl]="form.controls.id_sede">
+          @for (sede of sedes; track $index) {
+            <mat-option [value]="sede.id">{{sede.nombre}}</mat-option>
+          }
+        </mat-select>
+        <mat-error>{{obtenerErrorSelectSede()}}</mat-error>
+      </mat-form-field> -->
 
       <mat-form-field appearance="outline">
         <mat-label>Sede</mat-label>
         <mat-select [formControl]="form.controls.id_sede">
-          <mat-option value= 1 >Calle 80</mat-option>
+          <mat-option *ngFor="let sede of sedes" [value]="sede.id">{{sede.nombre}}</mat-option>
+        </mat-select>
+        <mat-error>{{obtenerErrorSelectSede()}}</mat-error>
+      </mat-form-field>
+      
+
+      <!-- <mat-form-field appearance="outline">
+        <mat-label>Sede</mat-label>
+        <mat-select [formControl]="form.controls.id_sede">
+          <mat-option value="1">Calle 80</mat-option>
           <mat-option value="2">Calle 90</mat-option>
           <mat-option value="3">Calle 100</mat-option>
           <mat-option value="4">Calle 110</mat-option>
         </mat-select>
         <mat-error>{{obtenerErrorSelectSede()}}</mat-error>
-      </mat-form-field>
-
-
+      </mat-form-field> -->
 
     <div class="contenedor-botones">
-        <button mat-flat-button type="submit"
-        [disabled]="form.invalid"
-        >Guardar cambios</button>
-        <a mat-stroked-button routerLink="/usaurios">Cancelar</a>
+        <button mat-flat-button type="submit" [disabled]="form.invalid">Guardar cambios</button>
+        <a mat-stroked-button routerLink="/usuarios">Cancelar</a>
     </div>
 </form>
