@@ -7,9 +7,10 @@ import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 import { UsuarioCreacionDTO, UsuarioDTO } from '../usuario';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { Rectoria, RectoriaService } from '../../compartidos/servicios/rectoria.service';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { UsuarioService } from '../../compartidos/servicios/usuario.service';
+import { Rectoria, RectoriaService } from '../../compartidos/servicios/rectoria.service';
 import { Sede, SedeService } from '../../compartidos/servicios/sede.service';
 
 @Component({
@@ -35,6 +36,12 @@ export class FormularioUsuariosComponent implements OnInit {
       this.form.patchValue(this.modelo);
     }
     this.cargarRectorias();
+    this.form.get('id_rectoria')?.valueChanges.subscribe(idRectoria => {
+      if (idRectoria != null) {
+        this.cargarSedesPorRectoria(idRectoria);
+      }
+    });
+      
   }
 
   @Input()
@@ -46,6 +53,7 @@ export class FormularioUsuariosComponent implements OnInit {
   private formbuilder = inject(FormBuilder);
   private rectoriaService = inject(RectoriaService);
   private sedeService = inject(SedeService);
+  private usuarioService = inject(UsuarioService);
 
   form = this.formbuilder.group({
     correo: ['', {validators: [Validators.email, Validators.required]}],
@@ -64,6 +72,7 @@ export class FormularioUsuariosComponent implements OnInit {
     this.rectoriaService.listarRectorias().subscribe(data => {
       this.rectorias = data;
     });
+    
   }
 
   cargarSedesPorRectoria(id: number){
@@ -120,6 +129,14 @@ export class FormularioUsuariosComponent implements OnInit {
     }
 
     const usuario = this.form.value as UsuarioCreacionDTO;
-    this.posteoFormulario.emit(usuario)
+    this.usuarioService.insertarUsuario(usuario).subscribe(
+      response => {
+        console.log('Usuario creado exitosamente', response);
+        this.posteoFormulario.emit(usuario);
+      },
+      error => {
+        console.error('Error al crear usuario', error);
+      }
+    );
   }
 }

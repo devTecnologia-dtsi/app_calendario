@@ -31,7 +31,7 @@ function consultar($id, $tabla, $correo)
     } elseif ($tabla == 'usuario') {
         $usuario = new crudusuario();
         $usuario->consultarusuario($id, $correo);
-    // Se añade la consulta para rectoria Jeyson Triana
+    // Se añade la consulta para rectoria (Jeyson Triana)
     } elseif ($tabla == 'rectoria') { 
         $rectoria = new crudRectoria();
         if ($id){
@@ -39,7 +39,7 @@ function consultar($id, $tabla, $correo)
         } else {
             $rectoria->listarRectorias();
         }
-    // Se añade la consulta para sede Jeyson Triana
+    // Se añade la consulta para sede (Jeyson Triana)
     } elseif ($tabla == 'sede') {
         $sede = new crudSede();
         if ($id){
@@ -47,10 +47,20 @@ function consultar($id, $tabla, $correo)
         } else {
             $sede->listarSedes();
         }
+    // Se añade la consulta para sedes por rectoria (Jeyson Triana)
     } elseif($tabla == 'sedesPorRectoria'){
         $sede = new crudSede();
         $sede->listarSedesPorRectoria($id);
+    //Se añade la consulta para rol (Jeyson Triana)
+    } elseif ($tabla == 'rol') {
+        $rol = new crudRol();
+        if ($id) {
+            $rol->consultarRol($id, $correo);
+        } else {
+            $rol->listarRoles();
+        }
     } else {
+        //Se añade error en caso de que no se encuentre la tabla (Jeyson Triana)
         echo json_encode(array('ERROR' => 'No se ha encontrado la tabla'));
     }
 }

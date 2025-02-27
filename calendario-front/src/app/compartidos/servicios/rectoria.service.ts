@@ -12,7 +12,8 @@ export interface Rectoria {
   providedIn: 'root'
 })
 export class RectoriaService {
-  private apiUrl = 'http://localhost/calendario-back/src/routes/rutas.php/rectoria/';
+  // private apiUrl = 'http://localhost/calendario-back/src/routes/rutas.php/rectoria/';
+  private apiUrl = 'http://localhost:82/rectoria/';
 
   constructor(private http: HttpClient) {}
 

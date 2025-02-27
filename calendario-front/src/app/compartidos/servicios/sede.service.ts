@@ -12,8 +12,9 @@ export interface Sede {
   providedIn: 'root'
 })
 export class SedeService {
-  private apiUrl = 'http://localhost/calendario-back/src/routes/rutas.php/sedesPorRectoria/';
-
+  // private apiUrl = 'http://localhost/calendario-back/src/routes/rutas.php/sedesPorRectoria/';
+  private apiUrl = 'http://localhost:82/sedesPorRectoria/';
+;
   constructor(private http: HttpClient) {}
 
   listarSedes(): Observable<Sede[]> {

@@ -12,7 +12,6 @@ export interface CalendarioDTO {
 }
 
 export interface CalendarioCreacionDTO {
-    id_usuario: number;
     id_rectoria: number;
     id_sede: number;
     id_tipoCalendario: number;
@@ -22,23 +21,23 @@ export interface CalendarioCreacionDTO {
     id_periodo: number;
     actividades?: ActividadCreacionDTO[];
 }
-  
+
 export interface ActividadDTO {
     id: number;
     nombre: string;
     estado: number;
-    fecha_creacion:Date;
+    fecha_creacion: Date;
     subactividades?: SubActividadDTO[];
 }
 
 export interface ActividadCreacionDTO {
     nombre: string;
     estado: number;
-    fecha_creacion:Date;
+    fecha_creacion: Date;
     subactividades?: SubActividadCreacionDTO[];
 }
-  
-export interface SubActividadDTO{
+
+export interface SubActividadDTO {
     id: number;
     nombre: string;
     estado: number;
@@ -47,11 +46,10 @@ export interface SubActividadDTO{
     fecha_creacion: Date;
 }
 
-export interface SubActividadCreacionDTO{
+export interface SubActividadCreacionDTO {
     nombre: string;
     estado: number;
     fecha_inicio: Date;
     fecha_fin: Date;
     fecha_creacion: Date;
 }
-  
