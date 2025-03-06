@@ -8,30 +8,32 @@ include_once __DIR__ . "/../models/usuario.php";
 include_once __DIR__ . "/../models/Rolcalendario.php";
 include_once __DIR__ . "/../models/rectoria.php";
 include_once __DIR__ . "/../models/sede.php";
+include_once __DIR__ . "/../models/rol.php";
 
-function consultar($id, $tabla, $correo)
+function consultar($id, $tabla)
 {
-    $correo = base64_decode($correo); //recibe el correo en base 64 de parte del frontend como un query param
-    //la sintaxis se aplica al endpoint de la siguiente forma: /nombretabla/id?=queryparamdelcorreo(base64)(solo si es peticion get o delete)
     if ($tabla == 'actividad') {
         $actividad = new crudactividad();
-        $actividad->consultaractividad($id, $correo);
+        $actividad->consultaractividad($id);
     } elseif ($tabla == 'periodo') {
         $periodo = new crudperiodo();
-        $periodo->consultarperiodo($id, $correo);
+        $periodo->consultarperiodo($id);
     } elseif ($tabla == 'subactividad') {
         $subactividad = new crudsubactividad();
-        $subactividad->consultarsubactividad($id, $correo);
+        $subactividad->consultarsubactividad($id);
     } elseif ($tabla == 'calendario') {
         $calendario = new crudcalendario();
-        $calendario->consultarcalendario($id, $correo);
+        $calendario->consultarcalendario($id);
     } elseif ($tabla == 'rolCalendario') {
         $rolcalendario = new crudrolCalendario();
-        $rolcalendario->consultarrolCalendario($id, $correo);
+        $rolcalendario->consultarrolCalendario($id);
     } elseif ($tabla == 'usuario') {
         $usuario = new crudusuario();
-        $usuario->consultarusuario($id, $correo);
-    // Se añade la consulta para rectoria (Jeyson Triana)
+        if ($id) {
+            $usuario->consultarUsuario($id);
+        } else {
+            $usuario->listarUsuarios();
+        }
     } elseif ($tabla == 'rectoria') { 
         $rectoria = new crudRectoria();
         if ($id){
@@ -39,7 +41,6 @@ function consultar($id, $tabla, $correo)
         } else {
             $rectoria->listarRectorias();
         }
-    // Se añade la consulta para sede (Jeyson Triana)
     } elseif ($tabla == 'sede') {
         $sede = new crudSede();
         if ($id){
@@ -47,93 +48,96 @@ function consultar($id, $tabla, $correo)
         } else {
             $sede->listarSedes();
         }
-    // Se añade la consulta para sedes por rectoria (Jeyson Triana)
     } elseif($tabla == 'sedesPorRectoria'){
         $sede = new crudSede();
         $sede->listarSedesPorRectoria($id);
-    //Se añade la consulta para rol (Jeyson Triana)
     } elseif ($tabla == 'rol') {
         $rol = new crudRol();
         if ($id) {
-            $rol->consultarRol($id, $correo);
+            $rol->consultarRol($id);
         } else {
             $rol->listarRoles();
         }
     } else {
-        //Se añade error en caso de que no se encuentre la tabla (Jeyson Triana)
         echo json_encode(array('ERROR' => 'No se ha encontrado la tabla'));
     }
 }
 
-function insertar($dato, $tabla, $correo)
+function insertar($dato, $tabla)
 {
-    $correo = base64_decode($correo); //recibe el correo en base 64 de parte del frontend como un query param
     if ($tabla == 'periodo') {
         $periodo = new crudperiodo();
-        $periodo->insertarperiodo($dato, $correo);
+        $periodo->insertarperiodo($dato);
     } elseif ($tabla == 'actividad') {
         $actividad = new crudactividad();
-        $actividad->insertaractividad($dato, $correo);
+        $actividad->insertaractividad($dato);
     } elseif ($tabla == 'subactividad') {
         $subactividad = new crudsubactividad();
-        $subactividad->insertarsubactividad($dato, $correo);
+        $subactividad->insertarsubactividad($dato);
     } elseif ($tabla == 'calendario') {
         $calendario = new crudcalendario();
-        $calendario->insertarcalendario($dato, $correo);
+        $calendario->insertarcalendario($dato);
     } elseif ($tabla == 'rolCalendario') {
         $calendario = new crudrolCalendario();
-        $calendario->insertarrolCalendario($dato, $correo);
+        $calendario->insertarrolCalendario($dato);
     } elseif ($tabla == 'usuario') {
-        $calendario = new crudusuario();
-        $calendario->insertarusuario($dato, $correo);
+        $usuario = new crudusuario();
+        $usuario->insertarUsuario($dato);
+    } elseif ($tabla == 'rol') {
+        $rol = new crudRol();
+        $rol->insertarRol($dato);
     }
 }
 
-function actualizar($id, $dato, $tabla, $correo)
+function actualizar($id, $dato, $tabla)
 {
-    $correo = base64_decode($correo); //recibe el correo en base 64 de parte del frontend como un query param
     if ($tabla == 'periodo') {
         $periodo = new crudperiodo();
-        $periodo->actualizarperiodo($dato, $id, $correo);
+        $periodo->actualizarperiodo($dato, $id);
     } elseif ($tabla == 'actividad') {
         $actividad = new crudactividad();
-        $actividad->actualizaractividad($dato, $id, $correo);
+        $actividad->actualizaractividad($dato, $id);
     } elseif ($tabla == 'subactividad') {
         $subactividad = new crudsubactividad();
-        $subactividad->actualizarsubactividad($dato, $id, $correo);
+        $subactividad->actualizarsubactividad($dato, $id);
     } elseif ($tabla == 'calendario') {
         $calendario = new crudcalendario();
-        $calendario->actualizarcalendario($dato, $id, $correo);
+        $calendario->actualizarcalendario($dato, $id);
     } elseif ($tabla == 'rolCalendario') {
         $rolcalendario = new crudrolCalendario();
-        $rolcalendario->actualizarrolCalendario($dato, $id, $correo);
+        $rolcalendario->actualizarrolCalendario($dato, $id);
     } elseif ($tabla == 'usuario') {
         $usuario = new crudusuario();
-        $usuario->actualizarusuario($dato, $id, $correo);
+        $usuario->actualizarUsuario($dato, $id);
+    } elseif ($tabla == 'rol') {
+        $rol = new crudRol();
+        $rol->actualizarRol($id, $dato);
     }
 }
 
-function eliminar($id, $tabla, $correo)
+function eliminar($id, $tabla)
 {
-    $correo = base64_decode($correo); //recibe el correo en base 64 de parte del frontend como un query param
     if ($tabla == 'periodo') {
         $periodo = new crudperiodo();
-        $periodo->eliminarperiodo($id, $correo);
+        $periodo->eliminarperiodo($id);
     } elseif ($tabla == 'actividad') {
         $actividad = new crudactividad();
-        $actividad->eliminaractividad($id, $correo);
+        $actividad->eliminaractividad($id);
     } elseif ($tabla == 'subactividad') {
         $subactividad = new crudsubactividad();
-        $subactividad->eliminarsubactividad($id, $correo);
+        $subactividad->eliminarsubactividad($id);
     } elseif ($tabla == 'calendario') {
         $calendario = new crudcalendario();
-        $calendario->eliminarcalendario($id, $correo);
+        $calendario->eliminarcalendario($id);
     } elseif ($tabla == 'rolCalendario') {
         $rolcalendario = new crudrolCalendario();
-        $rolcalendario->eliminarrolCalendario($id, $correo);
+        $rolcalendario->eliminarrolCalendario($id);
     } elseif ($tabla == 'usuario') {
         $usuario = new crudusuario();
-        $usuario->eliminarusuario($id, $correo);
+        $usuario->eliminarUsuario($id);
+    } elseif ($tabla == 'rol') {
+        $rol = new crudRol();
+        $rol->eliminarRol($id);
     }
 }
 ?>
