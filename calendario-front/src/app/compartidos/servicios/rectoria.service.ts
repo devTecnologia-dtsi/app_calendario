@@ -1,6 +1,8 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError, catchError } from 'rxjs';
+import { environment } from '../../../environments/environment.development';
+
 
 export interface Rectoria {
   id: number;
@@ -12,12 +14,18 @@ export interface Rectoria {
   providedIn: 'root'
 })
 export class RectoriaService {
-  // private apiUrl = 'http://localhost/calendario-back/src/routes/rutas.php/rectoria/';
-  private apiUrl = 'http://localhost:82/rectoria/';
 
-  constructor(private http: HttpClient) {}
+  private http = inject(HttpClient);
+  private urlBase = environment.apiUrl + '/rectoria/';
 
   listarRectorias(): Observable<Rectoria[]> {
-    return this.http.get<Rectoria[]>(`${this.apiUrl}`);
+    return this.http.get<Rectoria[]>(`${this.urlBase}`).pipe(
+      catchError(this.handleError)
+    );
   }
+
+    private handleError(error: any) {
+      console.error('Se produjo un error',error);
+      return throwError('Ha ocurrido un error, por favor inténtelo más tarde.');
+    }
 }

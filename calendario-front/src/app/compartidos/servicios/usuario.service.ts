@@ -1,16 +1,59 @@
 import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { UsuarioCreacionDTO } from '../../usuarios/usuario';
+import { inject, Injectable } from '@angular/core';
+import { Observable, throwError } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+import { UsuarioCreacionDTO, UsuarioDTO } from '../../usuarios/usuario';
+import { environment } from '../../../environments/environment.development';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UsuarioService {
-  private apiUrl = 'http://localhost:82/calendario-back/src/routes/rutas.php/insertarusuario';
-  
-  constructor(private http:HttpClient) {}
+  private http = inject(HttpClient);
+  private urlBase = environment.apiUrl + '/usuario';
 
-  insertarUsuario(usaurio: UsuarioCreacionDTO) {
-    return this.http.post<any>(this.apiUrl, usaurio);
+  listarUsuarios(): Observable<UsuarioDTO[]> {
+    return this.http.get<UsuarioDTO[]>(`${this.urlBase}/`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  consultarUsuario(id: number): Observable<UsuarioDTO> {
+    return this.http.get<UsuarioDTO>(`${this.urlBase}/${id}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  // insertarUsuario(usuario: UsuarioCreacionDTO): Observable<UsuarioCreacionDTO> {
+  //   return this.http.post<UsuarioCreacionDTO>(this.urlBase, usuario).pipe(
+  //     catchError(this.handleError)
+  //   );
+  // }
+
+  crearUsuario(usuario: UsuarioCreacionDTO) {
+    return this.http.post(this.urlBase, usuario).pipe(catchError(this.handleError));
+  }
+
+  // actualizarUsuario(id: number, usuario: UsuarioCreacionDTO): Observable<UsuarioCreacionDTO> {
+  //   return this.http.put<UsuarioCreacionDTO>(`${this.urlBase}/${id}`, usuario).pipe(
+  //     catchError(this.handleError)
+  //   );
+  // }
+
+  actualizarUsuario(id: number, usuario: UsuarioCreacionDTO) {
+    return this.http.put(`${this.urlBase}/${id}`, usuario).pipe(catchError(this.handleError));
+  }
+
+  eliminarUsuario(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.urlBase}/${id}`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  private handleError(error: any) {
+    console.error('Se produjo un error', error);
+    return throwError('Ha ocurrido un error, por favor inténtelo más tarde.');
   }
 }
+
+

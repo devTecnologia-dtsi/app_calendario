@@ -5,13 +5,13 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { RouterLink } from '@angular/router';
 import { RolCreacionDTO, RolDTO } from '../rol';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
-import { CommonModule, JsonPipe } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
+import { RolService } from '../../compartidos/servicios/rol.service';
 
 @Component({
   selector: 'app-indice-rol',
@@ -19,7 +19,6 @@ import { CommonModule, JsonPipe } from '@angular/common';
   imports: [
     CommonModule,
     MatButtonModule, 
-    RouterLink, 
     MatFormFieldModule, 
     ReactiveFormsModule, 
     MatInputModule, 
@@ -30,7 +29,6 @@ import { CommonModule, JsonPipe } from '@angular/common';
     MatCheckboxModule,
     FormsModule,
     HttpClientModule,
-    // JsonPipe
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './indice-rol.component.html',
@@ -38,20 +36,10 @@ import { CommonModule, JsonPipe } from '@angular/common';
 })
 export class IndiceRolComponent implements AfterViewInit, OnInit {
 
-  constructor(private http: HttpClient) {}
-
-  ngOnInit() {
-    this.cargarRoles();
-  }
-
-  cargarRoles() {
-    this.http.get<RolCreacionDTO[]>('http://localhost/calendario-back/src/models/rol.php').subscribe(data => {
-      console.log(data); // Verifica los datos recibidos
-      this.fuenteDatos.data = data;
-    });
-  }
+  constructor(private rolService: RolService) {}
 
   columnasMostradas: string[] = [
+    'Nombre',
     'Crear', 
     'Leer', 
     'Actualizar', 
@@ -60,46 +48,50 @@ export class IndiceRolComponent implements AfterViewInit, OnInit {
     'Subactividad', 
     'Calendario', 
     'Sistema', 
-    'Nombre'];
+    'Acciones'
+  ];
     
-  fuenteDatos = new MatTableDataSource<RolCreacionDTO>([]);
+  fuenteDatos = new MatTableDataSource<RolDTO>([]);
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   
+  ngOnInit() {
+    this.cargarRoles();
+  }
+
   ngAfterViewInit() {
     this.fuenteDatos.paginator = this.paginator;
   }
 
-  @Input()
-  modeloRol?: RolDTO;
+  cargarRoles() {
+    this.rolService.listarRoles().subscribe(data => {
+      console.log(data); // Verifica los datos recibidos
+      this.fuenteDatos.data = data;
+    });
+  }
 
-  @Output()
-  posteoFormulario = new EventEmitter<RolCreacionDTO>()
-
-  private formbuilder = inject(FormBuilder);
-
-  form = this.formbuilder.group({
-    nombre: [''],
-    crear: [0], 
-    leer: [0], 
-    actualizar: [0], 
-    borrar: [0], 
-    actividad: [0], 
-    subactividad: [0], 
-    calendario: [0], 
-    sistema: [0], 
-  })
-
-  cambioCheckbox(rol: RolCreacionDTO, permiso: string, event: any) {
+  cambioCheckbox(rol: RolDTO, permiso: string, event: any) {
     rol[permiso] = event.checked ? 1 : 0;
   }
 
-  guardarCambios(){
-    if(!this.form.valid){
-      return;
-    }
+  guardarCambios(rol: RolDTO) {
+    const rolActualizado: RolCreacionDTO = {
+      crear: rol.crear,
+      leer: rol.leer,
+      actualizar: rol.actualizar,
+      borrar: rol.borrar,
+      actividad: rol.actividad,
+      subactividad: rol.subactividad,
+      calendario: rol.calendario,
+      sistema: rol.sistema,
+      nombre: rol.nombre
+    };
 
-    const usuario = this.form.value as RolCreacionDTO;
-    this.posteoFormulario.emit(usuario)
+    this.rolService.actualizarRol(rol.id, rolActualizado).subscribe(() => {
+      console.log('Rol actualizado correctamente');
+      this.cargarRoles();
+    }, error => {
+      console.error('Error al actualizar el rol:', error);
+    });
   }
 }

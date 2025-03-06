@@ -1,5 +1,5 @@
-import { Component, inject, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, inject, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, FormGroup, FormArray, Validators, AbstractControl, FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -7,25 +7,37 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { CalendarioCreacionDTO } from '../calendarios';
+import { CalendarioCreacionDTO, CalendarioDTO } from '../calendarios';
 
 @Component({
   selector: 'app-formulario-calendarios',
   standalone: true,
   imports: [
+    MatFormFieldModule, 
+    MatInputModule, 
+    MatDatepickerModule,
     MatButtonModule,
     RouterLink,
-    MatFormFieldModule,
     ReactiveFormsModule,
-    MatInputModule,
-    MatDatepickerModule,
     MatSelectModule,
-    CommonModule
+    CommonModule,
+    MatButtonModule, 
+    RouterLink, 
+    MatFormFieldModule, 
+    ReactiveFormsModule, 
+    MatInputModule, 
+    MatDatepickerModule,
   ],
   templateUrl: './formulario-calendarios.component.html',
   styleUrls: ['./formulario-calendarios.component.css']
 })
 export class FormularioCalendariosComponent implements OnInit {
+
+  @Input()
+  calendario?: CalendarioDTO;
+
+  @Output()
+  posteoFormulario = new EventEmitter<CalendarioCreacionDTO>();
 
   private formBuilder = inject(FormBuilder);
 
@@ -35,7 +47,7 @@ export class FormularioCalendariosComponent implements OnInit {
     id_sede: [null, Validators.required],
     id_tipoCalendario: [null, Validators.required],
     estado: [1, Validators.required],
-    fecha_creacion: [new Date(), Validators.required],
+    fecha_creacion: new FormControl<Date | null>(null, {validators: [Validators.required]}),
     in_sede: [null, Validators.required],
     id_periodo: [null, Validators.required],
     actividades: this.formBuilder.array([])
@@ -52,7 +64,7 @@ export class FormularioCalendariosComponent implements OnInit {
     return this.formBuilder.group({
       nombre: ['', Validators.required],
       estado: [1, Validators.required],
-      fecha_creacion: [new Date(), Validators.required],
+      fecha_creacion: new FormControl<Date | null>(null, {validators: [Validators.required]}),
       subactividades: this.formBuilder.array([])
     });
   }
@@ -61,9 +73,9 @@ export class FormularioCalendariosComponent implements OnInit {
     return this.formBuilder.group({
       nombre: ['', Validators.required],
       estado: [1, Validators.required],
-      fecha_inicio: [null, Validators.required],
-      fecha_fin: [null, Validators.required],
-      fecha_creacion: [new Date(), Validators.required]
+      fecha_inicio: new FormControl<Date | null>(null, {validators: [Validators.required]}),
+      fecha_fin: new FormControl<Date | null>(null, {validators: [Validators.required]}),
+      fecha_creacion: new FormControl<Date | null>(null, {validators: [Validators.required]}),
     });
   }
 
@@ -74,6 +86,10 @@ export class FormularioCalendariosComponent implements OnInit {
   agregarSubActividad(actividadIndex: number): void {
     const subactividades = this.actividades.at(actividadIndex).get('subactividades') as FormArray;
     subactividades.push(this.nuevaSubActividad());
+  }
+
+  getSubactividadesControls(actividad: AbstractControl): AbstractControl[] {
+    return (actividad.get('subactividades') as FormArray).controls;
   }
 
   guardarCambios(): void {

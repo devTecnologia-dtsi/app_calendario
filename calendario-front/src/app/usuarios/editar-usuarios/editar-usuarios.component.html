@@ -1,3 +1,10 @@
 <h2>Editar usuario</h2>
 
-<app-formulario-usuarios [modelo]="usuario" (posteoFormulario)="guardarCambios($event)"></app-formulario-usuarios>
+@if (usuario) {
+    <app-mostrar-errores [errores]="errores"></app-mostrar-errores>
+    <app-formulario-usuarios [modelo]="usuario" (posteoFormulario)="guardarCambios($event)"></app-formulario-usuarios>
+} @else {
+    <app-cargando></app-cargando>
+
+}
+

@@ -25,19 +25,5 @@ export interface RolDTO{
     subactividad: number;
     calendario: number;
     sistema: number;
-    
+    [key: string]: number | string; // Firma de índice para permitir acceso dinámico
 }
-
-
-// export interface RolCreacionDTO 
-// {
-//     nombre: string;
-//     leer: boolean;
-//     crear: boolean;
-//     actualizar: boolean;
-//     borrar: boolean;
-//     actividad: boolean;
-//     subactividad: boolean;
-//     calendario: boolean;
-//     sistema: boolean;
-// }

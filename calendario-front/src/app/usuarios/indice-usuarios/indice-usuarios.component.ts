@@ -1,47 +1,58 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { RouterLink } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
-import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { HttpClientModule } from '@angular/common/http';
 import { UsuarioDTO } from '../usuario';
 import { DatePipe, CommonModule } from '@angular/common';
+import { UsuarioService } from '../../compartidos/servicios/usuario.service';
+import { Router } from '@angular/router';
+import { ListadoGenericoComponent } from "../../compartidos/componentes/listado-generico/listado-generico.component";
 
 @Component({
   selector: 'app-indice-usuarios',
+  standalone: true,
   imports: [
-    CommonModule,
+    RouterLink,
     MatButtonModule,
-    RouterLink, 
-    MatTableModule, 
+    ListadoGenericoComponent,
+    MatTableModule,
     MatPaginatorModule,
-    HttpClientModule,
-    DatePipe
-  ],
+    // CommonModule,
+    // MatButtonModule,
+    // RouterLink,
+    // MatTableModule,
+    // MatPaginatorModule,
+    // HttpClientModule,
+    // DatePipe,
+    // ListadoGenericoComponent
+],
   templateUrl: './indice-usuarios.component.html',
   styleUrls: ['./indice-usuarios.component.css']
 })
-export class IndiceUsuariosComponent implements OnInit {
-  displayedColumns: string[] = ['id', 'correo', 'estado', 'id_rectoria', 'id_sede', 'fecha_ingreso', 'fecha_creacion', 'id_rol'];
-  dataSource = new MatTableDataSource<UsuarioDTO>([]);
 
-  @ViewChild(MatPaginator) paginator!: MatPaginator;
+export class IndiceUsuariosComponent {
 
-  constructor(private http: HttpClient) {}
+  usuarioService = inject(UsuarioService);
+  // usuarios!: UsuarioDTO[];
+  dataSource = new MatTableDataSource<UsuarioDTO>();
 
-  ngOnInit() {
-    this.cargarUsuarios();
-  }
+  columnasAMostrar = ['id', 'correo', 'nombre_rectoria', 'nombre_sede', 'fechaCreacion', 'nombre_rol', 'acciones'];
 
-  cargarUsuarios() {
-    this.http.get<UsuarioDTO[]>('http://localhost/calendario-back/src/models/usuario.php').subscribe(data => {
-      this.dataSource.data = data;
-    });
+  @ViewChild(MatPaginator) 
+  paginator!: MatPaginator;
+
+  constructor(){
+    this.usuarioService.listarUsuarios().subscribe(usuarios => {
+      this.dataSource.data = usuarios;
+    })
   }
 
   ngAfterViewInit() {
     this.dataSource.paginator = this.paginator;
   }
 }
+
 
 

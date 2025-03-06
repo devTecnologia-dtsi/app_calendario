@@ -1,5 +1,5 @@
 import { Component, EventEmitter, inject, Input, OnInit, Output } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 import { UsuarioService } from '../../compartidos/servicios/usuario.service';
 import { Rectoria, RectoriaService } from '../../compartidos/servicios/rectoria.service';
 import { Sede, SedeService } from '../../compartidos/servicios/sede.service';
+import { RolService } from '../../compartidos/servicios/rol.service';
+import { RolDTO } from '../../rol/rol';
 
 @Component({
   selector: 'app-formulario-usuarios',
@@ -32,16 +34,18 @@ import { Sede, SedeService } from '../../compartidos/servicios/sede.service';
 })
 export class FormularioUsuariosComponent implements OnInit {
   ngOnInit(): void {
-    if (this.modelo !== undefined){
-      this.form.patchValue(this.modelo);
-    }
     this.cargarRectorias();
+    this.cargarRoles();
     this.form.get('id_rectoria')?.valueChanges.subscribe(idRectoria => {
       if (idRectoria != null) {
         this.cargarSedesPorRectoria(idRectoria);
       }
     });
-      
+
+    if (this.modelo !== undefined){
+      console.log('Datos del modelo recibidos en FormularioUsuariosComponent:', this.modelo);
+      this.form.patchValue(this.modelo);
+    }
   }
 
   @Input()
@@ -54,6 +58,7 @@ export class FormularioUsuariosComponent implements OnInit {
   private rectoriaService = inject(RectoriaService);
   private sedeService = inject(SedeService);
   private usuarioService = inject(UsuarioService);
+  private rolService = inject(RolService);
 
   form = this.formbuilder.group({
     correo: ['', {validators: [Validators.email, Validators.required]}],
@@ -63,21 +68,37 @@ export class FormularioUsuariosComponent implements OnInit {
     id_sede: [null as number | null, {validators: [Validators.required]}],    
     fecha_ingreso: new Date(),
     fecha_creacion: new Date(),
+
   })
 
   rectorias: Rectoria[] = [];
   sedes: Sede[] = [];
+  roles: RolDTO[] = [];
 
   cargarRectorias() {
     this.rectoriaService.listarRectorias().subscribe(data => {
       this.rectorias = data;
+      if (this.modelo) {
+        this.form.patchValue({ id_rectoria: this.modelo.id_rectoria });
+      }
     });
-    
   }
 
   cargarSedesPorRectoria(id: number){
     this.sedeService.listarSedesPorRectoria(id).subscribe(data => {
       this.sedes = data;
+      if (this.modelo) {
+        this.form.patchValue({ id_sede: this.modelo.id_sede });
+      }
+    });
+  }
+
+  cargarRoles(){
+    this.rolService.listarRoles().subscribe(data => {
+      this.roles = data;
+      if (this.modelo) {
+        this.form.patchValue({ id_rol: this.modelo.id_rol });
+      }
     });
   }
 
@@ -129,14 +150,7 @@ export class FormularioUsuariosComponent implements OnInit {
     }
 
     const usuario = this.form.value as UsuarioCreacionDTO;
-    this.usuarioService.insertarUsuario(usuario).subscribe(
-      response => {
-        console.log('Usuario creado exitosamente', response);
-        this.posteoFormulario.emit(usuario);
-      },
-      error => {
-        console.error('Error al crear usuario', error);
-      }
-    );
+    console.log('Datos del formulario:', usuario);
+    this.posteoFormulario.emit(usuario);
   }
 }
