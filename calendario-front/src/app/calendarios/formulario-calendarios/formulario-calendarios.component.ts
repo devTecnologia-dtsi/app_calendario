@@ -8,6 +8,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { CalendarioCreacionDTO, CalendarioDTO } from '../calendarios';
+import { MatNativeDateModule } from '@angular/material/core';
 
 @Component({
   selector: 'app-formulario-calendarios',
@@ -21,12 +22,7 @@ import { CalendarioCreacionDTO, CalendarioDTO } from '../calendarios';
     ReactiveFormsModule,
     MatSelectModule,
     CommonModule,
-    MatButtonModule, 
-    RouterLink, 
-    MatFormFieldModule, 
-    ReactiveFormsModule, 
-    MatInputModule, 
-    MatDatepickerModule,
+    MatNativeDateModule 
   ],
   templateUrl: './formulario-calendarios.component.html',
   styleUrls: ['./formulario-calendarios.component.css']
