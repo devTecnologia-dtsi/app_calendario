@@ -1,9 +1,7 @@
 <?php
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Methods: GET, POST, OPTIONS, DELETE, PUT");
-header("Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With");
 
 include_once __DIR__ . "/../controllers/controller.php";
+include_once __DIR__ . "/../../config/cors.php";
 
 $metodo = $_SERVER['REQUEST_METHOD'];
 $path = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '/';
@@ -14,20 +12,18 @@ $buscarid = explode('/', $path);
 $id = ($path !== '/' . $tabla . '/') ? end($buscarid) : null;
 $dato = json_decode(file_get_contents('php://input'), true);
 
-$correo = isset($_GET["user"]) ? $_GET["user"] : null;
-
 switch ($metodo) {
     case 'GET':
-        consultar($id, $tabla, $correo);
+        consultar($id, $tabla);
         break;
     case 'POST':
-        insertar($dato, $tabla, $correo);
+        insertar($dato, $tabla);
         break;
     case 'PUT':
-        actualizar($id, $dato, $tabla, $correo);
+        actualizar($id, $dato, $tabla);
         break;
     case 'DELETE':
-        eliminar($id, $tabla, $correo);
+        eliminar($id, $tabla);
         break;
     default:
         echo " Metodo no permitido";
