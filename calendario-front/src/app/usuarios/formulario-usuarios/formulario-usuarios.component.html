@@ -26,11 +26,17 @@
     <mat-select [formControl]="form.controls.id_sede">
       <mat-option *ngFor="let sede of sedes" [value]="sede.id">{{sede.nombre}}</mat-option>
     </mat-select>
-    <mat-error>{{obtenerErrorSelectSede()}}</mat-error>
+    @if (form.controls.id_rectoria.value == 1) {
+      <mat-error>{{obtenerErrorSelectSede()}}</mat-error>
+    }
+    @else {
+      <mat-error>{{obtenerFaltaSeleccionRectoria()}}</mat-error>
+    }
+
   </mat-form-field>
 
   <div class="contenedor-botones">
-    <button mat-flat-button type="submit" [disabled]="form.invalid">Guardar cambios</button>
-    <a mat-stroked-button routerLink="/usuarios">Cancelar</a>
+    <button mat-raised-button type="submit" [disabled]="form.invalid">Guardar cambios</button>
+    <a mat-raised-button color="warn" routerLink="/usuarios">Cancelar</a>
   </div>
 </form>

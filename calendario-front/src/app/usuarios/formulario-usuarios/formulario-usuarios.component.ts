@@ -66,8 +66,8 @@ export class FormularioUsuariosComponent implements OnInit {
     id_rol: [null as number | null, {validators: [Validators.required]}],
     id_rectoria: [null as number | null, {validators: [Validators.required]}], 
     id_sede: [null as number | null, {validators: [Validators.required]}],    
-    fecha_ingreso: new Date(),
-    fecha_creacion: new Date(),
+    // fecha_ingreso: new Date(),
+    // fecha_creacion: new Date(),
 
   })
 
@@ -100,6 +100,15 @@ export class FormularioUsuariosComponent implements OnInit {
         this.form.patchValue({ id_rol: this.modelo.id_rol });
       }
     });
+  }
+
+  obtenerFaltaSeleccionRectoria(): string {
+    let rectoria = this.form.controls.id_rectoria;
+
+    if(rectoria.hasError('required')){
+      return "Debe seleccionar primero la Rectoría";
+    }
+    return "";
   }
 
   obtenerErrorCampoCorreo(): string {
