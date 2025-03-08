@@ -10,10 +10,8 @@ class crudusuario
     {
         try {
             $conexion = new conexion();
-            // $sql = $conexion->test()->prepare("SELECT * FROM usuario WHERE id = ?");
-            // $sql->bind_param("i", $id);
 
-            $sql = $conexion->test()->prepare("CALL sp_usuario('ver', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
+            $sql = $conexion->test()->prepare("CALL sp_usuario('ver_id', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
             $sql->bind_param("i", $id);
             $sql->execute();
             $result = $sql->get_result();
@@ -22,7 +20,8 @@ class crudusuario
                 $datos[] = $fila;
             }
             header('Content-Type: application/json; charset=utf-8');
-            echo json_encode($datos);
+            // echo json_encode($datos);
+            echo json_encode(count($datos) > 0 ? $datos[0] : null);
         } catch (Exception $e) {
             echo json_encode(array('ERROR' => $e->getMessage()));
         }
@@ -78,6 +77,7 @@ class crudusuario
     {
         try {
             $conexion = new conexion();
+            $correo = isset($dato['correo']) ? $dato['correo'] : null;
             $correonuevo = isset($dato['correo']) ? $dato['correo'] : null;
             $estado = isset($dato['estado']) ? $dato['estado'] : null;
             $id_rectoria = isset($dato['id_rectoria']) ? $dato['id_rectoria'] : null;
@@ -87,7 +87,7 @@ class crudusuario
             $id_rol = isset($dato['id_rol']) ? $dato['id_rol'] : null;
 
             $sql = $conexion->test()->prepare("CALL sp_usuario('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $sql->bind_param('issiiissi', $id, $correonuevo, $correonuevo, $estado, $id_rectoria, $id_sede, $fechaIngreso, $fechaCreacion, $id_rol);
+            $sql->bind_param('issiiissi', $id, $$correo, $correonuevo, $estado, $id_rectoria, $id_sede, $fechaIngreso, $fechaCreacion, $id_rol);
             $sql->execute();
             $resultado = $sql->get_result();
             header('Content-Type: application/json; charset=utf-8');
