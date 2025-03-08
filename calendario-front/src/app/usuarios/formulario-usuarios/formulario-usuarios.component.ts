@@ -46,6 +46,8 @@ export class FormularioUsuariosComponent implements OnInit {
       console.log('Datos del modelo recibidos en FormularioUsuariosComponent:', this.modelo);
       this.form.patchValue(this.modelo);
     }
+
+
   }
 
   @Input()
@@ -66,9 +68,6 @@ export class FormularioUsuariosComponent implements OnInit {
     id_rol: [null as number | null, {validators: [Validators.required]}],
     id_rectoria: [null as number | null, {validators: [Validators.required]}], 
     id_sede: [null as number | null, {validators: [Validators.required]}],    
-    // fecha_ingreso: new Date(),
-    // fecha_creacion: new Date(),
-
   })
 
   rectorias: Rectoria[] = [];
@@ -78,15 +77,30 @@ export class FormularioUsuariosComponent implements OnInit {
   cargarRectorias() {
     this.rectoriaService.listarRectorias().subscribe(data => {
       this.rectorias = data;
+
+      console.log('Rectorías cargadas:', this.rectorias);
+      console.log('ID de Rectoría en el modelo:', this.modelo?.id_rectoria);
+
       if (this.modelo) {
         this.form.patchValue({ id_rectoria: this.modelo.id_rectoria });
       }
+
+      // if (this.modelo && this.modelo.id_rectoria !== undefined) {
+      //   this.form.patchValue({ id_rectoria: this.modelo.id_rectoria });
+      // } else {
+      //   console.warn("this.modelo no tiene un id_rectoria válido:", this.modelo);
+      // }
+      
     });
   }
 
   cargarSedesPorRectoria(id: number){
     this.sedeService.listarSedesPorRectoria(id).subscribe(data => {
       this.sedes = data;
+
+      console.log('Sedes cargadas:', this.sedes);
+      console.log('ID de Sede en el modelo:', this.modelo?.id_sede);
+
       if (this.modelo) {
         this.form.patchValue({ id_sede: this.modelo.id_sede });
       }
@@ -96,12 +110,16 @@ export class FormularioUsuariosComponent implements OnInit {
   cargarRoles(){
     this.rolService.listarRoles().subscribe(data => {
       this.roles = data;
+
+      console.log('Roles cargados:', this.roles);
+      console.log('ID de Rol en el modelo:', this.modelo?.id_rol);
+
       if (this.modelo) {
         this.form.patchValue({ id_rol: this.modelo.id_rol });
       }
     });
   }
-
+  
   obtenerFaltaSeleccionRectoria(): string {
     let rectoria = this.form.controls.id_rectoria;
 

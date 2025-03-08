@@ -1,10 +1,19 @@
 <h2>Usuarios</h2>
 
-<button class="contenedor-botones" mat-flat-button routerLink="/usuarios/crear">Crear nuevo</button>
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
 
+  <button class="contenedor-botones" mat-flat-button routerLink="/usuarios/crear">Crear nuevo</button>
+
+  <!-- Campo de búsqueda -->
+  <mat-form-field appearance="outline">
+    <mat-label>Buscar</mat-label>
+    <input matInput placeholder="Buscar" (keyup)="aplicarFiltro($event)">
+  </mat-form-field>
+</div>
 
 <div>
   <app-listado-generico [listado]="dataSource">
+    
     <ng-container contenido>
       <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 indice-elementos" >
         <ng-container matColumnDef="id">
@@ -47,10 +56,9 @@
   
         <tr mat-header-row *matHeaderRowDef="columnasAMostrar"></tr>
         <tr mat-row *matRowDef="let row; columns: columnasAMostrar;"></tr>
-  
+        
       </table>
-  
-      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements"></mat-paginator>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
     </ng-container>
   </app-listado-generico>
 
