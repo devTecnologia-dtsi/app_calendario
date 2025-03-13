@@ -16,7 +16,7 @@ export interface Rectoria {
 export class RectoriaService {
 
   private http = inject(HttpClient);
-  private urlBase = environment.apiUrl + '/rectoria/';
+  private urlBase = environment.apiUrl + 'rectoria/';
 
   listarRectorias(): Observable<Rectoria[]> {
     return this.http.get<Rectoria[]>(`${this.urlBase}`).pipe(

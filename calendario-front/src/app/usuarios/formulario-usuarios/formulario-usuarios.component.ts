@@ -27,7 +27,8 @@ import { RolDTO } from '../../rol/rol';
     MatSelectModule, 
     MatDatepickerModule,
     HttpClientModule,
-    CommonModule
+    CommonModule,
+    
   ],
   templateUrl: './formulario-usuarios.component.html',
   styleUrls: ['./formulario-usuarios.component.css']

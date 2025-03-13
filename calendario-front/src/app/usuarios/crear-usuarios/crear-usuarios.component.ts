@@ -39,12 +39,17 @@ export class CrearUsuariosComponent {
 
     this.usuarioService.crearUsuario(usuario).subscribe({
       next: () => {
+        alert('Usuario creado exitosamente');
         this.router.navigate(['/usuarios']);
       },
       error: (err) => {
         const errores = extraerErrores(err);
+        console.log('Errores recibidos:', errores);
+        alert('Hubo un error al crear el usuario.');
         this.errores = errores;
+        
       }
+
     });
 
     // Utiliza el servicio para insertar el usuario

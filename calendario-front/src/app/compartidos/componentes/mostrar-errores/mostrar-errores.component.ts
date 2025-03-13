@@ -1,13 +1,13 @@
 import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-mostrar-errores',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule],
   templateUrl: './mostrar-errores.component.html',
-  styleUrl: './mostrar-errores.component.css'
+  styleUrls: ['./mostrar-errores.component.css']
 })
 export class MostrarErroresComponent {
-  @Input({required: true}) 
-  errores!: string[];
-
+  @Input({ required: true }) errores!: string[];
 }

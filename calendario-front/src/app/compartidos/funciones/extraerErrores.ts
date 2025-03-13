@@ -1,13 +1,34 @@
-export function extraerErrores(obj: any): string[]{
-    const err = obj.error.errors;
+// export function extraerErrores(obj: any): string[]{
+//     const err = obj.error.errors;
 
+//     let mensajeDeError: string[] = [];
+
+//     for (let llave in err) {
+//         let campo = llave;
+//         const mensajesConCampos = err[llave].map((mensaje: string) => `${campo}: ${mensaje}`);
+//         mensajeDeError = mensajeDeError.concat(mensajesConCampos);
+        
+//     }
+
+//     return mensajeDeError;
+// }
+
+export function extraerErrores(obj: any): string[] {
+    const err = obj?.error?.errors; // Asegurar que existe `errors`
     let mensajeDeError: string[] = [];
 
-    for (let llave in err) {
-        let campo = llave;
-        const mensajesConCampos = err[llave].map((mensaje: string) => `${campo}: ${mensaje}`);
-        mensajeDeError = mensajeDeError.concat(mensajesConCampos);
-        
+    if (err && typeof err === 'object') {
+        for (let llave in err) {
+            if (Array.isArray(err[llave])) {
+                mensajeDeError = mensajeDeError.concat(err[llave]);
+            }
+        }
+    } else if (obj?.error?.message) {
+        mensajeDeError.push(obj.error.message);
+    } else if (typeof obj?.error === 'string') {
+        mensajeDeError.push(obj.error);
+    } else {
+        mensajeDeError.push('Error desconocido. Inténtelo más tarde.');
     }
 
     return mensajeDeError;

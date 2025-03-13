@@ -28,6 +28,13 @@ export class EditarUsuariosComponent implements OnInit {
   //     this.usuario = usuario;
   //   });
   // }
+  @Input({transform: numberAttribute})
+  id!: number;
+  usuario?: UsuarioDTO;
+  usuarioService = inject(UsuarioService);
+  errores: string[] = [];
+  router = inject(Router);
+  route = inject(ActivatedRoute);
 
   ngOnInit(): void {
         this.id = this.route.snapshot.params['id'];
@@ -39,14 +46,6 @@ export class EditarUsuariosComponent implements OnInit {
           console.error('Error al consultar el usuario:', error);
         });
       }
-
-  @Input({transform: numberAttribute})
-  id!: number;
-  usuario?: UsuarioDTO;
-  usuarioService = inject(UsuarioService);
-  errores: string[] = [];
-  router = inject(Router);
-  route = inject(ActivatedRoute);
 
   guardarCambios(usuario: UsuarioCreacionDTO){
     this.usuarioService.actualizarUsuario(this.id, usuario).subscribe({

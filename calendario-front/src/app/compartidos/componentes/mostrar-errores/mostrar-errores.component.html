@@ -1,5 +1,10 @@
-<ul>
+<!-- <ul>
     @for (error of errores; track $index) {
         <li>{{ error }}</li>
     }
+</ul> -->
+
+
+<ul *ngIf="errores && errores.length > 0">
+    <li *ngFor="let error of errores; let i = index">{{ error }}</li>
 </ul>

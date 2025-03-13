@@ -16,7 +16,7 @@ export interface Sede {
 export class SedeService {
 
   private http = inject(HttpClient);
-  private urlBase = environment.apiUrl + '/sedesPorRectoria/';
+  private urlBase = environment.apiUrl + 'sedesPorRectoria/';
 
   listarSedes(): Observable<Sede[]> {
     return this.http.get<Sede[]>(`${this.urlBase}`);

@@ -20,3 +20,8 @@ export interface UsuarioDTO{
     fecha_creacion: Date;
     id_rol: number;
 }
+
+export interface RespuestaAPI {
+    mensaje: string;
+  }
+  

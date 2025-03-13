@@ -15,42 +15,51 @@
   <app-listado-generico [listado]="dataSource">
     
     <ng-container contenido>
-      <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 indice-elementos" >
+      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 indice-elementos" >
         <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef> Id </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Id </th>
           <td mat-cell *matCellDef="let elemento"> {{elemento.id}} </td>
         </ng-container>
   
         <ng-container matColumnDef="correo">
-          <th mat-header-cell *matHeaderCellDef> Nombre </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
           <td mat-cell *matCellDef="let elemento"> {{elemento.correo}} </td>
         </ng-container>
   
         <ng-container matColumnDef="nombre_rectoria">
-          <th mat-header-cell *matHeaderCellDef> Rectoría </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Rectoría </th>
           <td mat-cell *matCellDef="let elemento"> {{elemento.nombre_rectoria}} </td>
         </ng-container>
   
         <ng-container matColumnDef="nombre_sede">
-          <th mat-header-cell *matHeaderCellDef> Sede </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Sede </th>
           <td mat-cell *matCellDef="let elemento"> {{elemento.nombre_sede}} </td>
         </ng-container>
   
         <ng-container matColumnDef="fechaCreacion">
-          <th mat-header-cell *matHeaderCellDef> Fecha creación </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha creación </th>
           <td mat-cell *matCellDef="let elemento"> {{elemento.fechaCreacion}} </td>
         </ng-container>
   
         <ng-container matColumnDef="nombre_rol">
-          <th mat-header-cell *matHeaderCellDef> Rol  </th>
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Rol  </th>
           <td mat-cell *matCellDef="let elemento"> {{elemento.nombre_rol}} </td>
         </ng-container>
   
         <ng-container matColumnDef="acciones">
           <th mat-header-cell *matHeaderCellDef> Acciones </th>
           <td mat-cell *matCellDef="let elemento">
-            <a routerLink="/usuarios/editar/{{elemento.id}}" mat-flat-button>Editar</a>
-            <button mat-flat-button color="warn">Borrar</button>
+
+            <!-- Botón Editar -->
+            <button mat-icon-button color="primary" [routerLink]="['/usuarios/editar', elemento.id]" matTooltip="Editar">
+              <mat-icon>edit</mat-icon>
+            </button>
+
+            <!-- Botón Eliminar -->
+            <button mat-icon-button color="warn" (click)="desactivarUsuario(elemento.id)" matTooltip="Eliminar">
+              <mat-icon>delete</mat-icon>
+            </button>
+
           </td>
         </ng-container>
   

@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment.development';
 export class RolService {
 
   private http = inject(HttpClient);
-  private urlBase = environment.apiUrl + '/rol/';
+  private urlBase = environment.apiUrl + 'rol/';
 
   listarRoles(): Observable<RolDTO[]> {
     return this.http.get<RolDTO[]>(`${this.urlBase}`).pipe(
