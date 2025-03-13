@@ -23,7 +23,13 @@ class crudusuario
             // echo json_encode($datos);
             echo json_encode(count($datos) > 0 ? $datos[0] : null);
         } catch (Exception $e) {
-            echo json_encode(array('ERROR' => $e->getMessage()));
+            // echo json_encode(array('ERROR' => $e->getMessage()));
+            http_response_code(400); // 400 para errores del usuario, 500 si es error del servidor
+            echo json_encode([
+                'error' => true,
+                'message' => $e->getMessage()
+            ]);
+            exit;
         }
     }
 
@@ -41,7 +47,13 @@ class crudusuario
             header('Content-Type: application/json; charset=utf-8');
             echo json_encode($datos);
         } catch (Exception $e) {
-            echo json_encode(array('ERROR' => $e->getMessage()));
+            // echo json_encode(array('ERROR' => $e->getMessage()));
+            http_response_code(400); // 400 para errores del usuario, 500 si es error del servidor
+            echo json_encode([
+                'error' => true,
+                'message' => $e->getMessage()
+            ]);
+            exit;
         }
     }
 
@@ -62,14 +74,17 @@ class crudusuario
             $sql->bind_param('ssiiissi', $correo, $correonuevo, $estado, $id_rectoria, $id_sede, $fechaIngreso, $fechaCreacion, $id_rol);
             $sql->execute();
             $resultado = $sql->get_result();
+
             header('Content-Type: application/json; charset=utf-8');
             if ($resultado) {
                 echo json_encode(array('mensaje' => 'Nuevo usuario registrado'));
             } else {
                 throw new Exception('Error en la inserción de datos');
             }
+            
         } catch (Exception $e) {
             echo json_encode(array('ERROR' => $e->getMessage()));
+            exit;
         }
     }
 
@@ -87,17 +102,61 @@ class crudusuario
             $id_rol = isset($dato['id_rol']) ? $dato['id_rol'] : null;
 
             $sql = $conexion->test()->prepare("CALL sp_usuario('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $sql->bind_param('issiiissi', $id, $$correo, $correonuevo, $estado, $id_rectoria, $id_sede, $fechaIngreso, $fechaCreacion, $id_rol);
+            $sql->bind_param('issiiissi', $id, $correo, $correonuevo, $estado, $id_rectoria, $id_sede, $fechaIngreso, $fechaCreacion, $id_rol);
             $sql->execute();
             $resultado = $sql->get_result();
             header('Content-Type: application/json; charset=utf-8');
-            if ($resultado) {
+            // if ($resultado) {
+            //     echo json_encode(array('mensaje' => 'Usuario actualizado correctamente'));
+            // } else {
+            //     throw new Exception('Error en la actualización de datos');
+            // }
+            if ($sql->affected_rows > 0) {
                 echo json_encode(array('mensaje' => 'Usuario actualizado correctamente'));
             } else {
                 throw new Exception('Error en la actualización de datos');
             }
+            
         } catch (Exception $e) {
-            echo json_encode(array('ERROR' => $e->getMessage()));
+            // echo json_encode(array('ERROR' => $e->getMessage()));
+            http_response_code(400); // 400 para errores del usuario, 500 si es error del servidor
+            echo json_encode([
+                'error' => true,
+                'message' => $e->getMessage()
+            ]);
+            exit;
+        }
+    }
+
+    public function desactivarUsuario ($id){
+        try {
+
+            if(!$id){
+                throw new Exception('ID de usuario no proporcionado');
+            }
+            
+            $conexion = new conexion();
+
+            $sql = $conexion->test()->prepare("CALL sp_usuario('desactivarUsuario', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
+            $sql->bind_param("i", $id);
+            $sql->execute();
+            $resultado = $sql->get_result();
+            $respuesta = $resultado->fetch_assoc();
+
+            header('Content-Type: application/json; charset=utf-8');
+            if(isset($respuesta['message'])){
+                echo json_encode(array('mensaje' => $respuesta['message']));
+            } else {
+                throw new Exception('Error en la desactivación de usuario');
+            }
+
+        }catch(Exception $e){
+            http_response_code(400);
+            echo json_encode([
+                'error' => true,
+                'message' => $e->getMessage()
+            ]);
+            exit;
         }
     }
 
@@ -116,7 +175,13 @@ class crudusuario
                 throw new Exception('Error en la eliminación de datos');
             }
         } catch (Exception $e) {
-            echo json_encode(array('ERROR' => $e->getMessage()));
+            // echo json_encode(array('ERROR' => $e->getMessage()));
+            http_response_code(400); // 400 para errores del usuario, 500 si es error del servidor
+            echo json_encode([
+                'error' => true,
+                'message' => $e->getMessage()
+            ]);
+            exit;
         }
     }
 }

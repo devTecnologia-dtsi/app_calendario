@@ -115,6 +115,17 @@ function actualizar($id, $dato, $tabla)
     }
 }
 
+function desactivar($id, $tabla)
+{
+    if($tabla == 'usuario'){
+        $usuario = new crudusuario();
+        $usuario->desactivarUsuario($id);
+    }else {
+        echo json_encode(array('ERROR' => 'No se puede desactivar en la tabla ' . $tabla));
+    }
+}
+
+
 function eliminar($id, $tabla)
 {
     if ($tabla == 'periodo') {

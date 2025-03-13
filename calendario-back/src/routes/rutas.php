@@ -16,12 +16,20 @@ switch ($metodo) {
     case 'GET':
         consultar($id, $tabla);
         break;
+
     case 'POST':
         insertar($dato, $tabla);
         break;
+
     case 'PUT':
         actualizar($id, $dato, $tabla);
         break;
+
+    case 'PATCH':
+        desactivar($id, $tabla);
+        break;
+        
+
     case 'DELETE':
         eliminar($id, $tabla);
         break;
