@@ -19,18 +19,34 @@ export class UsuarioService {
     );
   }
 
-  consultarUsuario(id: number): Observable<UsuarioDTO> {
-    return this.http.get<UsuarioDTO>(`${this.urlBase}/${id}`).pipe(
+  // listarUsuarios(): Observable<RespuestaAPI>{
+  //   return this.http.get<RespuestaAPI>(`${this.urlBase}/`).pipe(catchError(this.handleError))
+  // }
+
+  // consultarUsuario(id: number): Observable<UsuarioDTO> {
+  //   return this.http.get<UsuarioDTO>(`${this.urlBase}/${id}`).pipe(
+  //     catchError(this.handleError)
+  //   );
+  // }
+
+  consultarUsuario(id: number): Observable<RespuestaAPI> {
+    return this.http.get<RespuestaAPI>(`${this.urlBase}/${id}`).pipe(
       catchError(this.handleError)
     );
   }
-
+  
   crearUsuario(usuario: UsuarioCreacionDTO) {
     return this.http.post(this.urlBase, usuario).pipe(catchError(this.handleError));
   }
 
-  actualizarUsuario(id: number, usuario: UsuarioCreacionDTO) {
-    return this.http.put(`${this.urlBase}/${id}`, usuario).pipe(catchError(this.handleError));
+  // actualizarUsuario(id: number, usuario: UsuarioCreacionDTO) {
+  //   return this.http.put(`${this.urlBase}/${id}`, usuario).pipe(catchError(this.handleError));
+  // }
+
+  actualizarUsuario(id: number, usuario: UsuarioCreacionDTO): Observable<RespuestaAPI> {
+    return this.http.put<RespuestaAPI>(`${this.urlBase}/${id}`, usuario).pipe(
+      catchError(this.handleError)
+    );
   }
 
   desactivarUsuario(id: number): Observable<RespuestaAPI> {

@@ -22,12 +22,7 @@ import { extraerErrores } from '../../compartidos/funciones/extraerErrores';
 })
 
 export class EditarUsuariosComponent implements OnInit {
-  // ngOnInit(): void {
-  //   this.usuarioService.consultarUsuario(this.id).subscribe(usuario => {
-  //     console.log('ID del usuario recibido en EditarUsuariosComponent:', this.id);
-  //     this.usuario = usuario;
-  //   });
-  // }
+
   @Input({transform: numberAttribute})
   id!: number;
   usuario?: UsuarioDTO;
@@ -37,55 +32,53 @@ export class EditarUsuariosComponent implements OnInit {
   route = inject(ActivatedRoute);
 
   ngOnInit(): void {
-        this.id = this.route.snapshot.params['id'];
-        console.log('ID del usuario recibido en EditarUsuariosComponent:', this.id);
-        this.usuarioService.consultarUsuario(this.id).subscribe(data => {
-          console.log('Datos del usuario recibidos del servicio:', data);
-          this.usuario = data;
-        }, error => {
-          console.error('Error al consultar el usuario:', error);
-        });
+    // Obtiene el ID desde la URL solo una vez
+    this.id = this.route.snapshot.params['id'];
+    // console.log('ID del usuario recibido en EditarUsuariosComponent:', this.id);
+  
+    // Llama al servicio solo una vez
+    this.usuarioService.consultarUsuario(this.id).subscribe({
+      next: (respuesta) => {
+        // console.log('Respuesta completa del backend:', respuesta);
+    
+        if (respuesta.status === 1 && respuesta.data) {
+          this.usuario = respuesta.data;
+        } else {
+          console.warn(respuesta.message);
+          this.errores.push(respuesta.message);
+          this.usuario = undefined;
+        }
+      },
+      error: (error) => {
+        // console.error('Error al consultar el usuario:', error);
+        this.errores = extraerErrores(error);
       }
+    }); 
+  }
 
-  guardarCambios(usuario: UsuarioCreacionDTO){
+  guardarCambios(usuario: UsuarioCreacionDTO) {
     this.usuarioService.actualizarUsuario(this.id, usuario).subscribe({
-      next: () => {
+      next: (respuesta) => {
+        alert(respuesta.message);  // Muestra el mensaje del SP
         this.router.navigate(['/usuarios']);
       },
-      error: err => {
-        const errores = extraerErrores(err);
-        this.errores = errores;
+      error: (error) => {
+        this.errores = extraerErrores(error);
       }
     });
   }
-
+  
 }
 
-// export class EditarUsuariosComponent implements OnInit {
+  // guardarCambios(usuario: UsuarioCreacionDTO){
+  //   this.usuarioService.actualizarUsuario(this.id, usuario).subscribe({ 
+  //     next: () => {
+  //       this.router.navigate(['/usuarios']);
+  //       },
+  //       error: err => {
+  //         const errores = extraerErrores(err);
+  //         this.errores = errores;
+  //     }
+  //   });
+  // }
 
-//   private route = inject(ActivatedRoute);
-//   private router = inject(Router);
-//   private usuarioService = inject(UsuarioService);
-//   usuario: UsuarioDTO | undefined;
-
-//   @Input({transform: numberAttribute})
-//   id!: number;
-
-//   ngOnInit(): void {
-//     this.id = this.route.snapshot.params['id'];
-//     console.log('ID del usuario recibido en EditarUsuariosComponent:', this.id);
-//     this.usuarioService.consultarUsuario(this.id).subscribe(data => {
-//       console.log('Datos del usuario recibidos del servicio:', data);
-//       this.usuario = data;
-//     }, error => {
-//       console.error('Error al consultar el usuario:', error);
-//     });
-//   }
-
-//   guardarCambios(usuario: UsuarioCreacionDTO){
-//     console.log('Datos enviados al servicio:', usuario);
-//     this.usuarioService.actualizarUsuario(this.id, usuario).subscribe(() => {
-//       this.router.navigate(['/usuarios']);
-//     });
-//   }
-// }

@@ -29,7 +29,6 @@ switch ($metodo) {
         desactivar($id, $tabla);
         break;
         
-
     case 'DELETE':
         eliminar($id, $tabla);
         break;

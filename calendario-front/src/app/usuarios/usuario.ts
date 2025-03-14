@@ -22,6 +22,10 @@ export interface UsuarioDTO{
 }
 
 export interface RespuestaAPI {
-    mensaje: string;
-  }
+    status: number;
+    message: string;
+    data: UsuarioDTO | null;
+}
+  
+  
   
