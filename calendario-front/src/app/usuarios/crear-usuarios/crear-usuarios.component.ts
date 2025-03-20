@@ -1,67 +1,56 @@
 import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { ReactiveFormsModule } from '@angular/forms';
+
+// Angular Material
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
-import { Router, RouterLink } from '@angular/router';
-import { FormularioUsuariosComponent } from "../formulario-usuarios/formulario-usuarios.component";
+
+// Componentes y servicios personalizados
+import { FormularioUsuariosComponent } from '../formulario-usuarios/formulario-usuarios.component';
+import { MostrarErroresComponent } from '../../compartidos/componentes/mostrar-errores/mostrar-errores.component';
 import { UsuarioCreacionDTO } from '../usuario';
-import { HttpClientModule } from '@angular/common/http';
 import { UsuarioService } from '../../compartidos/servicios/usuario.service';
+import { NotificacionService } from '../../compartidos/servicios/notificacion.service';
 import { extraerErrores } from '../../compartidos/funciones/extraerErrores';
-import { MostrarErroresComponent } from "../../compartidos/componentes/mostrar-errores/mostrar-errores.component";
 
 @Component({
   selector: 'app-crear-usuarios',
   standalone: true,
   imports: [
-    MatButtonModule,
     RouterLink,
-    MatFormFieldModule,
     ReactiveFormsModule,
+    MatButtonModule,
+    MatFormFieldModule,
     MatInputModule,
     FormularioUsuariosComponent,
     MostrarErroresComponent
-],
+  ],
   templateUrl: './crear-usuarios.component.html',
   styleUrls: ['./crear-usuarios.component.css']
 })
 export class CrearUsuariosComponent {
 
-  private router = inject(Router);
-  private usuarioService = inject(UsuarioService);
+  // Manejo de errores
   errores: string[] = [];
 
-  guardarCambios(usuario: UsuarioCreacionDTO) {
-    //validación de datos
-    console.log('Datos del formulario:', usuario);
+  // Inyecciones de dependencias
+  private usuarioService = inject(UsuarioService);
+  private router = inject(Router);
+  private notificacionService = inject(NotificacionService);
 
+  // Método para guardar cambios
+  guardarCambios(usuario: UsuarioCreacionDTO) {
     this.usuarioService.crearUsuario(usuario).subscribe({
-      next: () => {
-        alert('Usuario creado exitosamente');
+      next: (respuesta) => {
+        this.notificacionService.mostrarExito(respuesta.message || "Usuario insertado correctamente.");
         this.router.navigate(['/usuarios']);
       },
-      error: (err) => {
-        const errores = extraerErrores(err);
-        console.log('Errores recibidos:', errores);
-        alert('Hubo un error al crear el usuario.');
-        this.errores = errores;
-        
+      error: (error) => {
+        this.errores = extraerErrores(error);
+        this.notificacionService.mostrarError(error.message || "Error en la creación del usuario.");
       }
-
     });
-
-    // Utiliza el servicio para insertar el usuario
-    // this.usuarioService.insertarUsuario(usuario).subscribe({
-    //   next: () => {
-    //     alert('Usuario creado exitosamente');
-    //     this.router.navigate(['/usuarios']);
-    //   },
-    //   error: (error) => {
-    //     console.error('Error al crear usuario:', error);
-    //     alert('Hubo un error al crear el usuario.');
-    //   }
-    // });
   }
 }

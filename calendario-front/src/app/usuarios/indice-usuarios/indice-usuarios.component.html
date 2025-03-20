@@ -12,67 +12,61 @@
 </div>
 
 <div>
-  <app-listado-generico [listado]="dataSource">
-    
-    <ng-container contenido>
-      <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 indice-elementos" >
-        <ng-container matColumnDef="id">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Id </th>
-          <td mat-cell *matCellDef="let elemento"> {{elemento.id}} </td>
-        </ng-container>
-  
-        <ng-container matColumnDef="correo">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
-          <td mat-cell *matCellDef="let elemento"> {{elemento.correo}} </td>
-        </ng-container>
-  
-        <ng-container matColumnDef="nombre_rectoria">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Rectoría </th>
-          <td mat-cell *matCellDef="let elemento"> {{elemento.nombre_rectoria}} </td>
-        </ng-container>
-  
-        <ng-container matColumnDef="nombre_sede">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Sede </th>
-          <td mat-cell *matCellDef="let elemento"> {{elemento.nombre_sede}} </td>
-        </ng-container>
-  
-        <ng-container matColumnDef="fechaCreacion">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha creación </th>
-          <td mat-cell *matCellDef="let elemento"> {{elemento.fechaCreacion}} </td>
-        </ng-container>
-  
-        <ng-container matColumnDef="nombre_rol">
-          <th mat-header-cell *matHeaderCellDef mat-sort-header> Rol  </th>
-          <td mat-cell *matCellDef="let elemento"> {{elemento.nombre_rol}} </td>
-        </ng-container>
-  
-        <ng-container matColumnDef="acciones">
-          <th mat-header-cell *matHeaderCellDef> Acciones </th>
-          <td mat-cell *matCellDef="let elemento">
-
-            <!-- Botón Editar -->
-            <button mat-icon-button color="primary" [routerLink]="['/usuarios/editar', elemento.id]" matTooltip="Editar">
-              <mat-icon>edit</mat-icon>
-            </button>
-
-            <!-- Botón Eliminar -->
-            <button mat-icon-button color="warn" (click)="desactivarUsuario(elemento.id)" matTooltip="Eliminar">
-              <mat-icon>delete</mat-icon>
-            </button>
-
-          </td>
-        </ng-container>
-  
-        <tr mat-header-row *matHeaderRowDef="columnasAMostrar"></tr>
-        <tr mat-row *matRowDef="let row; columns: columnasAMostrar;"></tr>
-        
-      </table>
-      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+  <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 indice-elementos">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Id </th>
+      <td mat-cell *matCellDef="let elemento"> {{elemento.id}} </td>
     </ng-container>
-  </app-listado-generico>
+
+    <ng-container matColumnDef="correo">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Nombre </th>
+      <td mat-cell *matCellDef="let elemento"> {{elemento.correo}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="nombre_rectoria">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Rectoría </th>
+      <td mat-cell *matCellDef="let elemento"> {{elemento.nombre_rectoria}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="nombre_sede">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Sede </th>
+      <td mat-cell *matCellDef="let elemento"> {{elemento.nombre_sede}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="fechaCreacion">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha y hora de creación </th>
+      <td mat-cell *matCellDef="let elemento"> {{elemento.fechaCreacion}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="nombre_rol">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> Rol </th>
+      <td mat-cell *matCellDef="let elemento"> {{elemento.nombre_rol}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="acciones">
+      <th mat-header-cell *matHeaderCellDef> Acciones </th>
+      <td mat-cell *matCellDef="let elemento">
+        <button mat-icon-button color="primary" [routerLink]="['/usuarios/editar', elemento.id]" matTooltip="Editar">
+          <mat-icon>edit</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" (click)="desactivarUsuario(elemento.id)" matTooltip="Eliminar">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="columnasAMostrar"></tr>
+    <tr mat-row *matRowDef="let row; columns: columnasAMostrar;"></tr>
+  </table>
+
+  <mat-paginator
+    [length]="totalUsuarios"
+    [pageSize]="pageSize"
+    [pageIndex]="pageIndex"
+    [pageSizeOptions]="[5, 10, 20]"
+    showFirstLastButtons
+    (page)="handlePageEvent($event)">
+  </mat-paginator>  
+
 
 </div>
-
-
-
-

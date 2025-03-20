@@ -1,31 +1,31 @@
-//Creación
+// Creación
 export interface UsuarioCreacionDTO {
-    correo: string;
+    correo_nuevo: string;
     estado: number;
     id_rectoria: number;
     id_sede: number;
-    fecha_ingreso: Date;
-    fecha_creacion: Date;
+    fechaIngreso: Date;
+    fechaCreacion: Date;
     id_rol: number;
-}
-
-//Lectura
-export interface UsuarioDTO{
+  }
+  
+  // Lectura
+  export interface UsuarioDTO {
     id: number;
-    correo: string;
+    correo_nuevo: string;
     estado: 1;
     id_rectoria: number;
     id_sede: number;
-    fecha_ingreso: Date;
-    fecha_creacion: Date;
+    fechaIngreso: Date;
+    fechaCreacion: Date;
     id_rol: number;
-}
-
-export interface RespuestaAPI {
+  }
+  
+  // Respuesta de la API
+  export interface RespuestaAPI {
     status: number;
     message: string;
     data: UsuarioDTO | null;
-}
-  
-  
+    total: number;
+  }
   

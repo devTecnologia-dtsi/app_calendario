@@ -1,7 +1,7 @@
 <form (submit)="guardarCambios()" [formGroup]="form">
   <mat-form-field appearance="outline">
     <mat-label>Correo</mat-label>
-    <input matInput [formControl]="form.controls.correo">
+    <input matInput [formControl]="form.controls.correo_nuevo" placeholder="ejemplo@uniminuto.edu">
     <mat-error>{{obtenerErrorCampoCorreo()}}</mat-error>
   </mat-form-field>
 
@@ -13,14 +13,24 @@
     <mat-error>{{obtenerErrorSelectRol()}}</mat-error>
   </mat-form-field>
 
-  <mat-form-field appearance="outline">
+  <!-- <mat-form-field appearance="outline">
     <mat-label>Rectoría</mat-label>
     <mat-select [formControl]="form.controls.id_rectoria">
       <mat-option *ngFor="let rectoria of rectorias" [value]="rectoria.id">{{rectoria.nombre}}</mat-option>
     </mat-select>
     <mat-error>{{obtenerErrorSelectRectoria()}}</mat-error>
-  </mat-form-field>
+  </mat-form-field> -->
 
+  <mat-form-field appearance="outline">
+    <mat-label>Rectoría</mat-label>
+    <mat-select [formControl]="form.controls.id_rectoria">
+      <mat-option *ngFor="let rectoria of rectorias || []" [value]="rectoria.id">
+        {{ rectoria.nombre }}
+      </mat-option>
+    </mat-select>
+    <mat-error>{{ obtenerErrorSelectRectoria() }}</mat-error>
+  </mat-form-field>
+  
   <mat-form-field appearance="outline">
     <mat-label>Sede</mat-label>
     <mat-select [formControl]="form.controls.id_sede">
