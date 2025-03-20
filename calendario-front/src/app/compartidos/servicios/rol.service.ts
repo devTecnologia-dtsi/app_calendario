@@ -40,7 +40,7 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { catchError, Observable, throwError } from 'rxjs';
-import { RolDTO, RolCreacionDTO } from '../../rol/rol';
+import { RolDTO, RolCreacionDTO, RespuestaAPI } from '../../rol/rol';
 import { environment } from '../../../environments/environment.development';
 
 @Injectable({
@@ -52,8 +52,8 @@ export class RolService {
   private urlBase = `${environment.apiUrl}rol/`;
 
   // Listar todos los roles
-  listarRoles(): Observable<RolDTO[]> {
-    return this.http.get<RolDTO[]>(this.urlBase).pipe(
+  listarRoles(): Observable<RespuestaAPI> {
+    return this.http.get<RespuestaAPI>(this.urlBase).pipe(
       catchError(this.handleError)
     );
   }

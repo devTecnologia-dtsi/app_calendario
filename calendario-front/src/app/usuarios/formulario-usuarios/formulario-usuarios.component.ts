@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular
 import { FormBuilder, ReactiveFormsModule, AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { Data, RouterLink } from '@angular/router';
 
 // Angular Material
 import { MatButtonModule } from '@angular/material/button';
@@ -15,7 +15,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { UsuarioCreacionDTO, UsuarioDTO } from '../usuario';
 import { UsuarioService } from '../../compartidos/servicios/usuario.service';
 import { Rectoria, RectoriaService } from '../../compartidos/servicios/rectoria.service';
-import { Sede, SedeService } from '../../compartidos/servicios/sede.service';
+import { SedeDTO, SedeService } from '../../compartidos/servicios/sede.service';
 import { RolDTO } from '../../rol/rol';
 import { RolService } from '../../compartidos/servicios/rol.service';
 
@@ -71,7 +71,7 @@ export class FormularioUsuariosComponent implements OnInit {
   });
 
   rectorias: Rectoria[] = [];
-  sedes: Sede[] = [];
+  sedes: SedeDTO[] = [];
   roles: RolDTO[] = [];
 
   // Inicialización
@@ -80,20 +80,20 @@ export class FormularioUsuariosComponent implements OnInit {
     this.cargarRoles();
 
     // Cargar sedes cuando cambie la rectoría seleccionada
-    this.form.get('id_rectoria')?.valueChanges.subscribe(idRectoria => {
-      this.sedes = [];
-      if (idRectoria != null) {
-        this.cargarSedesPorRectoria(idRectoria);
-      }
-    });
+    // this.form.get('id_rectoria')?.valueChanges.subscribe(idRectoria => {
+    //   this.sedes = [];
+    //   if (idRectoria != null) {
+    //     this.cargarSedesPorRectoria(idRectoria);
+    //   }
+    // });
 
     // Si hay un modelo cargado, llenamos el formulario con sus valores
-    // if (this.modelo) {
-    //   this.form.patchValue(this.modelo);
-    //   if (this.modelo.id_rectoria) {
-    //     this.cargarSedesPorRectoria(this.modelo.id_rectoria);
-    //   }
-    // }
+    if (this.modelo) {
+      this.form.patchValue(this.modelo);
+      if (this.modelo.id_rectoria) {
+        this.cargarSedesPorRectoria(this.modelo.id_rectoria);
+      }
+    }
 
     if (this.modelo) {
       this.form.patchValue(this.modelo);
@@ -103,15 +103,13 @@ export class FormularioUsuariosComponent implements OnInit {
   // Métodos de carga de datos
   cargarRectorias() {
     this.rectoriaService.listarRectorias().subscribe({
-      next: (data) => {
-        console.log('Rectorías cargadas:', data);  // ✅ Confirma que es un array
-        this.rectorias = Array.isArray(data) ? data : [];
+      next: (response) => {
+        console.log('Rectorías cargadas:', response);
+        this.rectorias = Array.isArray(response.data) ? response.data : [];
       },
       error: () => console.error('Error al cargar las rectorías')
     });
   }
-  
-  
   
   // cargarRectorias() {
   //   this.rectoriaService.listarRectorias().subscribe(data => {
@@ -123,12 +121,17 @@ export class FormularioUsuariosComponent implements OnInit {
 
   cargarSedesPorRectoria(id: number) {
     this.sedeService.listarSedesPorRectoria(id).subscribe({
-      next: (data) => {
-        this.sedes = data;
-        if (this.modelo) this.form.patchValue({ id_sede: this.modelo.id_sede });
+      next: (response) => {
+        if (response && Array.isArray(response.data)) {
+          this.sedes = response.data;
+          console.log('Sedes cargadas:', this.sedes);
+          if (this.modelo) {
+            this.form.patchValue({ id_sede: this.modelo.id_sede });
+          }
+        }
       },
-      error: () => console.error(`Error al cargar las sedes para la rectoría ID: ${id}`)
-    });
+      error: (error) => console.error(`Error al cargar las sedes para la rectoría ID: ${id}`, error)
+    });    
   }
 
   // cargarSedesPorRectoria(id: number) {
@@ -140,13 +143,15 @@ export class FormularioUsuariosComponent implements OnInit {
 
   cargarRoles() {
     this.rolService.listarRoles().subscribe({
-      next: (data) => {
-        this.roles = data;
+      next: (response) => {
+        console.log('Roles cargados:', response);
+        this.roles = Array.isArray(response.data) ? response.data : [];
         if (this.modelo) this.form.patchValue({ id_rol: this.modelo.id_rol });
       },
       error: () => console.error('Error al cargar los roles')
     });
   }
+  
 
   // cargarRoles() {
   //   this.rolService.listarRoles().subscribe(data => {

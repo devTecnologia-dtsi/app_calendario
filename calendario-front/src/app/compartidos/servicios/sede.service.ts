@@ -40,7 +40,14 @@ import { inject, Injectable } from '@angular/core';
 import { Observable, throwError, catchError } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 
-export interface Sede {
+  // Respuesta de la API
+export interface RespuestaAPI {
+  status: number;
+  message: string;
+  data: SedeDTO [];
+}
+
+export interface SedeDTO {
   id: number;
   codigo: string;
   nombre: string;
@@ -56,15 +63,14 @@ export class SedeService {
   private urlBase = environment.apiUrl + 'sede/';
 
   // Listar todas las sedes
-  listarSedes(): Observable<Sede[]> {
-    return this.http.get<Sede[]>(`${this.urlBase}`).pipe(
+  listarSedes(): Observable<RespuestaAPI> {
+    return this.http.get<RespuestaAPI>(`${this.urlBase}`).pipe(
       catchError(this.handleError)
     );
   }
 
-  // Listar sedes por rectoría
-  listarSedesPorRectoria(id: number): Observable<Sede[]> {
-    return this.http.get<Sede[]>(`${this.urlBase}porRectoria/${id}`).pipe(
+    listarSedesPorRectoria(id_rectoria: number): Observable<RespuestaAPI> {
+    return this.http.get<RespuestaAPI>(`${this.urlBase}sedesPorRectoria/${id_rectoria}`).pipe(
       catchError(this.handleError)
     );
   }

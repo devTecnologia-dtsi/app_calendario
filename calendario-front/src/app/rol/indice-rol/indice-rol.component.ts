@@ -66,7 +66,7 @@ export class IndiceRolComponent implements AfterViewInit, OnInit {
   cargarRoles() {
     this.rolService.listarRoles().subscribe(data => {
       console.log(data); // Verifica los datos recibidos
-      this.fuenteDatos.data = data;
+      // this.fuenteDatos.data = data;
     });
   }
 

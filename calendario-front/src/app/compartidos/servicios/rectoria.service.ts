@@ -4,6 +4,13 @@ import { Observable, throwError, catchError, map } from 'rxjs';
 import { environment } from '../../../environments/environment.development';
 
 
+  // Respuesta de la API
+export interface RespuestaAPI {
+  status: number;
+  message: string;
+  data: Rectoria [];
+}
+
 export interface Rectoria {
   id: number;
   codigo: string;
@@ -24,13 +31,11 @@ export class RectoriaService {
   //   );
   // }
   
-  listarRectorias(): Observable<Rectoria[]> {
-    return this.http.get<{ status: number; message: string; data: Rectoria[] }>(`${this.urlBase}`).pipe(
-      map(response => response.data),  // ✅ Extrae solo 'data'
+  listarRectorias(): Observable<RespuestaAPI> {
+    return this.http.get<RespuestaAPI>(`${this.urlBase}`).pipe(
       catchError(this.handleError)
     );
   }
-  
 
     private handleError(error: any) {
       console.error('Se produjo un error',error);

@@ -27,3 +27,9 @@ export interface RolDTO{
     sistema: number;
     [key: string]: number | string; // Firma de índice para permitir acceso dinámico
 }
+
+export interface RespuestaAPI {
+    status: number;
+    message: string;
+    data: RolDTO[];
+}
