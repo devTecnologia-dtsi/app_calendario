@@ -28,8 +28,8 @@ class Rol {
     public function listarRol() {
         try {
             // Llamada al SP
-            // $sql = $conexion->test()->prepare("CALL sp_rol('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'sistema@uniminuto.edu')");
-            $result = $this->ejecutarSP("CALL sp_rol('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
+            // $sql = $conexion->test()->prepare("CALL sp_rol('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'sistema@uniminuto.edu')");
+            $result = $this->ejecutarSP("CALL sp_rol('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
 
             // Obtener roles
             $roles = $result->fetch_all(MYSQLI_ASSOC);
@@ -52,7 +52,7 @@ class Rol {
     public function consultarRol($id) {
         try {
             // Llamada al SP
-            $result = $this->ejecutarSP("CALL sp_rol('obtener', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+            $result = $this->ejecutarSP("CALL sp_rol('obtener', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
             ["i", $id]);
             $rol = $result->fetch_assoc();
             $result->close();
@@ -83,7 +83,7 @@ class Rol {
         try {
             // Llamada al SP
             $result = $this->ejecutarSP(
-                "CALL sp_rol('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "CALL sp_rol('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)",
                 [
                     'iiiiiiiii',
                     $id,

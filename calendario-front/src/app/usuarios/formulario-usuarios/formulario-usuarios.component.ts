@@ -13,7 +13,6 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 
 // Modelos y servicios
 import { UsuarioCreacionDTO, UsuarioDTO } from '../usuario';
-import { UsuarioService } from '../../compartidos/servicios/usuario.service';
 import { Rectoria, RectoriaService } from '../../compartidos/servicios/rectoria.service';
 import { SedeDTO, SedeService } from '../../compartidos/servicios/sede.service';
 import { RolDTO } from '../../rol/rol';
