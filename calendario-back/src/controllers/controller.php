@@ -1,5 +1,4 @@
 <?php
-// Importación de modelos
 include_once __DIR__ . "/../models/periodo.php";
 include_once __DIR__ . "/../models/actividad.php";
 include_once __DIR__ . "/../models/subactividad.php";

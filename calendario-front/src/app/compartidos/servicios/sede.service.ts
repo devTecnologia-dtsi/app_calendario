@@ -60,11 +60,11 @@ export interface SedeDTO {
 export class SedeService {
 
   private http = inject(HttpClient);
-  private urlBase = environment.apiUrl + 'sede/';
+  private urlBase = environment.apiUrl;
 
   // Listar todas las sedes
   listarSedes(): Observable<RespuestaAPI> {
-    return this.http.get<RespuestaAPI>(`${this.urlBase}`).pipe(
+    return this.http.get<RespuestaAPI>(`${this.urlBase}sede/`).pipe(
       catchError(this.handleError)
     );
   }

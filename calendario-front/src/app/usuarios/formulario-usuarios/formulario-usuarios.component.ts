@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular
 import { FormBuilder, ReactiveFormsModule, AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
-import { Data, RouterLink } from '@angular/router';
+import { RouterLink } from '@angular/router';
 
 // Angular Material
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,7 @@ import { SedeDTO, SedeService } from '../../compartidos/servicios/sede.service';
 import { RolDTO } from '../../rol/rol';
 import { RolService } from '../../compartidos/servicios/rol.service';
 
-// Función para validar el dominio del correo
+// Validador personalizado para el dominio del correo
 export function dominioCorreoValidador(dominio: string): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const correo_nuevo = control.value;
@@ -47,9 +47,7 @@ export function dominioCorreoValidador(dominio: string): ValidatorFn {
   templateUrl: './formulario-usuarios.component.html',
   styleUrls: ['./formulario-usuarios.component.css']
 })
-
 export class FormularioUsuariosComponent implements OnInit {
-
   // Inputs y Outputs
   @Input() modelo?: UsuarioDTO;
   @Output() posteoFormulario = new EventEmitter<UsuarioCreacionDTO>();
@@ -58,8 +56,8 @@ export class FormularioUsuariosComponent implements OnInit {
   private formbuilder = inject(FormBuilder);
   private rectoriaService = inject(RectoriaService);
   private sedeService = inject(SedeService);
-  private usuarioService = inject(UsuarioService);
   private rolService = inject(RolService);
+  
 
   // Formularios y listas de datos
   form = this.formbuilder.group({
@@ -74,103 +72,71 @@ export class FormularioUsuariosComponent implements OnInit {
   sedes: SedeDTO[] = [];
   roles: RolDTO[] = [];
 
+  
   // Inicialización
   ngOnInit(): void {
+    this.cargarDatosIniciales();
+    this.manejarCambiosRectoria();
+  }
+
+  // Cargar datos iniciales
+  private cargarDatosIniciales() {
     this.cargarRectorias();
     this.cargarRoles();
 
-    // Cargar sedes cuando cambie la rectoría seleccionada
-    // this.form.get('id_rectoria')?.valueChanges.subscribe(idRectoria => {
-    //   this.sedes = [];
-    //   if (idRectoria != null) {
-    //     this.cargarSedesPorRectoria(idRectoria);
-    //   }
-    // });
-
-    // Si hay un modelo cargado, llenamos el formulario con sus valores
     if (this.modelo) {
       this.form.patchValue(this.modelo);
       if (this.modelo.id_rectoria) {
         this.cargarSedesPorRectoria(this.modelo.id_rectoria);
       }
     }
-
-    if (this.modelo) {
-      this.form.patchValue(this.modelo);
-    }
   }
 
-  // Métodos de carga de datos
-  cargarRectorias() {
+  // Manejar cambios en la rectoría seleccionada
+  private manejarCambiosRectoria() {
+    this.form.get('id_rectoria')?.valueChanges.subscribe(idRectoria => {
+      this.sedes = [];
+      if (idRectoria != null) {
+        this.cargarSedesPorRectoria(idRectoria);
+      }
+    });
+  }
+
+  // Cargar rectorías
+  private cargarRectorias() {
     this.rectoriaService.listarRectorias().subscribe({
       next: (response) => {
-        console.log('Rectorías cargadas:', response);
         this.rectorias = Array.isArray(response.data) ? response.data : [];
       },
       error: () => console.error('Error al cargar las rectorías')
     });
   }
-  
-  // cargarRectorias() {
-  //   this.rectoriaService.listarRectorias().subscribe(data => {
-  //     this.rectorias = data;
-  //     if (this.modelo) this.form.patchValue({ id_rectoria: this.modelo.id_rectoria });
-  //   });
-  //   error: () => console.error('Error al cargar las rectorías')
-  // }
 
-  cargarSedesPorRectoria(id: number) {
-    this.sedeService.listarSedesPorRectoria(id).subscribe({
+  // Cargar sedes por rectoría
+  private cargarSedesPorRectoria(id_rectoria: number) {
+    this.sedeService.listarSedesPorRectoria(id_rectoria).subscribe({
       next: (response) => {
-        if (response && Array.isArray(response.data)) {
-          this.sedes = response.data;
-          console.log('Sedes cargadas:', this.sedes);
-          if (this.modelo) {
-            this.form.patchValue({ id_sede: this.modelo.id_sede });
-          }
+        this.sedes = Array.isArray(response.data) ? response.data : [];
+        if (this.modelo) {
+          this.form.patchValue({ id_sede: this.modelo.id_sede });
         }
       },
-      error: (error) => console.error(`Error al cargar las sedes para la rectoría ID: ${id}`, error)
-    });    
+      error: (error) => console.error(`Error al cargar las sedes para la rectoría ID: ${id_rectoria}`, error)
+    });
   }
 
-  // cargarSedesPorRectoria(id: number) {
-  //   this.sedeService.listarSedesPorRectoria(id).subscribe(data => {
-  //     this.sedes = data;
-  //     if (this.modelo) this.form.patchValue({ id_sede: this.modelo.id_sede });
-  //   });
-  // }
-
-  cargarRoles() {
+  // Cargar roles
+  private cargarRoles() {
     this.rolService.listarRoles().subscribe({
       next: (response) => {
-        console.log('Roles cargados:', response);
         this.roles = Array.isArray(response.data) ? response.data : [];
         if (this.modelo) this.form.patchValue({ id_rol: this.modelo.id_rol });
       },
       error: () => console.error('Error al cargar los roles')
     });
   }
-  
 
-  // cargarRoles() {
-  //   this.rolService.listarRoles().subscribe(data => {
-  //     this.roles = data;
-  //     if (this.modelo) this.form.patchValue({ id_rol: this.modelo.id_rol });
-  //   });
-  // }
-
-  // Manejo de errores en los campos
-  // obtenerError(control: AbstractControl | null, mensaje: string): string {
-  //   return control?.hasError('required') ? mensaje : '';
-  // }
-
-  obtenerFaltaSeleccionRectoria(): string {
-    return this.form.controls.id_rectoria.hasError('required')
-      ? "Debe seleccionar primero la Rectoría"
-      : "";
-  }
-
+  // Obtener errores de validación
   obtenerErrorCampoCorreo(): string {
     const correo = this.form.controls.correo_nuevo;
     if (correo.hasError('email')) return "Debe ingresar una dirección de correo válida";
@@ -187,8 +153,16 @@ export class FormularioUsuariosComponent implements OnInit {
 
   obtenerErrorSelectRectoria(): string {
     return this.form.controls.id_rectoria.hasError('required')
-      ? "Debe seleccionar algún valor del campo Rectoria"
+      ? "Debe seleccionar algún valor del campo Rectoría"
       : "";
+  }
+
+  obtenerFaltaSeleccionRectoria(): string {
+    const rectoria = this.form.controls.id_rectoria;
+    if (rectoria.hasError('required')) {
+      return "Debe seleccionar una rectoría antes de elegir una sede.";
+    }
+    return "";
   }
 
   obtenerErrorSelectSede(): string {

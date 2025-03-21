@@ -47,7 +47,8 @@ class Sede {
 
     public function consultarSede($id) {
         try {
-            $result = $this->ejecutarSP("CALL sp_sede('obtener', ?, NULL, NULL)", ["i", $id]);
+            $result = $this->ejecutarSP("CALL sp_sede('obtener', ?, NULL, NULL)",
+            ["i", $id]);
             $sede = $result->fetch_assoc();
             $result->close();
 
@@ -71,18 +72,46 @@ class Sede {
         }
     }
 
+    // public function listarSedesPorRectoria($idRectoria) {
+    //     try {
+    //         $result = $this->ejecutarSP("CALL sp_sede('listar_por_rectoria', NULL, ?, NULL)", ["i", $idRectoria]);
+    //         $sedes = $result->fetch_all(MYSQLI_ASSOC);
+    //         $result->close();
+
+    //         $this->responderJson([
+    //             'status' => 1,
+    //             'message' => 'Sedes listadas por rectoría correctamente',
+    //             'data' => $sedes
+    //         ]);
+    //     } catch (Exception $e) {
+    //         $this->responderJson([
+    //             'status' => 0,
+    //             'message' => 'Error al listar sedes por rectoría: ' . $e->getMessage()
+    //         ]);
+    //     }
+    // }
+
     public function listarSedesPorRectoria($idRectoria) {
         try {
-            $result = $this->ejecutarSP("CALL sp_sede('listar_por_rectoria', NULL, ?, NULL)", ["i", $idRectoria]);
+            // Verificar que el parámetro $idRectoria no sea nulo
+            if ($idRectoria === null) {
+                throw new Exception("El ID de la rectoría es obligatorio.");
+            }
+    
+            // Llamar al procedimiento almacenado con el parámetro $idRectoria
+            $result = $this->ejecutarSP("CALL sp_sede('listar_por_rectoria', NULL, ?, NULL)",
+            ["i", $idRectoria]);
             $sedes = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
-
+    
+            // Responder con los datos obtenidos
             $this->responderJson([
                 'status' => 1,
                 'message' => 'Sedes listadas por rectoría correctamente',
                 'data' => $sedes
             ]);
         } catch (Exception $e) {
+            // Manejar errores y responder con un mensaje de error
             $this->responderJson([
                 'status' => 0,
                 'message' => 'Error al listar sedes por rectoría: ' . $e->getMessage()
