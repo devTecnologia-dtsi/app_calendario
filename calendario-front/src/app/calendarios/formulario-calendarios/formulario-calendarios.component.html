@@ -1,15 +1,4 @@
 <form [formGroup]="form" (ngSubmit)="guardarCambios()">
-  <!-- <mat-form-field appearance="outline">
-    <mat-label>Usuario</mat-label>
-    <mat-select formControlName="id_usuario">
-      <mat-option value="1">Jeyson Triana</mat-option>
-      <mat-option value="2">Alejandra Rueda</mat-option>
-      <mat-option value="3">Michell Rojas</mat-option>
-      <mat-option value="4">Stiven Muñoz</mat-option>
-    </mat-select>
-    <mat-error *ngIf="form.controls['id_usuario'].invalid">Seleccione un usuario</mat-error>
-  </mat-form-field> -->
-
   <div formArrayName="actividades">
     <div *ngFor="let actividad of actividades.controls; let i = index" [formGroupName]="i">
       <mat-form-field appearance="outline">
