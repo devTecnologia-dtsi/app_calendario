@@ -66,6 +66,7 @@ switch ($metodo) {
         if ($tabla === 'actividad') {
             // Actualizar actividad
             $actividad = new Actividad();
+            // var_dump($dato); exit;
             $actividad->gestionarActividad('actualizar', $dato);
         } else {
             actualizar($id, $dato, $tabla);

@@ -1,6 +1,6 @@
 <?php
-include_once __DIR__ . "/../models/periodo.php";
 include_once __DIR__ . "/../models/actividad.php";
+include_once __DIR__ . "/../models/periodo.php";
 include_once __DIR__ . "/../models/subactividad.php";
 include_once __DIR__ . "/../models/calendario.php";
 include_once __DIR__ . "/../models/usuario.php";
@@ -13,8 +13,8 @@ include_once __DIR__ . "/../models/rol.php";
 function consultar($id, $tabla, $limite = 5, $offset = 0) {
     switch ($tabla) {
         case 'actividad':
-            $actividad = new crudactividad();
-            $actividad->consultaractividad($id);
+            $actividad = new Actividad();
+            $actividad->gestionarActividad('ver', ['id' => $id]);
             break;
         case 'periodo':
             $periodo = new crudperiodo();
@@ -61,13 +61,13 @@ function consultar($id, $tabla, $limite = 5, $offset = 0) {
 // INSERTAR
 function insertar($dato, $tabla) {
     switch ($tabla) {
+        case 'actividad':
+            $actividad = new Actividad();
+            $actividad->gestionarActividad('insertar', $dato);
+            break;
         case 'periodo':
             $periodo = new crudperiodo();
             $periodo->insertarperiodo($dato);
-            break;
-        case 'actividad':
-            $actividad = new crudactividad();
-            $actividad->insertaractividad($dato);
             break;
         case 'subactividad':
             $subactividad = new crudsubactividad();
@@ -78,8 +78,8 @@ function insertar($dato, $tabla) {
             $calendario->insertarcalendario($dato);
             break;
         case 'rolCalendario':
-            $calendario = new crudrolCalendario();
-            $calendario->insertarrolCalendario($dato);
+            $rolcalendario = new crudrolCalendario();
+            $rolcalendario->insertarrolCalendario($dato);
             break;
         case 'usuario':
             $usuario = new CrudUsuario();
@@ -89,19 +89,22 @@ function insertar($dato, $tabla) {
             $rol = new Rol();
             $rol->insertarRol($dato);
             break;
+        default:
+            echo json_encode(array('ERROR' => 'No se ha encontrado la tabla para insertar'));
+            break;
     }
 }
 
 // ACTUALIZAR
 function actualizar($id, $dato, $tabla) {
     switch ($tabla) {
+        case 'actividad':
+            $actividad = new Actividad();
+            $actividad->gestionarActividad('actualizar', array_merge(['id' => $id], $dato));
+            break;
         case 'periodo':
             $periodo = new crudperiodo();
             $periodo->actualizarperiodo($dato, $id);
-            break;
-        case 'actividad':
-            $actividad = new crudactividad();
-            $actividad->actualizaractividad($dato, $id);
             break;
         case 'subactividad':
             $subactividad = new crudsubactividad();
@@ -123,29 +126,22 @@ function actualizar($id, $dato, $tabla) {
             $rol = new Rol();
             $rol->actualizarRol($id, $dato);
             break;
-    }
-}
-
-// DESACTIVAR
-function desactivar($id, $tabla) {
-    if ($tabla == 'usuario') {
-        $usuario = new CrudUsuario();
-        $usuario->desactivarUsuario($id);
-    } else {
-        echo json_encode(array('ERROR' => 'No se puede desactivar en la tabla ' . $tabla));
+        default:
+            echo json_encode(array('ERROR' => 'No se ha encontrado la tabla para actualizar'));
+            break;
     }
 }
 
 // ELIMINAR
 function eliminar($id, $tabla) {
     switch ($tabla) {
+        case 'actividad':
+            $actividad = new Actividad();
+            $actividad->gestionarActividad('eliminar', ['id' => $id]);
+            break;
         case 'periodo':
             $periodo = new crudperiodo();
             $periodo->eliminarperiodo($id);
-            break;
-        case 'actividad':
-            $actividad = new crudactividad();
-            $actividad->eliminaractividad($id);
             break;
         case 'subactividad':
             $subactividad = new crudsubactividad();
@@ -166,6 +162,9 @@ function eliminar($id, $tabla) {
         case 'rol':
             $rol = new Rol();
             $rol->eliminarRol($id);
+            break;
+        default:
+            echo json_encode(array('ERROR' => 'No se ha encontrado la tabla para eliminar'));
             break;
     }
 }

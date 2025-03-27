@@ -9,22 +9,22 @@ class Actividad
     private function ejecutarSp($query, $params = [])
     {
         $conexion = new conexion();
-        $sql = $conexion->test()->prepare($query);
+$sql = $conexion->test()->prepare($query);
 
         if (!empty($params)) {
-            $sql->bind_param(...$params);
-        }
+        $sql->bind_param(...$params);
+            }
 
         $sql->execute();
-        $result = $sql->get_result();
-        $sql->close();
+            $result = $sql->get_result();
+            $sql->close();
 
         return $result;
     }
 
     // Método para responder JSON
     private function responderJson($respuesta)
-    {
+        {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($respuesta);
         exit;
@@ -32,21 +32,22 @@ class Actividad
 
     // Método para llamar al SP con diferentes acciones
     public function gestionarActividad($accion, $dato)
-    {
+        {
         try {
             $query = "CALL sp_actividad(?, ?, ?, ?, ?, ?)";
-
+            
             $id = isset($dato['id']) ? $dato['id'] : null;
             $id_calendario = isset($dato['id_calendario']) ? $dato['id_calendario'] : null;
             $nombre = isset($dato['nombre']) ? $dato['nombre'] : null;
-            $estado = isset($dato['estado']) ? $dato['estado'] : null;
+        $estado = isset($dato['estado']) ? $dato['estado'] : null;
             $correo = isset($dato['correo']) ? $dato['correo'] : null;
 
-            // Ejecuta el SP con los parámetros adecuados
-            $result = $this->ejecutarSp($query, 
-            ["sissis", $accion, $id, $id_calendario, $nombre, $estado, $correo]);
+            // Ejecutar el SP con los parámetros adecuados
+            $result = $this->ejecutarSp($query, ["sissis", $accion, $id, $id_calendario, $nombre, $estado, $correo]);
 
-            // Procesa el resultado
+            // var_dump($result); exit;
+
+            // Procesar el resultado
             if ($accion === 'ver') {
                 $actividades = $result->fetch_all(MYSQLI_ASSOC);
                 $this->responderJson([
@@ -54,11 +55,20 @@ class Actividad
                     'message' => 'Actividades listadas correctamente',
                     'data' => $actividades
                 ]);
-            } else {
-                $mensaje = $result->fetch_assoc();
+    } else {
+        $mensaje = $result->fetch_assoc();
+
+                // Validar si $mensaje tiene datos antes de acceder a "status"
+                if (!$mensaje) {
+                    $this->responderJson([
+                        'status' => 0,
+                        'message' => 'No se recibió respuesta válida del SP'
+                    ]);
+                }
+
                 $this->responderJson([
-                    'status' => $mensaje['status'],
-                    'message' => $mensaje['message']
+                    'status' => $mensaje['status'] ?? 0, // Default 0 si no existe
+                    'message' => $mensaje['message'] ?? 'Error desconocido'
                 ]);
             }
         } catch (Exception $e) {
@@ -138,7 +148,7 @@ class Actividad
 
 //             if (!isset($correo)) {
 //                 $res = array(["error" => "El correo es obligatorio."]);
-//                 echo json_encode($res);
+            //                 echo json_encode($res);
 //                 exit;
 //             }
 
@@ -207,7 +217,7 @@ class Actividad
 //             $sql->execute();
 
 //             $result = $sql->get_result();
-
+            
 //             $row = $result->fetch_assoc();
 
 //             // var_dump($row);
@@ -242,7 +252,7 @@ class Actividad
 //                     throw new Exception('El registro de este id ya ha sido borrado o no ha sido creado');
 //                 } else {
 //                     if (($row['correo']) == null) { //si el correo ingresado no existe, arroja este error
-//                         throw new Exception('El usuario con el correo ' . $correo . ' no esta registrado.');
+            //                         throw new Exception('El usuario con el correo ' . $correo . ' no esta registrado.');
 //                     } else {
 
 //                         $sqlestado = $conexion->test()->prepare("select estado from actividad where id = ?;");
@@ -326,7 +336,7 @@ class Actividad
 
 
 //                 if ($resultado) {
-//                     echo json_encode(array('mensaje' => 'Actividad actualizada'));
+//            o json_encodoaje' =encodoajeada'));
 //                 } else {
 //                     throw new Exception('No se pudo actualizar el registro');
 //                 }
