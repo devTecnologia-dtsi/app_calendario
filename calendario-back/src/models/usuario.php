@@ -5,7 +5,9 @@ include_once __DIR__ . "/../../config/cors.php";
 
 class CrudUsuario {
     
-    private function ejecutarSp($query, $params = []) {
+    // Método para ejecutar el SP
+    private function ejecutarSp($query, $params = []) 
+    {
         $conexion = new conexion();
         $sql = $conexion->test()->prepare($query);
     
@@ -20,7 +22,8 @@ class CrudUsuario {
         return $result;
     }
 
-    private function responderJson($respuesta) {
+    private function responderJson($respuesta) 
+    {
         header('Content-Type: application/json; charset=utf-8');
         echo json_encode($respuesta);
         exit;
