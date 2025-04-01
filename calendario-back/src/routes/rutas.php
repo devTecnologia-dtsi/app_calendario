@@ -87,6 +87,18 @@ switch ($metodo) {
                 $actividad->listarActividad();
             }
 
+        } elseif ($tabla === 'subactividad') {
+            // Ver una subactividad específica o todas
+            if ($id) {
+                // Consultar subactividad por ID
+                $subactividad = new Subactividad();
+                $subactividad->buscarSubactividad($id);
+            } else {
+                // Listar todas las subactividades
+                $subactividad = new Subactividad();
+                $subactividad->listarSubactividad();
+            }
+
         } else {
             consultar($id, $tabla, $limite, $offset);
         }
@@ -105,6 +117,10 @@ switch ($metodo) {
             $actividad = new Actividad();
             $actividad->insertarActividad($dato);
 
+        } elseif ($tabla === 'subactividad') {
+            // Insertat subactividad
+            $subactividad = new Subactividad();
+            $subactividad->insertarSubactividad($dato);
         } else {
             insertar($dato, $tabla);
         }
@@ -134,6 +150,11 @@ switch ($metodo) {
             $actividad = new Actividad();
             // var_dump($dato); exit;
             $actividad->actualizarActividad($id, $dato);
+
+        } elseif ($tabla === 'subactividad') {
+            // Actualizar subactividad
+            $subactividad = new Subactividad();
+            $subactividad->actualizarSubactividad($id, $dato);
         } else {
             actualizar($id, $dato, $tabla);
         }
@@ -156,7 +177,15 @@ switch ($metodo) {
             // Deshabilitar actividad
             $actividad = new Actividad();
             $actividad->desactivarActividad($id);
-        } else {
+        } 
+        
+        elseif ($tabla === 'subactividad') {
+            // Deshabilitar subactividad
+            $subactividad = new Subactividad();
+            $subactividad->desactivarSubactividad($id);
+        }
+
+        else {
             desactivar($id, $tabla);
         }
         break;
@@ -179,7 +208,15 @@ switch ($metodo) {
             $actividad = new Actividad();
             $actividad->eliminarActividad($id);
 
-        } else {
+        }
+
+        elseif ($tabla === 'subactividad') {
+            // Eliminar Subactividad
+            $subactividad = new Subactividad();
+            $subactividad->eliminarSubactividad($id);
+        }
+        
+        else {
             eliminar($id, $tabla);
         }
         break;

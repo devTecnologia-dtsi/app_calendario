@@ -79,6 +79,12 @@ class Actividad
 
     public function insertarActividad($dato)
     {
+        if (!isset($dato['id_calendario'], $dato['nombre'], $dato['estado'], $dato['correo'])) {
+            $this->responderJson([
+                'status' => 0,
+                'message' => 'Faltan datos requeridos para insertar actividad'
+            ]);
+        }
         try {
             $result = $this->ejecutarSp("CALL sp_actividad('insertar', NULL, ?, ?, ?, ?)",
                 ["isis", $dato['id_calendario'], $dato['nombre'], $dato['estado'], $dato['correo']]);

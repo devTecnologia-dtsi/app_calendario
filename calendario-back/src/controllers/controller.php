@@ -22,8 +22,9 @@ function consultar($id, $tabla, $limite = 5, $offset = 0) {
             $periodo->consultarperiodo($id);
             break;
         case 'subactividad':
-            $subactividad = new crudsubactividad();
-            $subactividad->consultarsubactividad($id);
+            $subactividad = new Subactividad();
+            $subactividad->listarSubactividad();
+            $subactividad->buscarSubactividad($id);
             break;
         case 'calendario':
             $calendario = new crudcalendario();
@@ -71,7 +72,7 @@ function insertar($dato, $tabla) {
             $periodo->insertarperiodo($dato);
             break;
         case 'subactividad':
-            $subactividad = new crudsubactividad();
+            $subactividad = new Subactividad();
             $subactividad->insertarsubactividad($dato);
             break;
         case 'calendario':
@@ -108,7 +109,7 @@ function actualizar($id, $dato, $tabla) {
             $periodo->actualizarperiodo($dato, $id);
             break;
         case 'subactividad':
-            $subactividad = new crudsubactividad();
+            $subactividad = new Subactividad();
             $subactividad->actualizarsubactividad($dato, $id);
             break;
         case 'calendario':
@@ -146,6 +147,11 @@ function desactivar($id, $tabla) {
             $actividad->desactivarActividad($id);
             break;
 
+        case 'subactividad':
+            $subactividad = new Subactividad();
+            $subactividad->desactivarSubactividad($id);
+            break;
+
         default:
             echo json_encode(array('ERROR' => 'No se puede deshabilitar en la tabla ' . $tabla));
             break;
@@ -164,7 +170,7 @@ function eliminar($id, $tabla) {
             $periodo->eliminarperiodo($id);
             break;
         case 'subactividad':
-            $subactividad = new crudsubactividad();
+            $subactividad = new Subactividad();
             $subactividad->eliminarsubactividad($id);
             break;
         case 'calendario':

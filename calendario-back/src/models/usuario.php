@@ -31,7 +31,7 @@ class CrudUsuario {
 
     public function listarUsuarios($limite, $offset) {
         $conexion = new conexion();
-        $sql = $conexion->test()->prepare("CALL sp_usuario('ver', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?, ?)");
+        $sql = $conexion->test()->prepare("CALL sp_usuario('ver', NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?, ?)");
         $sql->bind_param("ii", $limite, $offset);
         $sql->execute();
     
@@ -55,7 +55,7 @@ class CrudUsuario {
     }
     
     public function consultarUsuario($id) {
-        $result = $this->ejecutarSp("CALL sp_usuario('ver_id', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+        $result = $this->ejecutarSp("CALL sp_usuario('ver_id', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
         ["i",$id]);
         $usuario = $result->fetch_assoc();
         
@@ -69,7 +69,7 @@ class CrudUsuario {
         public function insertarUsuario($dato)
     {
         try {
-            $respuesta = $this->ejecutarSP("CALL sp_usuario('insertar', NULL, ?, ?, ?, ?, NULL, NULL, ?, NULL, NULL)",
+            $respuesta = $this->ejecutarSP("CALL sp_usuario('insertar', NULL, ?, ?, ?, ?, NULL, ?, NULL, NULL)",
              [
                 'siiii',
                 $dato['correo_nuevo'], 
@@ -95,7 +95,7 @@ class CrudUsuario {
         try {
             // Ejecutar SP
             $result = $this->ejecutarSP(
-                "CALL sp_usuario('actualizar', ?, ?, ?, ?, ?, NULL, NULL, ?, NULL, NULL)",
+                "CALL sp_usuario('actualizar', ?, ?, ?, ?, ?, NULL, ?, NULL, NULL)",
                 [
                     'isiiii',
                     $id,
@@ -121,7 +121,7 @@ class CrudUsuario {
     }
     
     public function desactivarUsuario($id){
-        $result = $this->ejecutarSp("CALL sp_usuario('desactivar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL )",
+        $result = $this->ejecutarSp("CALL sp_usuario('desactivar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL )",
          ["i", $id]);
          $respuesta = $result->fetch_assoc();
          $this->responderJson($respuesta);
@@ -129,7 +129,7 @@ class CrudUsuario {
 
     // No se usa, pero se deja funcional en caso de implementación
     public function eliminarUsuario($id) {
-        $result = $this->ejecutarSP("CALL sp_usuario('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+        $result = $this->ejecutarSP("CALL sp_usuario('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
          ["i", $id]);
         $respuesta = $result->fetch_assoc();
         $this->responderJson($respuesta);
