@@ -99,6 +99,28 @@ switch ($metodo) {
                 $subactividad->listarSubactividad();
             }
 
+        } elseif ($tabla === 'tipoCalendarios') {
+            // Ver un tipo de calendario especifico o todos
+            $tipoCalendario = new TipoCalendarios();
+            if ($id) {
+                // Consultar tipo de calendario por ID
+                $tipoCalendario->consultarTipoCalendario($id);
+            } else {
+                // Listar todos los tipos de calendario
+                $tipoCalendario->listarTipoCalendario();
+            }
+        
+        } elseif ($tabla === 'calendario') {
+            // Ver un calendario especifico o todos
+            $calendario = new Calendario();
+            if ($id) {
+                // Consultar calendario por ID
+                $calendario->buscarCalendario($id);
+            } else {
+                // Listar todos los calendarios
+                $calendario->listarCalendario();
+            }
+
         } else {
             consultar($id, $tabla, $limite, $offset);
         }

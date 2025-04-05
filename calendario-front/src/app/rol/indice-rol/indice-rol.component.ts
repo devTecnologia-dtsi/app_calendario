@@ -106,6 +106,10 @@ export class IndiceRolComponent implements OnInit, AfterViewInit {
       next: (respuesta) => {
         if (respuesta.status === 1) {
           this.notificacionService.mostrarExito(respuesta.message || 'Rol actualizado correctamente');
+        
+        } else if (respuesta.status === 2) {
+          this.notificacionService.mostrarAdvertencia(respuesta.message || 'No se realizaron cambios en el Rol');
+        
         } else {
           this.notificacionService.mostrarError(respuesta.message || 'Error al actualizar el Rol');
         }

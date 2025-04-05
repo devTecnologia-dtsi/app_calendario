@@ -8,52 +8,51 @@ include_once __DIR__ . "/../models/Rolcalendario.php";
 include_once __DIR__ . "/../models/rectoria.php";
 include_once __DIR__ . "/../models/sede.php";
 include_once __DIR__ . "/../models/rol.php";
+include_once __DIR__ . "/../models/tipo_calendarios.php";
 
 // CONSULTAR
 function consultar($id, $tabla, $limite = 5, $offset = 0) {
+    $modelo = null;
     switch ($tabla) {
         case 'actividad':
-            $actividad = new Actividad();
-            $actividad->listarActividad();
-            $actividad->buscarActividad($id);
+            $modelo = new Actividad();
             break;
         case 'periodo':
             $periodo = new crudperiodo();
             $periodo->consultarperiodo($id);
             break;
         case 'subactividad':
-            $subactividad = new Subactividad();
-            $subactividad->listarSubactividad();
-            $subactividad->buscarSubactividad($id);
+            $modelo = new Subactividad();
             break;
         case 'calendario':
-            $calendario = new crudcalendario();
-            $calendario->consultarcalendario($id);
+            $modelo = new Calendario();
             break;
         case 'rolCalendario':
             $rolcalendario = new crudrolCalendario();
             $rolcalendario->consultarrolCalendario($id);
             break;
         case 'usuario':
-            $usuario = new CrudUsuario();
-            $id ? $usuario->consultarUsuario($id) : $usuario->listarUsuarios($limite, $offset);
+            $modelo = new CrudUsuario();
             break;
         case 'rectoria':
-            $rectoria = new Rectoria();
-            $id ? $rectoria->consultarRectoria($id) : $rectoria->listarRectorias();
+            $modelo = new Rectoria();
             break;
         case 'sede':
-            $sede = new Sede();
-            $id ? $sede->consultarSede($id) : $sede->listarSedes();
+            $modelo = new Sede();
             break;
         case 'sedesPorRectoria':
-            $sede = new Sede();
-            $sede->listarSedesPorRectoria($id);
+            $modelo = new Sede();
             break;
         case 'rol':
-            $rol = new Rol();
-            $id ? $rol->consultarRol($id) : $rol->listarRol();
+            $modelo = new Rol();
             break;
+        case 'tipoCalendarios':
+            $modelo = new TipoCalendarios();
+            break;
+
+        if ($modelo) {
+            $id ? $modelo->buscar($id) : $modelo->listar($limite, $offset);
+        }
         default:
             echo json_encode(array('ERROR' => 'No se ha encontrado la tabla'));
             break;

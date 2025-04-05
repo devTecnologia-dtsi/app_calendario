@@ -31,7 +31,7 @@ class CrudUsuario {
 
     public function listarUsuarios($limite, $offset) {
         $conexion = new conexion();
-        $sql = $conexion->test()->prepare("CALL sp_usuario('ver', NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?, ?)");
+        $sql = $conexion->test()->prepare("CALL sp_usuario('ver', NULL, NULL, NULL, NULL, NULL, NULL, ?, ?, 'jeyson.triana.m@uniminuto.edu')");
         $sql->bind_param("ii", $limite, $offset);
         $sql->execute();
     
@@ -55,7 +55,7 @@ class CrudUsuario {
     }
     
     public function consultarUsuario($id) {
-        $result = $this->ejecutarSp("CALL sp_usuario('ver_id', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+        $result = $this->ejecutarSp("CALL sp_usuario('ver_id', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
         ["i",$id]);
         $usuario = $result->fetch_assoc();
         
@@ -69,18 +69,42 @@ class CrudUsuario {
         public function insertarUsuario($dato)
     {
         try {
-            $respuesta = $this->ejecutarSP("CALL sp_usuario('insertar', NULL, ?, ?, ?, ?, NULL, ?, NULL, NULL)",
+
+            // Autocompletar dominio si no está incluido
+            $correo = $dato['correo_nuevo'];
+            if (!str_ends_with($correo, '@uniminuto.edu')) {
+                $correo .= '@uniminuto.edu';
+            }
+
+            $result = $this->ejecutarSP("CALL sp_usuario('insertar', NULL, ?, ?, ?, ?, ?, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
              [
                 'siiii',
+                // En caso de implemetación sin dominio
+                // $correo,
                 $dato['correo_nuevo'], 
                 $dato['estado'], 
                 $dato['id_rectoria'],
                 $dato['id_sede'],
                 $dato['id_rol']
             ]);
-            
 
-            $this->responderJSON($respuesta);
+            // Capturar respuesta del SP
+            $respuesta = $result->fetch_assoc();
+            $result->close();
+
+            // Verificar respuesta
+            if ($respuesta) {
+                $this->responderJson([
+                    'status' => $respuesta['status'] ?? null,
+                    'message' => $respuesta['message']  ?? 'Usuario creado correctamente'
+                ]);
+            } else {
+                $this->responderJson([
+                    'status' => 0,
+                    'message' => 'Error al crear el usuario'
+                ]);
+            }
+            
         } catch (Exception $e) {
             http_response_code(400);
             $this->responderJSON([
@@ -93,12 +117,21 @@ class CrudUsuario {
     public function actualizarUsuario($id, $dato)
     {
         try {
+
+            // Autocompletar dominio si no está incluido
+            $correo = $dato['correo_nuevo'];
+            if (!str_ends_with($correo, '@uniminuto.edu')) {
+                $correo .= '@uniminuto.edu';
+            }
+
             // Ejecutar SP
             $result = $this->ejecutarSP(
-                "CALL sp_usuario('actualizar', ?, ?, ?, ?, ?, NULL, ?, NULL, NULL)",
+                "CALL sp_usuario('actualizar', ?, ?, ?, ?, ?, ?, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
                 [
                     'isiiii',
                     $id,
+                    // En caso de implemetación sin dominio
+                    // $correo,
                     $dato['correo_nuevo'],
                     $dato['estado'],
                     $dato['id_rectoria'],
@@ -121,7 +154,7 @@ class CrudUsuario {
     }
     
     public function desactivarUsuario($id){
-        $result = $this->ejecutarSp("CALL sp_usuario('desactivar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL )",
+        $result = $this->ejecutarSp("CALL sp_usuario('desactivar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana.m@uniminuto.edu' )",
          ["i", $id]);
          $respuesta = $result->fetch_assoc();
          $this->responderJson($respuesta);
@@ -129,7 +162,7 @@ class CrudUsuario {
 
     // No se usa, pero se deja funcional en caso de implementación
     public function eliminarUsuario($id) {
-        $result = $this->ejecutarSP("CALL sp_usuario('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+        $result = $this->ejecutarSP("CALL sp_usuario('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
          ["i", $id]);
         $respuesta = $result->fetch_assoc();
         $this->responderJson($respuesta);

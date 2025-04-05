@@ -1,14 +1,33 @@
-button{
-    margin-right: 1rem;
-}
-
-mat-form-field{
-    width: 100%;
-    max-width: 500px;
-    display: block;
+.actividad-card {
+    margin-bottom: 1rem;
+  }
+  
+  .actividad-container {
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+  }
+  
+  .subactividad-card {
+    margin-bottom: 1rem;
+  }
+  
+  .subactividad-container {
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #ffffff;
+  }
+  
+  .contenedor-botones {
     margin-top: 1rem;
-}
-
-.contenedor-botones{
-    margin-top: 1rem;
-}
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  mat-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }

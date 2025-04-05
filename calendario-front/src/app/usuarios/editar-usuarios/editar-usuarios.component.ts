@@ -78,6 +78,8 @@ export class EditarUsuariosComponent implements OnInit {
         if (respuesta.status === 1) {
           this.notificacionService.mostrarExito(respuesta.message || "Usuario actualizado correctamente");
           this.router.navigate(['/usuarios']);
+        } else if (respuesta.status === 2) {
+          this.notificacionService.mostrarAdvertencia(respuesta.message || "No se realizaron cambios en el usuario");
         } else {
           this.notificacionService.mostrarError(respuesta.message || "Error al actualizar el usuario");
         }
