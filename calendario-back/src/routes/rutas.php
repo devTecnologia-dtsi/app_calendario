@@ -49,8 +49,9 @@ switch ($metodo) {
             } else {
                 $sede->listarSedes();
             }
-
-        } elseif ($tabla === 'sedesPorRectoria') {
+        } 
+        
+        elseif ($tabla === 'sedesPorRectoria') {
             // Listar sedes por rectoría
             $sede = new Sede();
             if ($id) {
@@ -60,7 +61,9 @@ switch ($metodo) {
                 echo json_encode(["error" => "ID de rectoría no especificado"]);
                 exit;
             }
-        } elseif ($tabla === 'rol') {
+        } 
+        
+        elseif ($tabla === 'rol') {
             // Consultar rol específico o todos
             $rol = new Rol();
             if ($id) {
@@ -69,7 +72,9 @@ switch ($metodo) {
                 $rol->listarRol();
             }
 
-        } elseif ($tabla === 'usuario') {
+        } 
+        
+        elseif ($tabla === 'usuario') {
             // Consultar usuario específico o todos
             $usuario = new CrudUsuario();
             if ($id) {
@@ -78,7 +83,9 @@ switch ($metodo) {
                 $usuario->listarUsuarios($limite, $offset);
             }
 
-        } elseif ($tabla === 'actividad') {
+        } 
+        
+        elseif ($tabla === 'actividad') {
             // Ver una actividad específica o todas
             $actividad = new Actividad();
             if ($id) {
@@ -87,19 +94,9 @@ switch ($metodo) {
                 $actividad->listarActividad();
             }
 
-        } elseif ($tabla === 'subactividad') {
-            // Ver una subactividad específica o todas
-            if ($id) {
-                // Consultar subactividad por ID
-                $subactividad = new Subactividad();
-                $subactividad->buscarSubactividad($id);
-            } else {
-                // Listar todas las subactividades
-                $subactividad = new Subactividad();
-                $subactividad->listarSubactividad();
-            }
-
-        } elseif ($tabla === 'tipoCalendarios') {
+        } 
+        
+        elseif ($tabla === 'tipoCalendarios') {
             // Ver un tipo de calendario especifico o todos
             $tipoCalendario = new TipoCalendarios();
             if ($id) {
@@ -110,7 +107,9 @@ switch ($metodo) {
                 $tipoCalendario->listarTipoCalendario();
             }
         
-        } elseif ($tabla === 'calendario') {
+        } 
+        
+        elseif ($tabla === 'calendario') {
             // Ver un calendario especifico o todos
             $calendario = new Calendario();
             if ($id) {
@@ -121,7 +120,47 @@ switch ($metodo) {
                 $calendario->listarCalendario();
             }
 
-        } else {
+        } 
+        
+        elseif ($tabla === 'periodo') {
+            // Ver un periodo especifico o todos
+            $periodo = new Periodo();
+            if ($id) {
+                // Consultar periodo por ID
+                $periodo->buscarPeriodo($id);
+            } else {
+                // Listar todos los periodos
+                $periodo->listarPeriodos();
+            }
+        
+        }
+
+        elseif ($tabla === 'modalidad') {
+            // Ver una modalidad especifica o todas
+            $modalidad = new Modalidades();
+            if ($id) {
+                // Consultar modalidad por ID
+                $modalidad->buscarModalidad($id);
+            } else {
+                // Listar todas las modalidades
+                $modalidad->listarModalidades();
+            }
+        
+        }
+
+        elseif ($tabla === 'logs') {
+            // Ver un log especifico o todos
+            $logs = new Logs();
+            if ($id) {
+                // Consultar log por ID
+                $logs->buscarLogs($id);
+            } else {
+                // Listar todos los logs
+                $logs->listarLogs();
+            }
+        }
+        
+        else {
             consultar($id, $tabla, $limite, $offset);
         }
         break;
@@ -139,13 +178,30 @@ switch ($metodo) {
             $actividad = new Actividad();
             $actividad->insertarActividad($dato);
 
-        } elseif ($tabla === 'subactividad') {
-            // Insertat subactividad
-            $subactividad = new Subactividad();
-            $subactividad->insertarSubactividad($dato);
-        } else {
+        } 
+        
+        elseif ($tabla === 'periodo') {
+            // Insertar periodo
+            $periodo = new Periodo();
+            $periodo->crearPeriodo($dato);
+        }
+
+        elseif ($tabla === 'calendario') {
+            // Insertar calendario
+            $calendario = new Calendario();
+            $calendario->insertarCalendario($dato);
+        }
+
+        elseif ($tabla === 'modalidad') {
+            // Insertar modalidad
+            $modalidad = new Modalidades();
+            $modalidad->crearModalidad($dato);
+        }
+        
+        else {
             insertar($dato, $tabla);
         }
+
         break;
 
     case 'PUT':
@@ -172,12 +228,27 @@ switch ($metodo) {
             $actividad = new Actividad();
             // var_dump($dato); exit;
             $actividad->actualizarActividad($id, $dato);
+        }
 
-        } elseif ($tabla === 'subactividad') {
-            // Actualizar subactividad
-            $subactividad = new Subactividad();
-            $subactividad->actualizarSubactividad($id, $dato);
-        } else {
+        else if ($tabla === 'periodo') {
+            // Actualizar periodo
+            $periodo = new Periodo();
+            $periodo->actualizarPeriodo($id, $dato);
+        }
+
+        elseif ($tabla === 'calendario') {
+            // Actualizar calendario
+            $calendario = new Calendario();
+            $calendario->actualizarCalendario($id, $dato);
+        }
+
+        elseif ($tabla === 'modalidad') {
+            // Actualizar modalidad
+            $modalidad = new Modalidades();
+            $modalidad->actualizarModalidad($id, $dato);
+        }
+        
+        else {
             actualizar($id, $dato, $tabla);
         }
         break;
@@ -201,10 +272,22 @@ switch ($metodo) {
             $actividad->desactivarActividad($id);
         } 
         
-        elseif ($tabla === 'subactividad') {
-            // Deshabilitar subactividad
-            $subactividad = new Subactividad();
-            $subactividad->desactivarSubactividad($id);
+        elseif ($tabla === 'calendario') {
+            // Deshabilitar calendario
+            $calendario = new Calendario();
+            $calendario->deshabilitarCalendario($id);
+        }
+
+        elseif ($tabla === 'modalidad') {
+            // Deshabilitar modalidad
+            $modalidad = new Modalidades();
+            $modalidad->desactivarModalidad($id);
+        }
+
+        elseif ($tabla === 'periodo') {
+            // Deshabilitar periodo
+            $periodo = new Periodo();
+            $periodo->deshabilitarPeriodo($id);
         }
 
         else {
@@ -231,13 +314,31 @@ switch ($metodo) {
             $actividad->eliminarActividad($id);
 
         }
-
-        elseif ($tabla === 'subactividad') {
-            // Eliminar Subactividad
-            $subactividad = new Subactividad();
-            $subactividad->eliminarSubactividad($id);
-        }
         
+        elseif ($tabla === 'periodo') {
+            // Eliminar periodo
+            $periodo = new Periodo();
+            $periodo->eliminarPeriodo($id);
+        }
+
+        elseif ($tabla === 'calendario') {
+            // Eliminar calendario
+            $calendario = new Calendario();
+            $calendario->eliminarCalendario($id);
+        }
+
+        elseif ($tabla === 'modalidad') {
+            // Eliminar modalidad
+            $modalidad = new Modalidades();
+            $modalidad->eliminarModalidad($id);
+        }
+
+        elseif ($tabla === 'periodo') {
+            // Eliminar periodo
+            $periodo = new Periodo();
+            $periodo->eliminarPeriodo($id);
+        }
+
         else {
             eliminar($id, $tabla);
         }

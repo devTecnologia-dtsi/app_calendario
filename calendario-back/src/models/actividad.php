@@ -33,7 +33,7 @@ class Actividad
     public function listarActividad ()
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('listar', NULL, NULL, NULL, NULL, NULL)");
+            $result = $this->ejecutarSp("CALL sp_actividad('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
             $actividades = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
 
@@ -53,7 +53,8 @@ class Actividad
     public function buscarActividad($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('listar', ?, NULL, NULL, NULL, NULL)", ["i", $id]);
+            $result = $this->ejecutarSp("CALL sp_actividad('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+            ["i", $id]);
             $actividad = $result->fetch_assoc();
             $result->close();
 
@@ -79,15 +80,15 @@ class Actividad
 
     public function insertarActividad($dato)
     {
-        if (!isset($dato['id_calendario'], $dato['nombre'], $dato['estado'], $dato['correo'])) {
+        if (!isset($dato['id_calendario'], $dato['id_padre'], $dato['titulo'], $dato['estado'], $dato['fecha_inicio'], $dato['fecha_fin'], $dato['correo'])) {
             $this->responderJson([
                 'status' => 0,
                 'message' => 'Faltan datos requeridos para insertar actividad'
             ]);
         }
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('insertar', NULL, ?, ?, ?, ?)",
-                ["isis", $dato['id_calendario'], $dato['nombre'], $dato['estado'], $dato['correo']]);
+            $result = $this->ejecutarSp("CALL sp_actividad('insertar', NULL, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                params: ["iisiss", $dato['id_calendario'], $dato['id_padre'], $dato['titulo'], $dato['estado'], $dato['fecha_inicio'], $dato['fecha_fin']]);
 
                 // Capturar respuesta del SP
                 $respuesta = $result->fetch_assoc();
@@ -104,8 +105,8 @@ class Actividad
     public function actualizarActividad($id, $dato)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('actualizar', ?, ?, ?, ?, ?)",
-                ["iisis", $id, $dato['id_calendario'], $dato['nombre'], $dato['estado'], $dato['correo']]);
+            $result = $this->ejecutarSp("CALL sp_actividad('actualizar', ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                params: ["iiisiss", $id, $dato['id_calendario'], $dato['id_padre'], $dato['titulo'], $dato['estado'], $dato['fecha_inicio'], $dato['fecha_fin']]);
 
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();
@@ -122,7 +123,7 @@ class Actividad
     public function desactivarActividad($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('deshabilitar', ?, NULL, NULL, NULL, NULL)",
+            $result = $this->ejecutarSp("CALL sp_actividad('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
                 ["i", $id]);
 
             // Capturar respuesta del SP
@@ -140,7 +141,7 @@ class Actividad
     public function eliminarActividad($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('eliminar', ?, NULL, NULL, NULL, NULL)",
+            $result = $this->ejecutarSp("CALL sp_actividad('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
                 ["i", $id]);
 
             // Capturar respuesta del SP

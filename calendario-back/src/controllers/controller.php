@@ -1,7 +1,6 @@
 <?php
 include_once __DIR__ . "/../models/actividad.php";
 include_once __DIR__ . "/../models/periodo.php";
-include_once __DIR__ . "/../models/subactividad.php";
 include_once __DIR__ . "/../models/calendario.php";
 include_once __DIR__ . "/../models/usuario.php";
 include_once __DIR__ . "/../models/Rolcalendario.php";
@@ -9,6 +8,8 @@ include_once __DIR__ . "/../models/rectoria.php";
 include_once __DIR__ . "/../models/sede.php";
 include_once __DIR__ . "/../models/rol.php";
 include_once __DIR__ . "/../models/tipo_calendarios.php";
+include_once __DIR__ . "/../models/logs.php";
+include_once __DIR__ . "/../models/modalidades.php";
 
 // CONSULTAR
 function consultar($id, $tabla, $limite = 5, $offset = 0) {
@@ -18,18 +19,10 @@ function consultar($id, $tabla, $limite = 5, $offset = 0) {
             $modelo = new Actividad();
             break;
         case 'periodo':
-            $periodo = new crudperiodo();
-            $periodo->consultarperiodo($id);
-            break;
-        case 'subactividad':
-            $modelo = new Subactividad();
+            $modelo = new Periodo();
             break;
         case 'calendario':
             $modelo = new Calendario();
-            break;
-        case 'rolCalendario':
-            $rolcalendario = new crudrolCalendario();
-            $rolcalendario->consultarrolCalendario($id);
             break;
         case 'usuario':
             $modelo = new CrudUsuario();
@@ -49,7 +42,12 @@ function consultar($id, $tabla, $limite = 5, $offset = 0) {
         case 'tipoCalendarios':
             $modelo = new TipoCalendarios();
             break;
-
+        case 'modalidad':
+            $modelo = new Modalidades();
+            break;
+        case 'logs':
+            $modelo = new Logs();
+            break;
         if ($modelo) {
             $id ? $modelo->buscar($id) : $modelo->listar($limite, $offset);
         }
@@ -67,28 +65,16 @@ function insertar($dato, $tabla) {
             $actividad->insertarActividad($dato);
             break;
         case 'periodo':
-            $periodo = new crudperiodo();
-            $periodo->insertarperiodo($dato);
-            break;
-        case 'subactividad':
-            $subactividad = new Subactividad();
-            $subactividad->insertarsubactividad($dato);
+            $periodo = new Periodo();
+            $periodo->crearPeriodo($dato);
             break;
         case 'calendario':
-            $calendario = new crudcalendario();
-            $calendario->insertarcalendario($dato);
-            break;
-        case 'rolCalendario':
-            $rolcalendario = new crudrolCalendario();
-            $rolcalendario->insertarrolCalendario($dato);
+            $calendario = new Calendario();
+            $calendario->insertarCalendario($dato);
             break;
         case 'usuario':
             $usuario = new CrudUsuario();
             $usuario->insertarUsuario($dato);
-            break;
-        case 'rol':
-            $rol = new Rol();
-            $rol->insertarRol($dato);
             break;
         default:
             echo json_encode(array('ERROR' => 'No se ha encontrado la tabla para insertar'));
@@ -104,20 +90,12 @@ function actualizar($id, $dato, $tabla) {
             $actividad->actualizarActividad($id, $dato);
             break;
         case 'periodo':
-            $periodo = new crudperiodo();
-            $periodo->actualizarperiodo($dato, $id);
-            break;
-        case 'subactividad':
-            $subactividad = new Subactividad();
-            $subactividad->actualizarsubactividad($dato, $id);
+            $periodo = new Periodo();
+            $periodo->actualizarPeriodo($$id, $dato);
             break;
         case 'calendario':
-            $calendario = new crudcalendario();
-            $calendario->actualizarcalendario($dato, $id);
-            break;
-        case 'rolCalendario':
-            $rolcalendario = new crudrolCalendario();
-            $rolcalendario->actualizarrolCalendario($dato, $id);
+            $calendario = new Calendario();
+            $calendario->actualizarCalendario($$id, $dato);
             break;
         case 'usuario':
             $usuario = new CrudUsuario();
@@ -126,6 +104,10 @@ function actualizar($id, $dato, $tabla) {
         case 'rol':
             $rol = new Rol();
             $rol->actualizarRol($id, $dato);
+            break;
+        case 'modalidad':
+            $modalidad = new Modalidades();
+            $modalidad->actualizarModalidad($id, $dato);
             break;
         default:
             echo json_encode(array('ERROR' => 'No se ha encontrado la tabla para actualizar'));
@@ -140,15 +122,22 @@ function desactivar($id, $tabla) {
             $usuario = new CrudUsuario();
             $usuario->desactivarUsuario($id);
             break;
-        
         case 'actividad':
             $actividad = new Actividad();
             $actividad->desactivarActividad($id);
             break;
 
-        case 'subactividad':
-            $subactividad = new Subactividad();
-            $subactividad->desactivarSubactividad($id);
+        case 'calendario':
+            $calendario = new Calendario();
+            $calendario->deshabilitarCalendario($id);
+            break;
+        case 'modalidad':
+            $modalidad = new Modalidades();
+            $modalidad->desactivarModalidad($id);
+            break;
+        case 'periodo':
+            $periodo = new Periodo();
+            $periodo->deshabilitarPeriodo($id);
             break;
 
         default:
@@ -165,28 +154,20 @@ function eliminar($id, $tabla) {
             $actividad->eliminarActividad($id);
             break;
         case 'periodo':
-            $periodo = new crudperiodo();
-            $periodo->eliminarperiodo($id);
-            break;
-        case 'subactividad':
-            $subactividad = new Subactividad();
-            $subactividad->eliminarsubactividad($id);
+            $periodo = new Periodo();
+            $periodo->eliminarPeriodo($id);
             break;
         case 'calendario':
-            $calendario = new crudcalendario();
-            $calendario->eliminarcalendario($id);
-            break;
-        case 'rolCalendario':
-            $rolcalendario = new crudrolCalendario();
-            $rolcalendario->eliminarrolCalendario($id);
+            $calendario = new Calendario();
+            $calendario->eliminarCalendario($id);
             break;
         case 'usuario':
             $usuario = new CrudUsuario();
             $usuario->eliminarUsuario($id);
             break;
-        case 'rol':
-            $rol = new Rol();
-            $rol->eliminarRol($id);
+        case 'modalidad':
+            $modalidad = new Modalidades();
+            $modalidad->eliminarModalidad($id);
             break;
         default:
             echo json_encode(array('ERROR' => 'No se ha encontrado la tabla para eliminar'));
