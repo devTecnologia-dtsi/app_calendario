@@ -71,7 +71,6 @@ switch ($metodo) {
             } else {
                 $rol->listarRol();
             }
-
         } 
         
         elseif ($tabla === 'usuario') {
@@ -82,7 +81,6 @@ switch ($metodo) {
             } else {
                 $usuario->listarUsuarios($limite, $offset);
             }
-
         } 
         
         elseif ($tabla === 'actividad') {
@@ -93,8 +91,17 @@ switch ($metodo) {
             } else {
                 $actividad->listarActividad();
             }
+        }
 
-        } 
+        elseif ($tabla === 'subactividad') {
+            // Ver una subactividad específica o todas
+            $subactividad = new SubActividad();
+            if ($id) {
+                $subactividad->buscarSubActividad($id);
+            } else {
+                $subactividad->listarSubActividad();
+            }
+        }
         
         elseif ($tabla === 'tipoCalendarios') {
             // Ver un tipo de calendario especifico o todos
@@ -106,8 +113,16 @@ switch ($metodo) {
                 // Listar todos los tipos de calendario
                 $tipoCalendario->listarTipoCalendario();
             }
-        
         } 
+
+        elseif ($tabla === 'tiposPeriodo') {
+            $tiposPeriodo = new TiposPeriodo();
+            if($id){
+                $tiposPeriodo->buscarTipoPeriodo($id);
+            } else {
+                $tiposPeriodo->listarTipoPeriodo();
+            }
+        }
         
         elseif ($tabla === 'calendario') {
             // Ver un calendario especifico o todos
@@ -119,12 +134,11 @@ switch ($metodo) {
                 // Listar todos los calendarios
                 $calendario->listarCalendario();
             }
-
         } 
         
-        elseif ($tabla === 'periodo') {
+        elseif ($tabla === 'periodoAcademico') {
             // Ver un periodo especifico o todos
-            $periodo = new Periodo();
+            $periodo = new PeriodoAcademico();
             if ($id) {
                 // Consultar periodo por ID
                 $periodo->buscarPeriodo($id);
@@ -132,7 +146,6 @@ switch ($metodo) {
                 // Listar todos los periodos
                 $periodo->listarPeriodos();
             }
-        
         }
 
         elseif ($tabla === 'modalidad') {
@@ -145,7 +158,6 @@ switch ($metodo) {
                 // Listar todas las modalidades
                 $modalidad->listarModalidades();
             }
-        
         }
 
         elseif ($tabla === 'logs') {
@@ -156,7 +168,7 @@ switch ($metodo) {
                 $logs->buscarLogs($id);
             } else {
                 // Listar todos los logs
-                $logs->listarLogs();
+                $logs->listarLogs($limite, $offset);
             }
         }
         
@@ -177,12 +189,17 @@ switch ($metodo) {
             // Insertar actividad
             $actividad = new Actividad();
             $actividad->insertarActividad($dato);
+        }
 
-        } 
-        
+        elseif ($tabla === 'subactividad') {
+            // Insertar subactividad
+            $subactividad = new SubActividad();
+            $subactividad->crearSubactividad($dato);
+        }
+
         elseif ($tabla === 'periodo') {
             // Insertar periodo
-            $periodo = new Periodo();
+            $periodo = new PeriodoAcademico();
             $periodo->crearPeriodo($dato);
         }
 
@@ -230,9 +247,15 @@ switch ($metodo) {
             $actividad->actualizarActividad($id, $dato);
         }
 
-        else if ($tabla === 'periodo') {
+        elseif ($tabla === 'subactividad') {
+            // Actualizar subactividad
+            $subactividad = new SubActividad();
+            $subactividad->actualizarSubactividad($id, $dato);
+        }
+
+        else if ($tabla === 'periodoAcademico') {
             // Actualizar periodo
-            $periodo = new Periodo();
+            $periodo = new PeriodoAcademico();
             $periodo->actualizarPeriodo($id, $dato);
         }
 
@@ -270,7 +293,13 @@ switch ($metodo) {
             // Deshabilitar actividad
             $actividad = new Actividad();
             $actividad->desactivarActividad($id);
-        } 
+        }
+
+        elseif ($tabla === 'subactividad') {
+            // Deshabilitar subactividad
+            $subactividad = new SubActividad();
+            $subactividad->deshabilitarSubactividad($id);
+        }
         
         elseif ($tabla === 'calendario') {
             // Deshabilitar calendario
@@ -284,9 +313,9 @@ switch ($metodo) {
             $modalidad->desactivarModalidad($id);
         }
 
-        elseif ($tabla === 'periodo') {
-            // Deshabilitar periodo
-            $periodo = new Periodo();
+        elseif ($tabla === 'periodoAcademico') {
+            // Deshabilitar periodo academico
+            $periodo = new PeriodoAcademico();
             $periodo->deshabilitarPeriodo($id);
         }
 
@@ -312,12 +341,17 @@ switch ($metodo) {
             // Eliminar actividad
             $actividad = new Actividad();
             $actividad->eliminarActividad($id);
+        }
 
+        elseif ($tabla === 'subactividad') {
+            // Eliminar subactividad
+            $subactividad = new SubActividad();
+            $subactividad->eliminarSubactividad($id);
         }
         
-        elseif ($tabla === 'periodo') {
+        elseif ($tabla === 'periodoAcademico') {
             // Eliminar periodo
-            $periodo = new Periodo();
+            $periodo = new PeriodoAcademico();
             $periodo->eliminarPeriodo($id);
         }
 
@@ -331,12 +365,6 @@ switch ($metodo) {
             // Eliminar modalidad
             $modalidad = new Modalidades();
             $modalidad->eliminarModalidad($id);
-        }
-
-        elseif ($tabla === 'periodo') {
-            // Eliminar periodo
-            $periodo = new Periodo();
-            $periodo->eliminarPeriodo($id);
         }
 
         else {

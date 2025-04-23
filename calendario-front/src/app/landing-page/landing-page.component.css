@@ -1,0 +1,13 @@
+.calendarios-container {
+    padding: 16px;
+  }
+  
+  .calendarios-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+  
+  .calendario-card {
+    max-width: 300px;
+  }

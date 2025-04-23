@@ -1,8 +1,80 @@
-<h2>Académicos</h2>
+<!-- <h2>Académicos</h2>
 <app-listado-calendarios [calendarios]="calendariosFinancieros"></app-listado-calendarios>
 
 <h2>Financieros</h2>
 <app-listado-calendarios [calendarios]="calendariosAcademicos"></app-listado-calendarios>
 
 <h2>Grados</h2>
-<app-listado-calendarios [calendarios]="calendariosGrados"></app-listado-calendarios>
+<app-listado-calendarios [calendarios]="calendariosGrados"></app-listado-calendarios> -->
+
+
+<div class="calendarios-container">
+    <h2>Académicos</h2>
+    <div class="calendarios-grid">
+      <mat-card *ngFor="let calendario of calendariosAcademicos" class="calendario-card">
+        <mat-card-header>
+          <mat-card-title>{{ calendario.nombreActividad }}</mat-card-title>
+          <mat-card-subtitle>{{ calendario.usuario }}</mat-card-subtitle>
+        </mat-card-header>
+        <img mat-card-image [src]="calendario.imagen || 'academico 2.jpg'" alt="Imagen del calendario">
+        <mat-card-content>
+          <p>Rectoría: {{ calendario.rectoria }}</p>
+          <p>Sede: {{ calendario.sede }}</p>
+          <p>Fecha de creación: {{calendario.fecha_creacion}}</p>
+          <p>Modalidad: {{ calendario.modalidad}}</p>
+          <p>Periodo académico: {{ calendario.periodo_academico}}</p>
+          <p>Tipo de periodo: {{ calendario.tipos_periodo}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="primary">Editar</button>
+          <button mat-button color="warn">Eliminar</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  
+    <h2>Financieros</h2>
+    <div class="calendarios-grid">
+      <mat-card *ngFor="let calendario of calendariosFinancieros" class="calendario-card">
+        <mat-card-header>
+          <mat-card-title>{{ calendario.nombreActividad }}</mat-card-title>
+          <mat-card-subtitle>{{ calendario.usuario }}</mat-card-subtitle>
+        </mat-card-header>
+        <img mat-card-image [src]="calendario.imagen || 'financiero.avif'" alt="Imagen del calendario">
+        <mat-card-content>
+            <p>Rectoría: {{ calendario.rectoria }}</p>
+            <p>Sede: {{ calendario.sede }}</p>
+            <p>Fecha de creación: {{calendario.fecha_creacion}}</p>
+            <p>Modalidad: {{ calendario.modalidad}}</p>
+            <p>Periodo académico: {{ calendario.periodo_academico}}</p>
+            <p>Tipo de periodo: {{ calendario.tipos_periodo}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="primary">Editar</button>
+          <button mat-button color="warn">Eliminar</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  
+    <h2>Grados</h2>
+    <div class="calendarios-grid">
+      <mat-card *ngFor="let calendario of calendariosGrados" class="calendario-card">
+        <mat-card-header>
+          <mat-card-title>{{ calendario.nombreActividad }}</mat-card-title>
+          <mat-card-subtitle>{{ calendario.usuario }}</mat-card-subtitle>
+        </mat-card-header>
+        <img mat-card-image [src]="calendario.imagen || 'grados.jpg'" alt="Imagen del calendario">
+        <mat-card-content>
+            <p>Rectoría: {{ calendario.rectoria }}</p>
+            <p>Sede: {{ calendario.sede }}</p>
+            <p>Fecha de creación: {{calendario.fecha_creacion}}</p>
+            <p>Modalidad: {{ calendario.modalidad}}</p>
+            <p>Periodo académico: {{ calendario.periodo_academico}}</p>
+            <p>Tipo de periodo: {{ calendario.tipos_periodo}}</p>
+        </mat-card-content>
+        <mat-card-actions>
+          <button mat-button color="primary">Editar</button>
+          <button mat-button color="warn">Eliminar</button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+  </div>

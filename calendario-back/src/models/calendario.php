@@ -2,42 +2,22 @@
 
 include_once __DIR__ . "/../../config/conexion.php";
 include_once __DIR__ . "/../../config/cors.php";
+include_once __DIR__ ."/baseModelo.php";
 
-class Calendario
+
+class Calendario extends BaseModelo
 {
-    private function ejecutarSp($query, $params = [])
-    {
-        $conexion = new conexion();
-        $sql = $conexion->test()->prepare($query);
-
-        if (!empty($params)) {
-            $sql->bind_param(...$params);
-        }
-
-        $sql->execute();
-        $result = $sql->get_result();
-        $sql->close();
-
-        return $result;
-    }
-
-    private function responderJson($respuesta)
-    {
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($respuesta);
-        exit;
-    }
 
     public function listarCalendario()
     {
         try {
-            $resulListarCalendario = $this->ejecutarSp("CALL sp_calendario('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
+            $resulListarCalendario = $this->ejecutarSp("CALL sp_calendario('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
             $calendarios = $resulListarCalendario->fetch_all(MYSQLI_ASSOC);
             $resulListarCalendario->close();
 
             $this->responderJson([
                 'sattus' => 1,
-                'mssage' => 'Calendarios listados correctamente',
+                'message' => 'Calendarios listados correctamente',
                 'data' => $calendarios
             ]);
         } catch (Exception $e) {
@@ -51,7 +31,7 @@ class Calendario
     public function buscarCalendario($id)
     {
         try {
-            $resultBuscarCalendario = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+            $resultBuscarCalendario = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
                 ["i", $id]);
                 $calendario = $resultBuscarCalendario->fetch_assoc();
                 $resultBuscarCalendario->close();
@@ -78,27 +58,29 @@ class Calendario
 
     public function insertarCalendario($data)
     {
-        // Validar que los datos requeridos estén presentes
-        if (empty($data['id_usuario']) || empty($data['id_rectoria']) || empty($data['id_sede']) ||
-            empty($data['id_tipo_calendario']) || empty($data['id_modalidad']) || empty($data['id_periodo']) ||
-            empty($data['estado']) || empty($data['en_sede'])) {
-            $this->responderJson([
-                'status' => 0,
-                'message' => 'Faltan datos requeridos para insertar el calendario'
-            ]);
-        }
+        // // Validar que los datos requeridos estén presentes
+        // if (!isset($data['id_usuario']) || !isset($data['id_rectoria']) || !isset($data['id_sede']) ||
+        // !isset($data['id_tipo_calendario']) || !isset($data['id_modalidad']) || !isset($data['id_tipo_periodo']) ||
+        // !isset($data['estado']) || !isset($data['en_sede'])) {
+        // $this->responderJson([
+        //     'status' => 0,
+        //     'message' => 'Faltan datos requeridos para insertar el calendario'
+        // ]);
+        // return;
+        // }
     
         try {
             $resultInsertarCalendario = $this->ejecutarSp(
                 "CALL sp_calendario('insertar', NULL, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
                 [
-                    "iiiiiiii", 
+                    "iiiiiiiii", 
                     $data['id_usuario'], 
                     $data['id_rectoria'],
                     $data['id_sede'],
                     $data['id_tipo_calendario'],
                     $data['id_modalidad'],
-                    $data['id_periodo'],
+                    $data['id_periodo_academico'],
+                    $data['id_tipo_periodo'],
                     $data['estado'],
                     $data['en_sede']
                 ]
@@ -106,7 +88,12 @@ class Calendario
             
             // Respuesta del SP
             $respuesta = $resultInsertarCalendario->fetch_assoc();
-            $this->responderJson($respuesta);
+            $this->responderJson([
+                'status' => 1,
+                'message' => 'Calendario creado correctamente.',
+                'data' => $respuesta
+            ]);
+
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
@@ -130,7 +117,7 @@ class Calendario
             empty($data['id_tipo_calendario']) || 
             empty($data['id_modalidad']) || 
             empty($data['id_periodo']) || 
-            !isset($data['estado']) // Validar explícitamente si 'estado' está definido
+            !isset($data['estado'])
         ) {
             $this->responderJson([
                 'status' => 0,
@@ -141,7 +128,7 @@ class Calendario
         try {
 
             // Ejecutar SP
-            $result = $this->ejecutarSP(
+            $result = $this->ejecutarSp(
                 "CALL sp_calendario('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
                 [
                     'iiiiiiiii',
@@ -152,6 +139,7 @@ class Calendario
                     $data['id_tipo_calendario'],
                     $data['id_modalidad'],
                     $data['id_periodo'],
+                    $data['id_tipo_periodo'],
                     $data['estado'],
                     $data['en_sede']
 

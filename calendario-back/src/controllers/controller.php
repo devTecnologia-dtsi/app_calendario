@@ -1,15 +1,17 @@
 <?php
 include_once __DIR__ . "/../models/actividad.php";
-include_once __DIR__ . "/../models/periodo.php";
+include_once __DIR__ . "/../models/subactividad.php";
+include_once __DIR__ . "/../models/periodoAcademico.php";
 include_once __DIR__ . "/../models/calendario.php";
 include_once __DIR__ . "/../models/usuario.php";
 include_once __DIR__ . "/../models/Rolcalendario.php";
 include_once __DIR__ . "/../models/rectoria.php";
 include_once __DIR__ . "/../models/sede.php";
 include_once __DIR__ . "/../models/rol.php";
-include_once __DIR__ . "/../models/tipo_calendarios.php";
+include_once __DIR__ . "/../models/tipoCalendarios.php";
 include_once __DIR__ . "/../models/logs.php";
 include_once __DIR__ . "/../models/modalidades.php";
+include_once __DIR__ . "/../models/tiposPeriodo.php";
 
 // CONSULTAR
 function consultar($id, $tabla, $limite = 5, $offset = 0) {
@@ -18,8 +20,10 @@ function consultar($id, $tabla, $limite = 5, $offset = 0) {
         case 'actividad':
             $modelo = new Actividad();
             break;
+        case 'subactividad':
+            $modelo = new Subactividad();
         case 'periodo':
-            $modelo = new Periodo();
+            $modelo = new PeriodoAcademico();
             break;
         case 'calendario':
             $modelo = new Calendario();
@@ -45,15 +49,20 @@ function consultar($id, $tabla, $limite = 5, $offset = 0) {
         case 'modalidad':
             $modelo = new Modalidades();
             break;
+        case 'peridoAcademico':
+            $modelo = new PeriodoAcademico();
+            break;
         case 'logs':
             $modelo = new Logs();
             break;
-        if ($modelo) {
-            $id ? $modelo->buscar($id) : $modelo->listar($limite, $offset);
-        }
+        
         default:
             echo json_encode(array('ERROR' => 'No se ha encontrado la tabla'));
             break;
+
+        if ($modelo) {
+            $id ? $modelo->buscar($id) : $modelo->listar($limite, $offset);
+        }
     }
 }
 
@@ -64,8 +73,11 @@ function insertar($dato, $tabla) {
             $actividad = new Actividad();
             $actividad->insertarActividad($dato);
             break;
+        case 'subactividad':
+            $subactividad = new Subactividad();
+            $subactividad->crearSubactividad($dato);
         case 'periodo':
-            $periodo = new Periodo();
+            $periodo = new PeriodoAcademico();
             $periodo->crearPeriodo($dato);
             break;
         case 'calendario':
@@ -89,8 +101,8 @@ function actualizar($id, $dato, $tabla) {
             $actividad = new Actividad();
             $actividad->actualizarActividad($id, $dato);
             break;
-        case 'periodo':
-            $periodo = new Periodo();
+        case 'periodoAcademico':
+            $periodo = new PeriodoAcademico();
             $periodo->actualizarPeriodo($$id, $dato);
             break;
         case 'calendario':
@@ -126,7 +138,6 @@ function desactivar($id, $tabla) {
             $actividad = new Actividad();
             $actividad->desactivarActividad($id);
             break;
-
         case 'calendario':
             $calendario = new Calendario();
             $calendario->deshabilitarCalendario($id);
@@ -135,8 +146,8 @@ function desactivar($id, $tabla) {
             $modalidad = new Modalidades();
             $modalidad->desactivarModalidad($id);
             break;
-        case 'periodo':
-            $periodo = new Periodo();
+        case 'periodoAcademico':
+            $periodo = new PeriodoAcademico();
             $periodo->deshabilitarPeriodo($id);
             break;
 
@@ -153,8 +164,8 @@ function eliminar($id, $tabla) {
             $actividad = new Actividad();
             $actividad->eliminarActividad($id);
             break;
-        case 'periodo':
-            $periodo = new Periodo();
+        case 'periodoAcademico':
+            $periodo = new PeriodoAcademico();
             $periodo->eliminarPeriodo($id);
             break;
         case 'calendario':

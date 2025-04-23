@@ -2,32 +2,34 @@
 
 include_once __DIR__ . "/../../config/conexion.php";
 include_once __DIR__ . "/../../config/cors.php";
+include_once __DIR__ ."/baseModelo.php";
 
-class CrudUsuario {
+class CrudUsuario extends BaseModelo
+{
     
     // Método para ejecutar el SP
-    private function ejecutarSp($query, $params = []) 
-    {
-        $conexion = new conexion();
-        $sql = $conexion->test()->prepare($query);
+    // private function ejecutarSp($query, $params = []) 
+    // {
+    //     $conexion = new conexion();
+    //     $sql = $conexion->test()->prepare($query);
     
-        if (!empty($params)) {
-            $sql->bind_param(...$params);
-        }
+    //     if (!empty($params)) {
+    //         $sql->bind_param(...$params);
+    //     }
 
-        $sql->execute();
-        $result = $sql->get_result();
-        $sql->close(); 
+    //     $sql->execute();
+    //     $result = $sql->get_result();
+    //     $sql->close(); 
     
-        return $result;
-    }
+    //     return $result;
+    // }
 
-    private function responderJson($respuesta) 
-    {
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($respuesta);
-        exit;
-    }
+    // private function responderJson($respuesta) 
+    // {
+    //     header('Content-Type: application/json; charset=utf-8');
+    //     echo json_encode($respuesta);
+    //     exit;
+    // }
 
     public function listarUsuarios($limite, $offset) {
         $conexion = new conexion();

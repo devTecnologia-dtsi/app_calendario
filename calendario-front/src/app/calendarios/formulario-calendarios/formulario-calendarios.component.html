@@ -1,70 +1,153 @@
-<form [formGroup]="form" (ngSubmit)="guardarCambios()">
-  <div formArrayName="actividades">
-    <div *ngFor="let actividad of actividades.controls; let i = index" [formGroupName]="i" class="actividad-card">
-      <mat-card class="actividad-container">
-        <mat-card-header>
-          <mat-card-title>Actividad {{ i + 1 }}</mat-card-title>
-          <button mat-icon-button color="warn" (click)="eliminarActividad(i)" matTooltip="Eliminar Actividad">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </mat-card-header>
+<form [formGroup]="form" (ngSubmit)="guardar()">
+  <!-- Información General del Calendario -->
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Información General del Calendario</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <!-- Rectoría -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Rectoría</mat-label>
+        <mat-select formControlName="id_rectoria">
+          <mat-option *ngFor="let rectoria of rectorias" [value]="rectoria.id">{{ rectoria.nombre }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('id_rectoria')?.invalid">Seleccione una rectoría</mat-error>
+      </mat-form-field>
 
-        <mat-card-content>
-          <!-- Nombre de la Actividad -->
-          <mat-form-field appearance="outline">
-            <mat-label>Nombre de la Actividad</mat-label>
-            <input matInput formControlName="nombre">
-            <mat-error *ngIf="actividad.get('nombre')?.invalid">El nombre de la actividad es requerido</mat-error>
-          </mat-form-field>
+      <!-- Sede -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Sede</mat-label>
+        <mat-select formControlName="id_sede">
+          <mat-option *ngFor="let sede of sedes" [value]="sede.id">{{ sede.nombre }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('id_sede')?.invalid">Seleccione una sede</mat-error>
+      </mat-form-field>
 
-          <!-- Subactividades -->
-          <div formArrayName="subactividades">
-            <div *ngFor="let subactividad of getSubactividades(i).controls; let j = index" [formGroupName]="j" class="subactividad-card">
-              <mat-card class="subactividad-container">
-                <mat-card-header>
-                  <mat-card-title>Subactividad {{ j + 1 }}</mat-card-title>
-                  <button mat-icon-button color="warn" (click)="eliminarSubActividad(i, j)" matTooltip="Eliminar Subactividad">
-                    <mat-icon>delete</mat-icon>
-                  </button>
-                </mat-card-header>
+      <!-- Tipo de Calendario -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Tipo de Calendario</mat-label>
+        <mat-select formControlName="id_tipo_calendario">
+          <mat-option *ngFor="let tipo of tiposCalendario" [value]="tipo.id">{{ tipo.nombre }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('id_tipo_calendario')?.invalid">Seleccione un tipo de calendario</mat-error>
+      </mat-form-field>
 
-                <mat-card-content>
-                  <!-- Nombre de la Subactividad -->
-                  <mat-form-field appearance="outline">
-                    <mat-label>Nombre de la Subactividad</mat-label>
-                    <input matInput formControlName="nombre">
-                    <mat-error *ngIf="subactividad.get('nombre')?.invalid">El nombre de la subactividad es requerido</mat-error>
-                  </mat-form-field>
+      <!-- Modalidad -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Modalidad</mat-label>
+        <mat-select formControlName="id_modalidad">
+          <mat-option *ngFor="let modalidad of modalidades" [value]="modalidad.id">{{ modalidad.nombre }}</mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('id_modalidad')?.invalid">Seleccione una modalidad</mat-error>
+      </mat-form-field>
 
-                  <!-- Fecha de Inicio -->
-                  <mat-form-field appearance="outline">
-                    <mat-label>Fecha de Inicio</mat-label>
-                    <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio">
-                    <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
-                    <mat-datepicker #pickerInicio></mat-datepicker>
-                    <mat-error *ngIf="subactividad.get('fecha_inicio')?.invalid">La fecha de inicio es requerida</mat-error>
-                  </mat-form-field>
+      <!-- Tipo de Periodo -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Tipo de Periodo</mat-label>
+        <mat-select formControlName="id_tipo_periodo">
+          <mat-option *ngFor="let tp of tiposPeriodo" [value]="tp.id">
+            {{ tp.nombre }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('id_tipo_periodo')?.invalid">
+          Seleccione un tipo de periodo
+        </mat-error>
+      </mat-form-field>
 
-                  <!-- Fecha de Fin -->
-                  <mat-form-field appearance="outline">
-                    <mat-label>Fecha de Fin</mat-label>
-                    <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin">
-                    <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
-                    <mat-datepicker #pickerFin></mat-datepicker>
-                    <mat-error *ngIf="subactividad.get('fecha_fin')?.invalid">La fecha de fin es requerida</mat-error>
-                  </mat-form-field>
-                </mat-card-content>
-              </mat-card>
-            </div>
-            <button mat-button color="primary" type="button" (click)="agregarSubActividad(i)">Agregar Subactividad</button>
-          </div>
-        </mat-card-content>
-      </mat-card>
-    </div>
-    <button mat-button color="primary" type="button" (click)="agregarActividad()">Agregar Actividad</button>
-  </div>
+      <!-- Periodo Académico -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>Periodo Académico</mat-label>
+        <mat-select formControlName="id_periodo_academico">
+          <mat-option *ngFor="let periodo of periodos" [value]="periodo.id">
+            {{ periodo.anio }} - {{ periodo.periodo }}
+          </mat-option>
+        </mat-select>
+        <mat-error *ngIf="form.get('id_periodo_academico')?.invalid">Seleccione un periodo académico</mat-error>
+      </mat-form-field>
 
-  <div class="contenedor-botones">
-    <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Guardar Cambios</button>
-  </div>
-</form>
+        <!-- En sede -->
+      <mat-form-field appearance="outline" class="form-field">
+        <mat-label>¿En sede?</mat-label>
+        <mat-select formControlName="in_sede">
+          <mat-option [value]="1">Sí</mat-option>
+          <mat-option [value]="0">No</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Actividades -->
+  <mat-card class="form-card">
+    <mat-card-header>
+      <mat-card-title>Actividades</mat-card-title>
+      <button mat-button color="primary" (click)="agregarActividad()">Agregar Actividad</button>
+    </mat-card-header>
+    <mat-card-content>
+      <div formArrayName="actividades">
+        <div *ngFor="let actividad of actividades.controls; let i = index" [formGroupName]="i">
+          <mat-card class="actividad-card">
+            <mat-card-header>
+              <mat-card-title>Actividad {{ i + 1 }}</mat-card-title>
+              <button mat-icon-button color="warn" (click)="eliminarActividad(i)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </mat-card-header>
+            <mat-card-content>
+              <!-- Título de la actividad -->
+              <mat-form-field appearance="outline" class="form-field">
+                <mat-label>Título</mat-label>
+                <input matInput formControlName="titulo">
+                <mat-error *ngIf="actividad.get('titulo')?.invalid">El título es requerido</mat-error>
+              </mat-form-field>
+      
+              <!-- Subactividades -->
+              <div formArrayName="subactividades">
+                <div *ngFor="let subactividad of getSubactividades(i).controls; let j = index" [formGroupName]="j">
+                  <mat-card class="subactividad-card">
+                    <mat-card-header>
+                      <mat-card-title>Subactividad {{ j + 1 }}</mat-card-title>
+                      <button mat-icon-button color="warn" (click)="eliminarSubactividad(i, j)">
+                        <mat-icon>delete</mat-icon>
+                      </button>
+                    </mat-card-header>
+                    <mat-card-content>
+                      <!-- Nombre de la subactividad -->
+                      <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Nombre</mat-label>
+                        <input matInput formControlName="nombre">
+                        <mat-error *ngIf="subactividad.get('nombre')?.invalid">El nombre es requerido</mat-error>
+                      </mat-form-field>
+      
+                      <!-- Descripción -->
+                      <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Descripción</mat-label>
+                        <textarea matInput formControlName="descripcion"></textarea>
+                      </mat-form-field>
+      
+                      <!-- Fechas -->
+                      <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Fecha Inicio</mat-label>
+                        <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio">
+                        <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerInicio></mat-datepicker>
+                      </mat-form-field>
+      
+                      <mat-form-field appearance="outline" class="form-field">
+                        <mat-label>Fecha Fin</mat-label>
+                        <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin">
+                        <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
+                        <mat-datepicker #pickerFin></mat-datepicker>
+                      </mat-form-field>
+                    </mat-card-content>
+                  </mat-card>
+                </div>
+              </div>
+              <button mat-button color="primary" (click)="agregarSubactividad(i)">Agregar Subactividad</button>
+            </mat-card-content>
+          </mat-card>
+        </div>
+      </div> 
+
+  <!-- Botón Guardar -->
+  <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Guardar</button>

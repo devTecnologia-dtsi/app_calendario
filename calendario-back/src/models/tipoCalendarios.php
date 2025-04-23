@@ -2,29 +2,30 @@
 
 include_once __DIR__ . "/../../config/conexion.php";
 include_once __DIR__ . "/../../config/cors.php";
+include_once __DIR__ . "/baseModelo.php";
 
-class TipoCalendarios
+class TipoCalendarios extends BaseModelo
 {
-    private function ejecutarSP($query, $params = []) {
-        $conexion = new conexion();
-        $sql = $conexion->test()->prepare($query);
+//     private function ejecutarSP($query, $params = []) {
+//         $conexion = new conexion();
+//         $sql = $conexion->test()->prepare($query);
 
-        if (!empty($params)) {
-            $sql->bind_param(...$params);
-        }
+//         if (!empty($params)) {
+//             $sql->bind_param(...$params);
+//         }
 
-        $sql->execute();
-        $result = $sql->get_result();
-        $sql->close();
+//         $sql->execute();
+//         $result = $sql->get_result();
+//         $sql->close();
 
-        return $result;
-    }
+//         return $result;
+//     }
 
-    private function responderJson($respuesta) {
-        header('Content-Type: application/json; charset=utf-8');
-        echo json_encode($respuesta);
-        exit;
-    }
+//     private function responderJson($respuesta) {
+//         header('Content-Type: application/json; charset=utf-8');
+//         echo json_encode($respuesta);
+//         exit;
+//     }
 
     public function listarTipoCalendario() {
         try {

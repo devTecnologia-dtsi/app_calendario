@@ -9,7 +9,7 @@ import { ActividadCreacionDTO, RespuestaAPIActividades } from '../../calendarios
 })
 export class ActividadService {
   private http = inject(HttpClient);
-  private urlBase = environment.apiUrl + 'subactividad';
+  private urlBase = `${environment.apiUrl}actividad/`;
 
   listarActividades(): Observable<RespuestaAPIActividades> {
     return this.http.get<RespuestaAPIActividades>(`${this.urlBase}`).pipe(catchError(this.handleError));
@@ -31,8 +31,8 @@ export class ActividadService {
     return this.http.patch<RespuestaAPIActividades>(`${this.urlBase}/${id}`, {}).pipe(catchError(this.handleError));
   }
 
-  eliminarActividad(id: number): Observable<void> {return this.http.delete<void>(`${this.urlBase}/${id}`).pipe
-    (catchError(this.handleError));
+  eliminarActividad(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.urlBase}/${id}`).pipe(catchError(this.handleError));
   } 
 
   // Manejo de errores
@@ -44,8 +44,6 @@ export class ActividadService {
         errorMessage = `Error del servidor: ${error.status} - ${error.message}`;
       }
       return throwError(() => new Error(errorMessage));
-    }
-
-
+  }
 
 }
