@@ -68,7 +68,6 @@ export class FormularioCalendariosComponent implements OnInit {
       id_sede: [null, Validators.required],
       id_tipo_calendario: [null, Validators.required],
       id_modalidad: [null, Validators.required],
-      // id_periodo: [null, Validators.required],
       id_tipo_periodo: [null, Validators.required],
       id_periodo_academico: [null, Validators.required],
       estado: [1],
@@ -113,8 +112,9 @@ export class FormularioCalendariosComponent implements OnInit {
       subactividades: this.formBuilder.array([])
 
     });
+
     this.actividades.push(actividadForm);
-    this.mostrarFechas.push(false); // Inicializa el control de visibilidad de fechas
+    // this.mostrarFechas.push(false); // Inicializa el control de visibilidad de fechas
   }
 
   getSubactividades(index: number): FormArray {
@@ -138,18 +138,18 @@ export class FormularioCalendariosComponent implements OnInit {
 
   eliminarActividad(index: number): void {
     this.actividades.removeAt(index);
-    this.mostrarFechas.splice(index, 1); // Elimina el control de visibilidad de fechas
+    // this.mostrarFechas.splice(index, 1); // Elimina el control de visibilidad de fechas
   }
 
-  toggleFechas(index: number): void {
-    this.mostrarFechas[index] = !this.mostrarFechas[index];
-  }
+  // toggleFechas(index: number): void {
+  //   this.mostrarFechas[index] = !this.mostrarFechas[index];
+  // }
 
-  eliminarFechas(index: number): void {
-    const actividad = this.actividades.at(index);
-    actividad.patchValue({ fecha_inicio: null, fecha_fin: null });
-    this.mostrarFechas[index] = false; // Oculta las fechas después de eliminarlas
-  }
+  // eliminarFechas(index: number): void {
+  //   const actividad = this.actividades.at(index);
+  //   actividad.patchValue({ fecha_inicio: null, fecha_fin: null });
+  //   this.mostrarFechas[index] = false; // Oculta las fechas después de eliminarlas
+  // }
 
   cargarRectorias(): void {
     this.rectoriaService.listarRectorias().subscribe({
@@ -205,30 +205,6 @@ export class FormularioCalendariosComponent implements OnInit {
     });
   }
 
-  // guardar(): void {
-  //   if (this.form.valid) {
-  //     console.log('Formulario válido. Enviando datos...');
-  //     const datosFormulario = this.form.value;
-  //     console.log('Datos del formulario:', datosFormulario);
-  //     this.enviarDatos(datosFormulario.calendario, datosFormulario.actividades);
-  //   } else {
-  //     console.error('El formulario no es válido:', this.form.errors);
-  //     console.log('Estado del formulario:', this.form.status);
-  //     console.log('Controles del formulario:', this.form.controls);
-  
-  //     this.actividades.controls.forEach((actividad, index) => {
-  //       console.log(`Estado de la actividad ${index + 1}:`, actividad.status);
-  //       console.log(`Errores de la actividad ${index + 1}:`, actividad.errors);
-  
-  //       const subactividades = this.getSubactividades(index);
-  //       subactividades.controls.forEach((subactividad, subIndex) => {
-  //         console.log(`Estado de la subactividad ${subIndex + 1} de la actividad ${index + 1}:`, subactividad.status);
-  //         console.log(`Errores de la subactividad ${subIndex + 1} de la actividad ${index + 1}:`, subactividad.errors);
-  //       });
-  //     });
-  //   }
-  // }
-
   guardar() {
     if (this.form.invalid) return console.error('Formulario inválido');
   
@@ -238,7 +214,7 @@ export class FormularioCalendariosComponent implements OnInit {
       id_sede:          this.form.value.id_sede,
       id_tipo_calendario: this.form.value.id_tipo_calendario,
       id_modalidad:     this.form.value.id_modalidad,
-      id_periodo_academico:       this.form.value.id_periodo_Academico,
+      id_periodo_academico:       this.form.value.id_periodo_academico,
       id_tipo_periodo:  this.form.value.id_tipo_periodo,
       estado:           this.form.value.estado,
       en_sede:          this.form.value.in_sede

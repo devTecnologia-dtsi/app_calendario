@@ -57,35 +57,33 @@ class Calendario extends BaseModelo
     }
 
     public function insertarCalendario($data)
-    {
-        // // Validar que los datos requeridos estén presentes
-        // if (!isset($data['id_usuario']) || !isset($data['id_rectoria']) || !isset($data['id_sede']) ||
-        // !isset($data['id_tipo_calendario']) || !isset($data['id_modalidad']) || !isset($data['id_tipo_periodo']) ||
-        // !isset($data['estado']) || !isset($data['en_sede'])) {
-        // $this->responderJson([
-        //     'status' => 0,
-        //     'message' => 'Faltan datos requeridos para insertar el calendario'
-        // ]);
-        // return;
-        // }
-    
-        try {
-            $resultInsertarCalendario = $this->ejecutarSp(
-                "CALL sp_calendario('insertar', NULL, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
-                [
-                    "iiiiiiiii", 
-                    $data['id_usuario'], 
-                    $data['id_rectoria'],
-                    $data['id_sede'],
-                    $data['id_tipo_calendario'],
-                    $data['id_modalidad'],
-                    $data['id_periodo_academico'],
-                    $data['id_tipo_periodo'],
-                    $data['estado'],
-                    $data['en_sede']
-                ]
-            );
-            
+{
+    // Validar que los datos requeridos estén presentes
+    if (!isset($data['id_usuario']) || !isset($data['id_rectoria']) || !isset($data['id_sede']) ||
+        !isset($data['id_tipo_calendario']) || !isset($data['id_modalidad']) || !isset($data['id_tipo_periodo']) ||
+        !isset($data['estado']) || !isset($data['en_sede'])) {
+        $this->responderJson([
+            'status' => 0,
+            'message' => 'Faltan datos requeridos para insertar el calendario'
+        ]);
+        return;
+    }
+
+    try {
+        $resultInsertarCalendario = $this->ejecutarSp("CALL sp_calendario('insertar', NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+            [
+                "iiiiiiiii", 
+                $data['id_usuario'], 
+                $data['id_rectoria'],
+                $data['id_sede'],
+                $data['id_tipo_calendario'],
+                $data['id_modalidad'],
+                $data['id_periodo_academico'],
+                $data['id_tipo_periodo'],
+                $data['estado'],
+                $data['en_sede']
+            ]);
+
             // Respuesta del SP
             $respuesta = $resultInsertarCalendario->fetch_assoc();
             $this->responderJson([
@@ -101,6 +99,52 @@ class Calendario extends BaseModelo
             ]);
         }
     }
+
+    // public function insertarCalendario($data)
+    // {
+    //     // Validar que los datos requeridos estén presentes
+    //     if (!isset($data['id_usuario']) || !isset($data['id_rectoria']) || !isset($data['id_sede']) ||
+    //     !isset($data['id_tipo_calendario']) || !isset($data['id_modalidad']) || !isset($data['id_tipo_periodo']) ||
+    //     !isset($data['estado']) || !isset($data['en_sede'])) {
+    //     $this->responderJson([
+    //         'status' => 0,
+    //         'message' => 'Faltan datos requeridos para insertar el calendario'
+    //     ]);
+    //     return;
+    //     }
+    
+    //     try {
+    //         $resultInsertarCalendario = $this->ejecutarSp(
+    //             "CALL sp_calendario('insertar', NULL, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+    //             [
+    //                 "iiiiiiiii", 
+    //                 $data['id_usuario'], 
+    //                 $data['id_rectoria'],
+    //                 $data['id_sede'],
+    //                 $data['id_tipo_calendario'],
+    //                 $data['id_modalidad'],
+    //                 $data['id_periodo_academico'],
+    //                 $data['id_tipo_periodo'],
+    //                 $data['estado'],
+    //                 $data['en_sede']
+    //             ]
+    //         );
+            
+    //         // Respuesta del SP
+    //         $respuesta = $resultInsertarCalendario->fetch_assoc();
+    //         $this->responderJson([
+    //             'status' => 1,
+    //             'message' => 'Calendario creado correctamente.',
+    //             'data' => $respuesta
+    //         ]);
+
+    //     } catch (Exception $e) {
+    //         $this->responderJson([
+    //             'status' => 0,
+    //             'message' => 'Error al insertar calendario: ' . $e->getMessage()
+    //         ]);
+    //     }
+    // }
     
 
     public function actualizarCalendario($id, $data)
