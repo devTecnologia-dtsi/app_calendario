@@ -129,7 +129,7 @@ switch ($metodo) {
             $calendario = new Calendario();
             if ($id) {
                 // Consultar calendario por ID
-                $calendario->buscarCalendario($id);
+                $calendario->consultarCalendarioParaEdicion($id);
             } else {
                 // Listar todos los calendarios
                 $calendario->listarCalendario();
@@ -262,7 +262,7 @@ switch ($metodo) {
         elseif ($tabla === 'calendario') {
             // Actualizar calendario
             $calendario = new Calendario();
-            $calendario->actualizarCalendario($id, $dato);
+            $calendario->editarCalendario($id);
         }
 
         elseif ($tabla === 'modalidad') {

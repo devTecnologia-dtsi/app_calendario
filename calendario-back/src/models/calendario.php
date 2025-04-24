@@ -28,36 +28,56 @@ class Calendario extends BaseModelo
         }
     }
 
-    public function buscarCalendario($id)
+    public function consultarCalendarioParaEdicion($id)
     {
         try {
-            $resultBuscarCalendario = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
-                ["i", $id]);
-                $calendario = $resultBuscarCalendario->fetch_assoc();
-                $resultBuscarCalendario->close();
-
-                if ($calendario) {
-                    $this->responderJson([
-                        'status' => 1,
-                        'message' => 'Calendario encontrado correctamente',
-                        'data' => $calendario
-                    ]);
-                } else {
-                    $this->responderJson([
-                        'status' => 0,
-                        'message' => 'Calendario no encontrado'
-                    ]);
+            // Consultar el calendario base
+            $result = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')", ["i", $id]);
+            $calendario = $result->fetch_assoc();
+            $result->close();
+    
+            if (!$calendario) {
+                return $this->responderJson([
+                    'status' => 0,
+                    'message' => 'Calendario no encontrado'
+                ]);
+            }
+    
+            // Consultar actividades
+            $actividades = $this->ejecutarSp("SELECT * FROM actividad WHERE id_calendario = ?", ["i", $id]);
+            $actividadesArray = [];
+    
+            while ($actividad = $actividades->fetch_assoc()) {
+                // Consultar subactividades por cada actividad
+                $subactividades = $this->ejecutarSp("SELECT * FROM subactividad WHERE id_actividad = ?", ["i", $actividad['id']]);
+                $subactividadesArray = [];
+    
+                while ($sub = $subactividades->fetch_assoc()) {
+                    $subactividadesArray[] = $sub;
                 }
+    
+                $actividad['subactividades'] = $subactividadesArray;
+                $actividadesArray[] = $actividad;
+            }
+    
+            $calendario['actividades'] = $actividadesArray;
+    
+            return $this->responderJson([
+                'status' => 1,
+                'message' => 'Calendario a editar obtenido',
+                'data' => $calendario
+            ]);
         } catch (Exception $e) {
-            $this->responderJson([
+            return $this->responderJson([
                 'status' => 0,
-                'message' => 'Error al buscar calendario: ' . $e->getMessage()
+                'message' => 'Error al obtener el calendario: ' . $e->getMessage()
             ]);
         }
     }
-
+    
+    
     public function insertarCalendario($data)
-{
+    {
     // Validar que los datos requeridos estén presentes
     if (!isset($data['id_usuario']) || !isset($data['id_rectoria']) || !isset($data['id_sede']) ||
         !isset($data['id_tipo_calendario']) || !isset($data['id_modalidad']) || !isset($data['id_tipo_periodo']) ||
@@ -67,7 +87,7 @@ class Calendario extends BaseModelo
             'message' => 'Faltan datos requeridos para insertar el calendario'
         ]);
         return;
-    }
+        }
 
     try {
         $resultInsertarCalendario = $this->ejecutarSp("CALL sp_calendario('insertar', NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
@@ -100,52 +120,58 @@ class Calendario extends BaseModelo
         }
     }
 
-    // public function insertarCalendario($data)
-    // {
-    //     // Validar que los datos requeridos estén presentes
-    //     if (!isset($data['id_usuario']) || !isset($data['id_rectoria']) || !isset($data['id_sede']) ||
-    //     !isset($data['id_tipo_calendario']) || !isset($data['id_modalidad']) || !isset($data['id_tipo_periodo']) ||
-    //     !isset($data['estado']) || !isset($data['en_sede'])) {
-    //     $this->responderJson([
-    //         'status' => 0,
-    //         'message' => 'Faltan datos requeridos para insertar el calendario'
-    //     ]);
-    //     return;
-    //     }
-    
-    //     try {
-    //         $resultInsertarCalendario = $this->ejecutarSp(
-    //             "CALL sp_calendario('insertar', NULL, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
-    //             [
-    //                 "iiiiiiiii", 
-    //                 $data['id_usuario'], 
-    //                 $data['id_rectoria'],
-    //                 $data['id_sede'],
-    //                 $data['id_tipo_calendario'],
-    //                 $data['id_modalidad'],
-    //                 $data['id_periodo_academico'],
-    //                 $data['id_tipo_periodo'],
-    //                 $data['estado'],
-    //                 $data['en_sede']
-    //             ]
-    //         );
-            
-    //         // Respuesta del SP
-    //         $respuesta = $resultInsertarCalendario->fetch_assoc();
-    //         $this->responderJson([
-    //             'status' => 1,
-    //             'message' => 'Calendario creado correctamente.',
-    //             'data' => $respuesta
-    //         ]);
+    public function editarCalendario($id) 
+    {
+        try {
+            $resultadoCalendario = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
+            ["i", $id]);
+            $calendario = $resultadoCalendario->fetch_assoc();
+            $resultadoCalendario->close();
 
-    //     } catch (Exception $e) {
-    //         $this->responderJson([
-    //             'status' => 0,
-    //             'message' => 'Error al insertar calendario: ' . $e->getMessage()
-    //         ]);
-    //     }
-    // }
-    
+            if(!$calendario) {
+                return $this->responderJson([
+                    'status' => 0,
+                    'message' => 'Calendario no encontrado'
+                ]);
+            }
+
+            // Obtener las actividades del calendario
+            $resultadoActividades = $this->ejecutarSp("CALL sp_actividad('listar_por_calendario',  ?, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
+            ["i", $id]);
+            $actividades = [];
+
+            while ($actividad = $resultadoActividades->fetch_assoc()) {
+                $idActividad = $actividad['id'];
+
+                // Obtener subactividades para cada actividad
+                $resultadoSubactividades = $this->ejecutarSp("CALL sp_subactividad('listar_por_actividad', ?, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
+                 ["i", $idActividad]);
+                $subactividades = $resultadoSubactividades->fetch_all(MYSQLI_ASSOC);
+                $resultadoSubactividades->close();
+
+                // Asociar las subactividades a la actividad
+                $actividad['subactividades'] = $subactividades;
+                $actividades[] = $actividad;
+
+            }
+            $resultadoActividades->close();
+
+            // Agregar actividades al calendario
+            $calendario['actividades'] = $actividades;
+
+            // Devolver toda la estructura
+            $this->responderJson([
+                'status' => 1,
+                'message' => 'Calendario a editar obtenido',
+                'data' => $calendario
+            ]);
+        } catch (Exception $e) {
+            $this->responderJson([
+                'status' => 0,
+                'message' => 'Error al obtener calendario: ' . $e->getMessage()
+            ]);
+        }
+    }
 
     public function actualizarCalendario($id, $data)
     {

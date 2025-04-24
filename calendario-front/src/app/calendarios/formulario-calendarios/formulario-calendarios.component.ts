@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CalendarioCreacionDTO, ActividadCreacionDTO, CalendarioRespuestaAPI, RespuestaAPIActividades } from '../calendarios';
+import { CalendarioCreacionDTO, ActividadCreacionDTO, CalendarioRespuestaCreacionAPI, RespuestaAPIActividades } from '../calendarios';
 import { RectoriaService } from '../../compartidos/servicios/rectoria.service';
 import { SedeService } from '../../compartidos/servicios/sede.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -20,6 +20,7 @@ import { ActividadService } from '../../compartidos/servicios/actividad.service'
 import moment from 'moment';
 import { SubactividadesService } from '../../compartidos/servicios/subactividades.service';
 import { TiposPeriodoService } from '../../compartidos/servicios/tipos-periodo.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-formulario-calendarios',
@@ -61,6 +62,7 @@ export class FormularioCalendariosComponent implements OnInit {
   private actividad = inject(ActividadService);
   private subactividadService = inject(SubactividadesService);
   private tiposPeriodoService = inject(TiposPeriodoService);
+  private route = inject(ActivatedRoute);
 
   constructor() {
     this.form = this.formBuilder.group({
@@ -78,6 +80,21 @@ export class FormularioCalendariosComponent implements OnInit {
   }
 
   ngOnInit(): void {
+
+    // Obtener el tipo de calendario desde la URL
+    const tipoCalendario = this.route.snapshot.paramMap.get('tipo');
+    const tiposMap: any = {
+      academico: 1,
+      financiero: 2,
+      grados: 3
+    };
+
+    const idTipo = tiposMap[tipoCalendario || ''] || null;
+  
+    if (idTipo) {
+      this.form.patchValue({ id_tipo_calendario: idTipo });
+    }
+
     this.cargarRectorias();
     this.cargarModalidades();
     this.cargarPeriodos();
@@ -238,7 +255,7 @@ export class FormularioCalendariosComponent implements OnInit {
   
   private enviarDatos(calendario: CalendarioCreacionDTO, actividades: ActividadCreacionDTO[]): void {
     this.calendarios.crearCalendario(calendario).subscribe({
-      next: (respuestaCalendario: CalendarioRespuestaAPI) => {
+      next: (respuestaCalendario: CalendarioRespuestaCreacionAPI) => {
         console.log('Calendario creado:', respuestaCalendario);
   
         // Obtener el ID del calendario creado

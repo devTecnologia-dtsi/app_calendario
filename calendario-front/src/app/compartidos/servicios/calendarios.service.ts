@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment.development';
-import { CalendarioCreacionDTO, CalendarioRespuestaAPI } from '../../calendarios/calendarios';
+import { CalendarioCreacionDTO, CalendarioRespuestaConsultaAPI, CalendarioRespuestaCreacionAPI } from '../../calendarios/calendarios';
 import { catchError, Observable, throwError } from 'rxjs';
 
 @Injectable({
@@ -13,28 +13,28 @@ export class CalendariosService {
   private urlBase: string = `${environment.apiUrl}calendario/`;
 
   // Listar todos los calendarios
-  listarCalendarios() {
-    return this.http.get<CalendarioRespuestaAPI>(this.urlBase).pipe(catchError(this.handleError));    
+  listarCalendarios(): Observable<CalendarioRespuestaCreacionAPI> {
+    return this.http.get<CalendarioRespuestaCreacionAPI>(this.urlBase).pipe(catchError(this.handleError));
   }
 
-  // Consultar un calendario por ID
-  consultarCalendario(id: number) {
-    return this.http.get<CalendarioRespuestaAPI>(`${this.urlBase}${id}`).pipe(catchError(this.handleError));
+  // Consultar un calendario para editar
+  consultarCalendario(id: number): Observable<CalendarioRespuestaConsultaAPI> {
+    return this.http.get<CalendarioRespuestaConsultaAPI>(`${this.urlBase}${id}`).pipe(catchError(this.handleError));
   }
 
   // Crear un calendario
-  crearCalendario(calendario: CalendarioCreacionDTO): Observable<CalendarioRespuestaAPI> {
-    return this.http.post<CalendarioRespuestaAPI>(this.urlBase, calendario).pipe(catchError(this.handleError));
+  crearCalendario(calendario: CalendarioCreacionDTO): Observable<CalendarioRespuestaCreacionAPI> {
+    return this.http.post<CalendarioRespuestaCreacionAPI>(this.urlBase, calendario).pipe(catchError(this.handleError));
   }
 
   // Actualizar un calendario
-  actualizarCalendario(id: number, calendario: CalendarioCreacionDTO): Observable<CalendarioRespuestaAPI> {
-    return this.http.put<CalendarioRespuestaAPI>(`${this.urlBase}${id}`, calendario).pipe(catchError(this.handleError));
+  actualizarCalendario(id: number, calendario: CalendarioCreacionDTO): Observable<CalendarioRespuestaConsultaAPI> {
+    return this.http.put<CalendarioRespuestaConsultaAPI>(`${this.urlBase}${id}`, calendario).pipe(catchError(this.handleError));
   }
 
   // Desactivar un calendario
-  desactivarCalendario(id: number): Observable<CalendarioRespuestaAPI> {
-    return this.http.patch<CalendarioRespuestaAPI>(`${this.urlBase}${id}`, {}).pipe(catchError(this.handleError));
+  desactivarCalendario(id: number): Observable<CalendarioRespuestaConsultaAPI> {
+    return this.http.patch<CalendarioRespuestaConsultaAPI>(`${this.urlBase}${id}`, {}).pipe(catchError(this.handleError));
   }
 
   // Eliminar un calendario
@@ -45,11 +45,12 @@ export class CalendariosService {
   // Manejo de errores
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocurrió un error inesperado';
-      if (error.error instanceof ErrorEvent) {
-        errorMessage = `Error de cliente: ${error.error.message}`;
-      } else {
-        errorMessage = `Error del servidor: ${error.status} - ${error.message}`;
-      }
-      return throwError(() => new Error(errorMessage));
+    if (error.error instanceof ErrorEvent) {
+      errorMessage = `Error de cliente: ${error.error.message}`;
+    } else {
+      errorMessage = `Error del servidor: ${error.status} - ${error.message}`;
+    }
+    return throwError(() => new Error(errorMessage));
   }
 }
+

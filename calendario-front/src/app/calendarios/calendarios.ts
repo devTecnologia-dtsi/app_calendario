@@ -1,5 +1,6 @@
 export interface CalendarioDTO {
     id_calendario: number;
+    id_usuario: number;
     correo_organizador: string;
     tipo_calendario: string;
     rectoria: string;
@@ -9,6 +10,7 @@ export interface CalendarioDTO {
     en_sede: string;
     estado_calendario: string;
     fecha_creacion: Date;
+    actividades: ActividadDTO[];
 }
 
 export interface CalendarioCreacionDTO {
@@ -30,18 +32,26 @@ export interface RespuestaCreacionCalendario {
     id_calendario: number;
 }
 
-export interface CalendarioRespuestaAPI {
+export interface CalendarioRespuestaCreacionAPI {
     status: number;
     message: string;
     data: RespuestaCreacionCalendario;
-}
-
+  }
+  
+  // este es el que se usa para editar
+  export interface CalendarioRespuestaConsultaAPI {
+    status: number;
+    message: string;
+    data: CalendarioCreacionDTO; 
+  }
+  
 // Actividades
 export interface ActividadDTO {
     id: number;
     id_calendario: number;
     titulo: string;
     estado: number;
+    subactividades: SubactividadDTO[];
 }
 
 export interface ActividadCreacionDTO {

@@ -27,6 +27,7 @@ abstract class BaseModelo
         echo json_encode($respuesta);
         exit;
     }
+
 }
 
 
