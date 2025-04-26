@@ -26,30 +26,30 @@ class Subactividad extends BaseModelo
         }
     }
 
-    public function buscarSubactividad($id)
+    public function buscarSubactividadPorActividad($id_actividad)
     {
         try {
-            $resultBuscarSubactividad = $this->ejecutarSp("CALL sp_subactividad('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL)", 
-            ["i", $id]);
-            $subactividad = $resultBuscarSubactividad->fetch_assoc();
+            $resultBuscarSubactividad = $this->ejecutarSp("CALL sp_subactividad('listar_por_actividad', NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL)", 
+            ["i", $id_actividad]);
+            $subactividad = $resultBuscarSubactividad->fetch_all(MYSQLI_ASSOC);
             $resultBuscarSubactividad->close();
 
             if ($subactividad) {
                 $this->responderJson([
                     'status' => 1,
-                    'message' => 'Subactividad encontrada.',
+                    'message' => 'Subactividades encontradas.',
                     'data' => $subactividad
                 ]);
             } else {
                 $this->responderJson([
                     'status' => 0,
-                    'message' => 'Subactividad no encontrada.'
+                    'message' => 'No se encontraron subactividades.'
                 ]);
             }
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
-                'message' => 'Error al buscar la subactividad. ' . $e->getMessage()
+                'message' => 'Error al buscar las subactividades. ' . $e->getMessage()
             ]);
         }
     }

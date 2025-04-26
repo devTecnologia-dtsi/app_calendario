@@ -28,30 +28,30 @@ class Actividad extends BaseModelo
         }
     }
 
-    public function buscarActividad($id)
+    public function buscarActividadPorCalendario($id_calendario)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('listar', ?, NULL, NULL, NULL, NULL)",
-            ["i", $id]);
-            $actividad = $result->fetch_assoc();
+            $result = $this->ejecutarSp("CALL sp_actividad('listar_por_calendario', NULL, ?, NULL, NULL, NULL)",
+            ["i", $id_calendario]);
+            $actividad = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
 
             if ($actividad) {
                 $this->responderJson([
                     'status' => 1,
-                    'message' => 'Actividad encontrada',
+                    'message' => 'Actividades encontradas',
                     'data' => $actividad
                 ]);
             } else {
                 $this->responderJson([
                     'status' => 0,
-                    'message' => 'Actividad no encontrada'
+                    'message' => 'No se encontraron actividades para el calendario especificado'
                 ]);
             }
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
-                'message' => 'Error al buscar actividad: ' . $e->getMessage()
+                'message' => 'Error al buscar actividades: ' . $e->getMessage()
             ]);
         }
     }

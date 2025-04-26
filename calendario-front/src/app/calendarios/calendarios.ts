@@ -55,6 +55,7 @@ export interface ActividadDTO {
 }
 
 export interface ActividadCreacionDTO {
+    id?: number; // ← agrega esto
     id_calendario?: number;
     titulo: string;
     estado: number;
@@ -85,6 +86,7 @@ export interface SubactividadDTO {
 }
 
 export interface SubactividadCreacionDTO {
+    id?: number; // ← agrega esto
     id_actividad?: number;
     nombre: string;
     descripcion: string;

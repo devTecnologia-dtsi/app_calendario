@@ -1,1 +1,12 @@
-<p>editar-calendarios works!</p>
+<h2>Editar Calendario</h2>
+
+@if (modelo) {
+    <app-mostrar-errores [errores]="errores"></app-mostrar-errores>
+    <app-formulario-calendarios
+      [modelo]="modelo"
+      (posteoFormulario)="guardarCambios($event)">
+    </app-formulario-calendarios>
+  } @else {
+    <app-cargando></app-cargando>
+  }
+  

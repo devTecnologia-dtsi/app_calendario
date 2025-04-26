@@ -1,31 +1,50 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CalendariosService } from '../../compartidos/servicios/calendarios.service';
-import { CalendarioCreacionDTO, ActividadCreacionDTO } from '../calendarios';
+import { CalendarioCreacionDTO, ActividadCreacionDTO, CalendarioDTO } from '../calendarios';
+import { FormularioCalendariosComponent } from "../formulario-calendarios/formulario-calendarios.component";
+import { MostrarErroresComponent } from "../../compartidos/componentes/mostrar-errores/mostrar-errores.component";
+import { CargandoComponent } from "../../compartidos/componentes/cargando/cargando.component";
+import { NotificacionService } from '../../compartidos/servicios/notificacion.service';
 
 @Component({
   selector: 'app-editar-calendarios',
   templateUrl: './editar-calendarios.component.html',
-  styleUrls: ['./editar-calendarios.component.css']
+  styleUrls: ['./editar-calendarios.component.css'],
+  imports: [
+    FormularioCalendariosComponent,
+    MostrarErroresComponent,
+    CargandoComponent
+]
 })
+
+
 export class EditarCalendariosComponent implements OnInit {
+
+  // Propiedades
   modelo?: CalendarioCreacionDTO;
+  calendario?: CalendarioDTO;
+  errores: string[] = [];
 
-  constructor(
-    private calendariosService: CalendariosService,
-    private route: ActivatedRoute,
-    private router: Router
-  ) {}
 
+  // Inyecciones de dependencias
+  private calendariosService = inject(CalendariosService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  private notificacionService = inject(NotificacionService);
+  
+  // Inicialización del componente
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('id'));
 
     if (isNaN(id) || id <= 0) {
-      console.error('ID inválido');
+      // console.error('ID inválido');
+      this.notificacionService.mostrarError("ID de calendario no válido.");
       this.router.navigate(['/']);
       return;
     }
 
+    // Consultar calendario
     this.calendariosService.consultarCalendario(id).subscribe({
       next: (respuesta) => {
         const calendario = respuesta.data;
@@ -66,7 +85,7 @@ export class EditarCalendariosComponent implements OnInit {
     });
   }
 
-  guardarCambios(calendario: CalendarioCreacionDTO): void {
+  guardarCambios(calendario: CalendarioCreacionDTO) {
     const id = Number(this.route.snapshot.paramMap.get('id'));
     this.calendariosService.actualizarCalendario(id, calendario).subscribe({
       next: () => {

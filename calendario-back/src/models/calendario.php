@@ -28,6 +28,54 @@ class Calendario extends BaseModelo
         }
     }
 
+    // public function consultarCalendarioParaEdicion($id)
+    // {
+    //     try {
+    //         // Consultar el calendario base
+    //         $result = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')", ["i", $id]);
+    //         $calendario = $result->fetch_assoc();
+    //         $result->close();
+    
+    //         if (!$calendario) {
+    //             return $this->responderJson([
+    //                 'status' => 0,
+    //                 'message' => 'Calendario no encontrado'
+    //             ]);
+    //         }
+    
+    //         // Consultar actividades
+    //         $actividades = $this->ejecutarSp("SELECT * FROM actividad WHERE id_calendario = ?", ["i", $id]);
+    //         $actividadesArray = [];
+    
+    //         while ($actividad = $actividades->fetch_assoc()) {
+    //             // Consultar subactividades por cada actividad
+    //             $subactividades = $this->ejecutarSp("SELECT * FROM subactividad WHERE id_actividad = ?", ["i", $actividad['id']]);
+    //             $subactividadesArray = [];
+    
+    //             while ($sub = $subactividades->fetch_assoc()) {
+    //                 $subactividadesArray[] = $sub;
+    //             }
+    
+    //             $actividad['subactividades'] = $subactividadesArray;
+    //             $actividadesArray[] = $actividad;
+    //         }
+    
+    //         $calendario['actividades'] = $actividadesArray;
+    
+    //         return $this->responderJson([
+    //             'status' => 1,
+    //             'message' => 'Calendario a editar obtenido',
+    //             'data' => $calendario
+    //         ]);
+    //     } catch (Exception $e) {
+    //         return $this->responderJson([
+    //             'status' => 0,
+    //             'message' => 'Error al obtener el calendario: ' . $e->getMessage()
+    //         ]);
+    //     }
+    // }
+    
+    
     public function consultarCalendarioParaEdicion($id)
     {
         try {
@@ -44,12 +92,14 @@ class Calendario extends BaseModelo
             }
     
             // Consultar actividades
-            $actividades = $this->ejecutarSp("SELECT * FROM actividad WHERE id_calendario = ?", ["i", $id]);
+            $actividades = $this->ejecutarSp("CALL sp_actividad('listar_por_calendario', NULL, ?, NULL, NULL, NULL)",
+            ["i", $id]);
             $actividadesArray = [];
     
             while ($actividad = $actividades->fetch_assoc()) {
                 // Consultar subactividades por cada actividad
-                $subactividades = $this->ejecutarSp("SELECT * FROM subactividad WHERE id_actividad = ?", ["i", $actividad['id']]);
+                $subactividades = $this->ejecutarSp("CALL sp_subactividad('listar_por_actividad', NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL)",
+                ["i", $actividad['id']]);
                 $subactividadesArray = [];
     
                 while ($sub = $subactividades->fetch_assoc()) {
@@ -74,8 +124,7 @@ class Calendario extends BaseModelo
             ]);
         }
     }
-    
-    
+
     public function insertarCalendario($data)
     {
     // Validar que los datos requeridos estén presentes

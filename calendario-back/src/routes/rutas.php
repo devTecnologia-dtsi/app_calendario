@@ -87,7 +87,7 @@ switch ($metodo) {
             // Ver una actividad específica o todas
             $actividad = new Actividad();
             if ($id) {
-                $actividad->buscarActividad($id);
+                $actividad->buscarActividadPorCalendario($id);
             } else {
                 $actividad->listarActividad();
             }
@@ -97,7 +97,7 @@ switch ($metodo) {
             // Ver una subactividad específica o todas
             $subactividad = new SubActividad();
             if ($id) {
-                $subactividad->buscarSubActividad($id);
+                $subactividad->buscarSubactividadPorActividad($id);
             } else {
                 $subactividad->listarSubActividad();
             }

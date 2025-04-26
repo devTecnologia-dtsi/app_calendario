@@ -7,6 +7,14 @@ import Swal from 'sweetalert2';
 })
 export class NotificacionService {
 
+  mostrarInfo(mensaje: string, titulo: string = 'Información') {
+    Swal.fire({
+      icon: 'info',
+      title: titulo,
+      text: mensaje
+    });
+  }
+  
   mostrarExito(mensaje: string = 'Operación exitosa', titulo: string = '¡Éxito!') {
     Swal.fire({
       icon: 'success',
