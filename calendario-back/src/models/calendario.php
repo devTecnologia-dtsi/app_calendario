@@ -7,7 +7,6 @@ include_once __DIR__ ."/baseModelo.php";
 
 class Calendario extends BaseModelo
 {
-
     public function listarCalendario()
     {
         try {
@@ -28,54 +27,6 @@ class Calendario extends BaseModelo
         }
     }
 
-    // public function consultarCalendarioParaEdicion($id)
-    // {
-    //     try {
-    //         // Consultar el calendario base
-    //         $result = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')", ["i", $id]);
-    //         $calendario = $result->fetch_assoc();
-    //         $result->close();
-    
-    //         if (!$calendario) {
-    //             return $this->responderJson([
-    //                 'status' => 0,
-    //                 'message' => 'Calendario no encontrado'
-    //             ]);
-    //         }
-    
-    //         // Consultar actividades
-    //         $actividades = $this->ejecutarSp("SELECT * FROM actividad WHERE id_calendario = ?", ["i", $id]);
-    //         $actividadesArray = [];
-    
-    //         while ($actividad = $actividades->fetch_assoc()) {
-    //             // Consultar subactividades por cada actividad
-    //             $subactividades = $this->ejecutarSp("SELECT * FROM subactividad WHERE id_actividad = ?", ["i", $actividad['id']]);
-    //             $subactividadesArray = [];
-    
-    //             while ($sub = $subactividades->fetch_assoc()) {
-    //                 $subactividadesArray[] = $sub;
-    //             }
-    
-    //             $actividad['subactividades'] = $subactividadesArray;
-    //             $actividadesArray[] = $actividad;
-    //         }
-    
-    //         $calendario['actividades'] = $actividadesArray;
-    
-    //         return $this->responderJson([
-    //             'status' => 1,
-    //             'message' => 'Calendario a editar obtenido',
-    //             'data' => $calendario
-    //         ]);
-    //     } catch (Exception $e) {
-    //         return $this->responderJson([
-    //             'status' => 0,
-    //             'message' => 'Error al obtener el calendario: ' . $e->getMessage()
-    //         ]);
-    //     }
-    // }
-    
-    
     public function consultarCalendarioParaEdicion($id)
     {
         try {
@@ -127,115 +78,103 @@ class Calendario extends BaseModelo
 
     public function insertarCalendario($data)
     {
-    // Validar que los datos requeridos estén presentes
-    if (!isset($data['id_usuario']) || !isset($data['id_rectoria']) || !isset($data['id_sede']) ||
-        !isset($data['id_tipo_calendario']) || !isset($data['id_modalidad']) || !isset($data['id_tipo_periodo']) ||
-        !isset($data['estado']) || !isset($data['en_sede'])) {
-        $this->responderJson([
-            'status' => 0,
-            'message' => 'Faltan datos requeridos para insertar el calendario'
-        ]);
-        return;
-        }
-
-    try {
-        $resultInsertarCalendario = $this->ejecutarSp("CALL sp_calendario('insertar', NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
-            [
-                "iiiiiiiii", 
-                $data['id_usuario'], 
-                $data['id_rectoria'],
-                $data['id_sede'],
-                $data['id_tipo_calendario'],
-                $data['id_modalidad'],
-                $data['id_periodo_academico'],
-                $data['id_tipo_periodo'],
-                $data['estado'],
-                $data['en_sede']
-            ]);
-
-            // Respuesta del SP
-            $respuesta = $resultInsertarCalendario->fetch_assoc();
-            $this->responderJson([
-                'status' => 1,
-                'message' => 'Calendario creado correctamente.',
-                'data' => $respuesta
-            ]);
-
-        } catch (Exception $e) {
-            $this->responderJson([
-                'status' => 0,
-                'message' => 'Error al insertar calendario: ' . $e->getMessage()
-            ]);
-        }
-    }
-
-    public function editarCalendario($id) 
-    {
-        try {
-            $resultadoCalendario = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-            ["i", $id]);
-            $calendario = $resultadoCalendario->fetch_assoc();
-            $resultadoCalendario->close();
-
-            if(!$calendario) {
-                return $this->responderJson([
-                    'status' => 0,
-                    'message' => 'Calendario no encontrado'
-                ]);
-            }
-
-            // Obtener las actividades del calendario
-            $resultadoActividades = $this->ejecutarSp("CALL sp_actividad('listar_por_calendario',  ?, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-            ["i", $id]);
-            $actividades = [];
-
-            while ($actividad = $resultadoActividades->fetch_assoc()) {
-                $idActividad = $actividad['id'];
-
-                // Obtener subactividades para cada actividad
-                $resultadoSubactividades = $this->ejecutarSp("CALL sp_subactividad('listar_por_actividad', ?, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-                 ["i", $idActividad]);
-                $subactividades = $resultadoSubactividades->fetch_all(MYSQLI_ASSOC);
-                $resultadoSubactividades->close();
-
-                // Asociar las subactividades a la actividad
-                $actividad['subactividades'] = $subactividades;
-                $actividades[] = $actividad;
-
-            }
-            $resultadoActividades->close();
-
-            // Agregar actividades al calendario
-            $calendario['actividades'] = $actividades;
-
-            // Devolver toda la estructura
-            $this->responderJson([
-                'status' => 1,
-                'message' => 'Calendario a editar obtenido',
-                'data' => $calendario
-            ]);
-        } catch (Exception $e) {
-            $this->responderJson([
-                'status' => 0,
-                'message' => 'Error al obtener calendario: ' . $e->getMessage()
-            ]);
-        }
-    }
-
-    public function actualizarCalendario($id, $data)
-    {
-        // Depuración: Verificar el contenido de $data
-        // var_dump($data);
-        // exit;
-
-        // Validar que los datos requeridos estén presentes
         if (
             empty($data['id_usuario']) || 
             empty($data['id_rectoria']) || 
             empty($data['id_sede']) || 
             empty($data['id_tipo_calendario']) || 
             empty($data['id_modalidad']) || 
-            empty($data['id_periodo']) || 
+            empty($data['id_periodo_academico']) || 
+            empty($data['id_tipo_periodo']) || 
+            !isset($data['estado'])
+        ) {
+            $this->responderJson([
+                'status' => 0,
+                'message' => 'Faltan datos requeridos para crear el calendario'
+            ]);
+            return;
+        }
+    
+        try {
+            // Crear calendario base
+            $resultado = $this->ejecutarSp(
+                "CALL sp_calendario('insertar', NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                [
+                    'iiiiiiiii',
+                    $data['id_usuario'],
+                    $data['id_rectoria'],
+                    $data['id_sede'],
+                    $data['id_tipo_calendario'],
+                    $data['id_modalidad'],
+                    $data['id_periodo_academico'],
+                    $data['id_tipo_periodo'],
+                    $data['estado'],
+                    $data['en_sede']
+                ]
+            );
+            $res = $resultado->fetch_assoc();
+            $idCalendario = $res['id_calendario'];
+            $resultado->close();
+    
+            // Crear actividades
+            if (isset($data['actividades']) && is_array($data['actividades'])) {
+                foreach ($data['actividades'] as $actividad) {
+                    $resActividad = $this->ejecutarSp(
+                        "CALL sp_actividad('insertar', NULL, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                        [
+                            'iss',
+                            $idCalendario,
+                            $actividad['titulo'],
+                            $actividad['estado']
+                        ]
+                    );
+                    $actividadCreada = $resActividad->fetch_assoc();
+                    $idActividad = $actividadCreada['id_actividad'];
+                    $resActividad->close();
+    
+                    // Crear subactividades
+                    if (isset($actividad['subactividades']) && is_array($actividad['subactividades'])) {
+                        foreach ($actividad['subactividades'] as $subactividad) {
+                            $this->ejecutarSp(
+                                "CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, 'jeyson.triana.m@uniminuto.edu')",
+                                [
+                                    'ississ',
+                                    $idActividad,
+                                    $subactividad['nombre'],
+                                    $subactividad['descripcion'],
+                                    $subactividad['estado'],
+                                    $subactividad['fecha_inicio'],
+                                    $subactividad['fecha_fin']
+                                ]
+                            )->close();
+                        }
+                    }
+                }
+            }
+    
+            $this->responderJson([
+                'status' => 1,
+                'message' => 'Calendario creado exitosamente',
+                'id_calendario' => $idCalendario
+            ]);
+    
+        } catch (Exception $e) {
+            $this->responderJson([
+                'status' => 0,
+                'message' => 'Error al crear calendario completo: ' . $e->getMessage()
+            ]);
+        }
+    }
+ 
+    public function actualizarCalendarioCompleto($id, $data)
+    {
+        if (
+            empty($data['id_usuario']) || 
+            empty($data['id_rectoria']) || 
+            empty($data['id_sede']) || 
+            empty($data['id_tipo_calendario']) || 
+            empty($data['id_modalidad']) || 
+            empty($data['id_periodo_academico']) || 
             !isset($data['estado'])
         ) {
             $this->responderJson([
@@ -244,40 +183,111 @@ class Calendario extends BaseModelo
             ]);
             return;
         }
+    
         try {
-
-            // Ejecutar SP
-            $result = $this->ejecutarSp(
-                "CALL sp_calendario('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+            // 1. Actualizar calendario
+            $this->ejecutarSp(
+                "CALL sp_calendario('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
                 [
-                    'iiiiiiiii',
+                    'iiiiiiiiii',
                     $id,
-                    $data['id_usuario'], 
+                    $data['id_usuario'],
                     $data['id_rectoria'],
                     $data['id_sede'],
                     $data['id_tipo_calendario'],
                     $data['id_modalidad'],
-                    $data['id_periodo'],
+                    $data['id_periodo_academico'],
                     $data['id_tipo_periodo'],
                     $data['estado'],
                     $data['en_sede']
-
                 ]
-            );
+            )->close();
     
-            // Capturar respuesta del SP
-            $respuesta = $result->fetch_assoc();
-            $this->responderJSON($respuesta);
+            // 2. Procesar actividades
+            if (isset($data['actividades']) && is_array($data['actividades'])) {
+                foreach ($data['actividades'] as $actividad) {
     
+                    if (isset($actividad['id']) && $actividad['id'] > 0) {
+                        // Actualizar actividad
+                        $this->ejecutarSp(
+                            "CALL sp_actividad('actualizar', ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                            [
+                                'iisi',
+                                $actividad['id'],
+                                $id,
+                                $actividad['titulo'],
+                                $actividad['estado']
+                                // 'jeyson.triana@uniminuto.edu'
+                            ]
+                        )->close();
+                        $idActividad = $actividad['id'];
+                    } else {
+                        // Insertar nueva actividad
+                        $resAct = $this->ejecutarSp(
+                            "CALL sp_actividad('insertar', NULL, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                            [
+                                'iss',
+                                $id,
+                                $actividad['titulo'],
+                                $actividad['estado']
+                            ]
+                        );
+                        $actividadInsertada = $resAct->fetch_assoc();
+                        $idActividad = $actividadInsertada['id_actividad'];
+                        $resAct->close();
+                    }
+    
+                    // 3. Procesar subactividades
+                    if (isset($actividad['subactividades']) && is_array($actividad['subactividades'])) {
+                        foreach ($actividad['subactividades'] as $subactividad) {
+    
+                            if (isset($subactividad['id']) && $subactividad['id'] > 0) {
+                                // Actualizar subactividad
+                                $this->ejecutarSp(
+                                    "CALL sp_subactividad('actualizar', ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana.m@uniminuto.edu')",
+                                    [
+                                        'iississ',
+                                        $subactividad['id'],
+                                        $idActividad,
+                                        $subactividad['nombre'],
+                                        $subactividad['descripcion'],
+                                        $subactividad['estado'],
+                                        $subactividad['fecha_inicio'],
+                                        $subactividad['fecha_fin']
+                                    ]
+                                )->close();
+                            } else {
+                                // Insertar nueva subactividad
+                                $this->ejecutarSp(
+                                    "CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, 'jeyson.triana.m@uniminuto.edu')",
+                                    [
+                                        'ississ',
+                                        $idActividad,
+                                        $subactividad['nombre'],
+                                        $subactividad['descripcion'],
+                                        $subactividad['estado'],
+                                        $subactividad['fecha_inicio'],
+                                        $subactividad['fecha_fin']
+                                    ]
+                                )->close();
+                            }
+                        }
+                    }
+                }
+            }
+    
+            $this->responderJson([
+                'status' => 1,
+                'message' => 'Calendario actualizado exitosamente.'
+            ]);
         } catch (Exception $e) {
-            http_response_code(400);
-            $this->responderJSON([
-                'error' => true,
-                'message' => $e->getMessage()
+            $this->responderJson([
+                'status' => 0,
+                'message' => 'Error al actualizar calendario completo: ' . $e->getMessage()
             ]);
         }
     }
-
+    
     public function deshabilitarCalendario($id)
     {
         try {
@@ -313,7 +323,4 @@ class Calendario extends BaseModelo
             ]);
         }
     }
-
-
-
 }

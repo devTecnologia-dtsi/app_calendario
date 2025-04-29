@@ -262,7 +262,7 @@ switch ($metodo) {
         elseif ($tabla === 'calendario') {
             // Actualizar calendario
             $calendario = new Calendario();
-            $calendario->editarCalendario($id);
+            $calendario->actualizarCalendarioCompleto($id, $dato);
         }
 
         elseif ($tabla === 'modalidad') {

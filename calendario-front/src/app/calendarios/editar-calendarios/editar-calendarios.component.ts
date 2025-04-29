@@ -51,10 +51,12 @@ export class EditarCalendariosComponent implements OnInit {
 
         // Mapear actividades y subactividades
         const actividades: ActividadCreacionDTO[] = (calendario.actividades || []).map((act: any) => ({
+          id: act.id, //ID de la actividad
           id_calendario: act.id_calendario,
           titulo: act.titulo,
           estado: act.estado,
           subactividades: (act.subactividades || []).map((sub: any) => ({
+            id: sub.id, //ID de la subactividad
             nombre: sub.nombre,
             descripcion: sub.descripcion,
             fecha_inicio: sub.fecha_inicio,

@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { NotificacionService } from '../compartidos/servicios/notificacion.service';
 
 @Component({
   selector: 'app-landing-page',
@@ -24,6 +25,8 @@ export class LandingPageComponent implements OnInit {
   calendariosGrados: any[] = [];
 
   private calendariosService = inject(CalendariosService)
+  private route = inject(ActivatedRoute)
+  private notificacion = inject(NotificacionService)
 
   ngOnInit(): void {
     this.cargarCalendarios();
@@ -44,5 +47,15 @@ export class LandingPageComponent implements OnInit {
         console.error('Error al cargar los calendarios:', error);
       }
     });
+  }
+
+  desactivarCalendario(): void {
+    const idCalendario = this.route.snapshot.paramMap.get('id');
+    if (idCalendario) {
+      this.calendariosService.desactivarCalendario(Number(idCalendario)).subscribe({
+        next: () => this.notificacion.mostrarExito('Calendario desactivado correctamente'),
+        error: () => this.notificacion.mostrarError('Error al desactivar el calendario')
+      });
+    }
   }
 }

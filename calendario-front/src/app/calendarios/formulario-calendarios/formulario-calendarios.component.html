@@ -91,7 +91,9 @@
           <mat-card class="actividad-card">
             <mat-card-header>
               <mat-card-title>Actividad {{ i + 1 }}</mat-card-title>
-              <button mat-icon-button color="warn" (click)="eliminarActividad(i)">
+              <!-- <button mat-icon-button color="warn" (click)="eliminarActividad(i)"> -->
+              <!-- <button mat-icon-button color="warn" (click)="desactivarActividad(i)"> -->
+              <button mat-icon-button color="warn" type="button" (click)="desactivarActividad(actividad.value.id)">
                 <mat-icon>delete</mat-icon>
               </button>
             </mat-card-header>
@@ -109,7 +111,8 @@
                   <mat-card class="subactividad-card">
                     <mat-card-header>
                       <mat-card-title>Subactividad {{ j + 1 }}</mat-card-title>
-                      <button mat-icon-button color="warn" (click)="eliminarSubactividad(i, j)">
+                      <!-- <button mat-icon-button color="warn" (click)="eliminarSubactividad(i, j)"> -->
+                      <button mat-icon-button color="warn" type="button" (click)="desactivarSubactividad(subactividad.value.id, actividad.value.id)">
                         <mat-icon>delete</mat-icon>
                       </button>
                     </mat-card-header>

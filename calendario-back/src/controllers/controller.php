@@ -107,7 +107,7 @@ function actualizar($id, $dato, $tabla) {
             break;
         case 'calendario':
             $calendario = new Calendario();
-            $calendario->actualizarCalendario($$id, $dato);
+            $calendario->actualizarCalendarioCompleto($$id, $dato);
             break;
         case 'usuario':
             $usuario = new CrudUsuario();
