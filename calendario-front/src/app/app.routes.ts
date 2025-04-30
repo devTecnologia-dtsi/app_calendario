@@ -3,11 +3,7 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
 import { IndiceUsuariosComponent } from './usuarios/indice-usuarios/indice-usuarios.component';
 import { CrearUsuariosComponent } from './usuarios/crear-usuarios/crear-usuarios.component';
 import { EditarUsuariosComponent } from './usuarios/editar-usuarios/editar-usuarios.component';
-// import { CrearCalendariosComponent } from './calendarios/crear-calendarios/crear-calendarios.component';
 import { EditarCalendariosComponent } from './calendarios/editar-calendarios/editar-calendarios.component';
-import { AcademicoComponent } from './calendarios/academico/academico.component';
-import { FinancieroComponent } from './calendarios/financiero/financiero.component';
-import { GradosComponent } from './calendarios/grados/grados.component';
 import { IndiceRolComponent } from './rol/indice-rol/indice-rol.component';
 import { LogsComponent } from './logs/logs.component';
 import { FormularioCalendariosComponent } from './calendarios/formulario-calendarios/formulario-calendarios.component';
@@ -16,9 +12,6 @@ export const routes: Routes = [
     {path: '', component: LandingPageComponent},
     {path: 'calendarios/crear/:tipo', component: FormularioCalendariosComponent},
     {path: 'calendarios/editar/:id', component: EditarCalendariosComponent},
-    {path: 'calendarios/crear/academico', component: AcademicoComponent},
-    {path: 'calendarios/crear/financiero', component: FinancieroComponent},
-    {path: 'calendarios/crear/grados', component: GradosComponent},
     {path: 'rol', component: IndiceRolComponent},
     {path: 'usuarios', component: IndiceUsuariosComponent},
     {path: 'usuarios/crear', component: CrearUsuariosComponent},

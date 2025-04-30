@@ -5,39 +5,26 @@
         </a>
     </span>
 
-    <div>
-        <a routerLink="calendarios/crear/academico" mat-button>
-            <mat-icon>menu_book</mat-icon>Calendario académico
-        </a>
-    </div>
+    <!-- <app-autorizado rol="administrador"> -->
+        <div>
+            <a routerLink="rol" mat-button>
+                <mat-icon>groups</mat-icon> Roles
+            </a>
+        </div>
+    
+        <div>
+            <a routerLink="usuarios" mat-button>
+                <mat-icon>person</mat-icon> Usuarios
+            </a>
+        </div>
+    
+        <div>
+            <a routerLink="logs" mat-button> 
+                <mat-icon>list_alt</mat-icon>  Logs
+            </a>
+        </div>
 
-    <div>
-        <a routerLink="calendarios/crear/financiero" mat-button>
-            <mat-icon>attach_money</mat-icon>Calendario financiero
-        </a>
-    </div>
+    <!-- </app-autorizado> -->
 
-    <div>
-        <a routerLink="calendarios/crear/grados" mat-button>
-            <mat-icon>school</mat-icon>Calendario de grados
-        </a>
-    </div>
 
-    <div>
-        <a routerLink="rol" mat-button>
-            <mat-icon>groups</mat-icon> Roles
-        </a>
-    </div>
-
-    <div>
-        <a routerLink="usuarios" mat-button>
-            <mat-icon>person</mat-icon> Usuarios
-        </a>
-    </div>
-
-    <div>
-        <a routerLink="logs" mat-button> 
-            <mat-icon>list_alt</mat-icon>  Logs
-        </a>
-    </div>
 </mat-toolbar>

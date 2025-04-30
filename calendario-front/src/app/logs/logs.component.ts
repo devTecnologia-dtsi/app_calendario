@@ -9,12 +9,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-logs',
   imports: [
-    RouterLink,
     MatButtonModule,
     MatTableModule,
     MatPaginatorModule,
@@ -62,10 +60,6 @@ export class LogsComponent implements OnInit{
           this.logs = Array.isArray(respuesta.data) ? respuesta.data : [];
           this.dataSource.data = this.logs;
           this.totalLogs = respuesta.total || 0;
-
-          // Configuración de paginación
-          // this.dataSource.paginator = this.paginator;
-          // this.dataSource.sort = this.sort;
 
         } else {
           this.notificacionService.mostrarAdvertencia(respuesta.message || 'No se encontraron logs', 'Aviso');

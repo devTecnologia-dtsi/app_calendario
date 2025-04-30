@@ -28,10 +28,6 @@ export class CalendariosService {
   }
 
   // Actualizar un calendario
-  // actualizarCalendario(id: number, calendario: CalendarioCreacionDTO): Observable<CalendarioRespuestaConsultaAPI> {
-  //   return this.http.put<CalendarioRespuestaConsultaAPI>(`${this.urlBase}${id}`, calendario).pipe(catchError(this.handleError));
-  // }
-
   actualizarCalendario(id: number, calendario: CalendarioCreacionDTO): Observable<CalendarioRespuestaConsultaAPI> {
     return this.http.put<CalendarioRespuestaConsultaAPI>(`${this.urlBase}${id}`, calendario).pipe(
       catchError(this.handleError)

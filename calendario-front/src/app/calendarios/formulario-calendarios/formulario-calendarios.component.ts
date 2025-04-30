@@ -1,6 +1,6 @@
 import { Component, OnInit, Input, Output, EventEmitter, inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CalendarioCreacionDTO, ActividadCreacionDTO, CalendarioRespuestaCreacionAPI, RespuestaAPIActividades } from '../calendarios';
+import { CalendarioCreacionDTO, ActividadCreacionDTO } from '../calendarios';
 import { RectoriaService } from '../../compartidos/servicios/rectoria.service';
 import { SedeService } from '../../compartidos/servicios/sede.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -22,6 +22,7 @@ import { SubactividadesService } from '../../compartidos/servicios/subactividade
 import { TiposPeriodoService } from '../../compartidos/servicios/tipos-periodo.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { NotificacionService } from '../../compartidos/servicios/notificacion.service';
+import { fechaFinPosteriorValidator, fechaNoPasadaValidator} from '../../compartidos/funciones/validaciones';
 
 @Component({
   selector: 'app-formulario-calendarios',
@@ -44,7 +45,6 @@ import { NotificacionService } from '../../compartidos/servicios/notificacion.se
 export class FormularioCalendariosComponent implements OnInit {
 
   @Input() modelo?: CalendarioCreacionDTO;
-  // @Output() onSubmit = new EventEmitter<CalendarioCreacionDTO>();
   @Output() posteoFormulario = new EventEmitter<CalendarioCreacionDTO>();
 
   form: FormGroup;
@@ -172,8 +172,8 @@ export class FormularioCalendariosComponent implements OnInit {
     const subactividadForm = this.fb.group({
       nombre: [sub?.nombre || '', Validators.required],
       descripcion: [sub?.descripcion || ''],
-      fecha_inicio: [sub?.fecha_inicio || null],
-      fecha_fin: [sub?.fecha_fin || null],
+      fecha_inicio: [sub?.fecha_inicio || null, [fechaNoPasadaValidator]],
+      fecha_fin: [sub?.fecha_fin || null, [fechaNoPasadaValidator, fechaFinPosteriorValidator('fecha_inicio')]],
       estado: [1]
     });
     this.getSubactividades(index).push(subactividadForm);
@@ -187,86 +187,137 @@ export class FormularioCalendariosComponent implements OnInit {
   //   this.getSubactividades(index).removeAt(subIndex);
   // }
 
-  // Desactivar actividad
-  // desactivarActividad(index: number): void {
-  //   const actividad = this.actividades.at(index).value;
-  //   if (actividad.id) {
-  //     this.actividadService.desactivarActividad(actividad.id).subscribe({
-  //       next: () => this.notificacion.mostrarExito('Actividad desactivada correctamente'),
-  //       error: () => this.notificacion.mostrarError('Error al desactivar la actividad')
-  //     });
-  //   }
+  // // Desactivar actividad
+  // async desactivarActividad(id: number): Promise<void> {
+  //   const confirmacion = await this.notificacion.mostrarConfirmacion(
+  //     '¿Seguro que quieres desactivar esta actividad?',
+  //     'Confirmar desactivación'
+  //   );
+  
+  //   if (!confirmacion) return;
+  
+  //   this.actividadService.desactivarActividad(id).subscribe({
+  //     next: (respuesta) => {
+  //       if (respuesta.status === 1) {
+  //         this.notificacion.mostrarExito(respuesta.message || 'Actividad desactivada correctamente');
+          
+  //         // BUSCAR el índice actual de la actividad por ID
+  //         const index = this.actividades.controls.findIndex(
+  //           (act) => act.value.id === id
+  //         );
+  
+  //         if (index !== -1) {
+  //           this.actividades.removeAt(index);
+  //         }
+  
+  //       } else {
+  //         this.notificacion.mostrarError(respuesta.message || 'No se pudo desactivar la actividad');
+  //       }
+  //     },
+  //     error: () => this.notificacion.mostrarError('Error al desactivar la actividad')
+  //   });
+  // }
+  
+  // // Desactivar subactividad
+  // async desactivarSubactividad(idSubactividad: number, idActividad: number): Promise<void> {
+  //   const confirmacion = await this.notificacion.mostrarConfirmacion(
+  //     '¿Seguro que quieres desactivar esta subactividad?',
+  //     'Confirmar desactivación'
+  //   );
+  
+  //   if (!confirmacion) return;
+  
+  //   this.subactividadService.desactivarSubactividad(idSubactividad).subscribe({
+  //     next: (respuesta) => {
+  //       if (respuesta.status === 1) {
+  //         this.notificacion.mostrarExito(respuesta.message || 'Subactividad desactivada correctamente');
+  
+  //         // BUSCAR el índice de la actividad
+  //         const indexActividad = this.actividades.controls.findIndex(
+  //           (act) => act.value.id === idActividad
+  //         );
+  
+  //         if (indexActividad !== -1) {
+  //           const subactividadesArray = this.getSubactividades(indexActividad);
+  //           const indexSub = subactividadesArray.controls.findIndex(
+  //             (sub) => sub.value.id === idSubactividad
+  //           );
+  
+  //           if (indexSub !== -1) {
+  //             subactividadesArray.removeAt(indexSub);
+  //           }
+  //         }
+  
+  //       } else {
+  //         this.notificacion.mostrarError(respuesta.message || 'No se pudo desactivar la subactividad');
+  //       }
+  //     },
+  //     error: () => this.notificacion.mostrarError('Error al desactivar la subactividad')
+  //   });
   // }
 
-  // Desactivar actividad
-  async desactivarActividad(id: number): Promise<void> {
+  // Eliminar o desactivar actividad
+  async eliminarActividad(index: number): Promise<void> {
+    const actividad = this.actividades.at(index).value;
+
     const confirmacion = await this.notificacion.mostrarConfirmacion(
-      '¿Seguro que quieres desactivar esta actividad?',
-      'Confirmar desactivación'
+      '¿Seguro que quieres eliminar esta actividad?',
+      'Confirmar eliminación'
     );
-  
+
     if (!confirmacion) return;
-  
-    this.actividadService.desactivarActividad(id).subscribe({
-      next: (respuesta) => {
-        if (respuesta.status === 1) {
-          this.notificacion.mostrarExito(respuesta.message || 'Actividad desactivada correctamente');
-          
-          // BUSCAR el índice actual de la actividad por ID
-          const index = this.actividades.controls.findIndex(
-            (act) => act.value.id === id
-          );
-  
-          if (index !== -1) {
-            this.actividades.removeAt(index);
+
+    // Si tiene ID, desactiva del backend
+    if (actividad.id) {
+      this.actividadService.desactivarActividad(actividad.id).subscribe({
+        next: (respuesta) => {
+          if (respuesta.status === 1) {
+            this.notificacion.mostrarExito(respuesta.message || 'Actividad desactivada correctamente');
+          } else {
+            this.notificacion.mostrarError(respuesta.message || 'No se pudo desactivar la actividad');
+            return;
           }
-  
-        } else {
-          this.notificacion.mostrarError(respuesta.message || 'No se pudo desactivar la actividad');
-        }
-      },
-      error: () => this.notificacion.mostrarError('Error al desactivar la actividad')
-    });
+          this.actividades.removeAt(index); // Siempre se remueve del formulario
+        },
+        error: () => this.notificacion.mostrarError('Error al desactivar la actividad')
+      });
+    } else {
+      // Si no tiene ID (es nueva), solo la eliminamos del formulario
+      this.actividades.removeAt(index);
+    }
   }
-  
-  // Desactivar subactividad
-  async desactivarSubactividad(idSubactividad: number, idActividad: number): Promise<void> {
+
+  // Eliminar o desactivar subactividad
+  async eliminarSubactividad(indexActividad: number, indexSub: number): Promise<void> {
+    const subactividad = this.getSubactividades(indexActividad).at(indexSub).value;
+
     const confirmacion = await this.notificacion.mostrarConfirmacion(
-      '¿Seguro que quieres desactivar esta subactividad?',
-      'Confirmar desactivación'
+      '¿Seguro que quieres eliminar esta subactividad?',
+      'Confirmar eliminación'
     );
-  
+
     if (!confirmacion) return;
-  
-    this.subactividadService.desactivarSubactividad(idSubactividad).subscribe({
-      next: (respuesta) => {
-        if (respuesta.status === 1) {
-          this.notificacion.mostrarExito(respuesta.message || 'Subactividad desactivada correctamente');
-  
-          // BUSCAR el índice de la actividad
-          const indexActividad = this.actividades.controls.findIndex(
-            (act) => act.value.id === idActividad
-          );
-  
-          if (indexActividad !== -1) {
-            const subactividadesArray = this.getSubactividades(indexActividad);
-            const indexSub = subactividadesArray.controls.findIndex(
-              (sub) => sub.value.id === idSubactividad
-            );
-  
-            if (indexSub !== -1) {
-              subactividadesArray.removeAt(indexSub);
-            }
+
+    // Si tiene ID, desactiva del backend
+    if (subactividad.id) {
+      this.subactividadService.desactivarSubactividad(subactividad.id).subscribe({
+        next: (respuesta) => {
+          if (respuesta.status === 1) {
+            this.notificacion.mostrarExito(respuesta.message || 'Subactividad desactivada correctamente');
+          } else {
+            this.notificacion.mostrarError(respuesta.message || 'No se pudo desactivar la subactividad');
+            return;
           }
-  
-        } else {
-          this.notificacion.mostrarError(respuesta.message || 'No se pudo desactivar la subactividad');
-        }
-      },
-      error: () => this.notificacion.mostrarError('Error al desactivar la subactividad')
-    });
+          this.getSubactividades(indexActividad).removeAt(indexSub); // Siempre se remueve
+        },
+        error: () => this.notificacion.mostrarError('Error al desactivar la subactividad')
+      });
+    } else {
+      // Si no tiene ID (es nueva), solo la eliminamos del formulario
+      this.getSubactividades(indexActividad).removeAt(indexSub);
+    }
   }
-  
+ 
   cargarRectorias() {
     this.rectoriaService.listarRectorias().subscribe({
       next: (r) => (this.rectorias = r.data),

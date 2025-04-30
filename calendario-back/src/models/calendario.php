@@ -291,7 +291,7 @@ class Calendario extends BaseModelo
     public function deshabilitarCalendario($id)
     {
         try {
-            $resultDesactivarCalendario = $this->ejecutarSp("CALL sp_calendario('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
+            $resultDesactivarCalendario = $this->ejecutarSp("CALL sp_calendario('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
                 ["i", $id]);
             
             $respuesta = $resultDesactivarCalendario->fetch_assoc();

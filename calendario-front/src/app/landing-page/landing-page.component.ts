@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { NotificacionService } from '../compartidos/servicios/notificacion.service';
 
 @Component({
@@ -25,7 +25,7 @@ export class LandingPageComponent implements OnInit {
   calendariosGrados: any[] = [];
 
   private calendariosService = inject(CalendariosService)
-  private route = inject(ActivatedRoute)
+  private router = inject(Router);
   private notificacion = inject(NotificacionService)
 
   ngOnInit(): void {
@@ -49,13 +49,25 @@ export class LandingPageComponent implements OnInit {
     });
   }
 
-  desactivarCalendario(): void {
-    const idCalendario = this.route.snapshot.paramMap.get('id');
-    if (idCalendario) {
-      this.calendariosService.desactivarCalendario(Number(idCalendario)).subscribe({
-        next: () => this.notificacion.mostrarExito('Calendario desactivado correctamente'),
-        error: () => this.notificacion.mostrarError('Error al desactivar el calendario')
-      });
-    }
+  async desactivarCalendario(id: number) {
+    const confirmacion = await this.notificacion.mostrarConfirmacion(
+      '¿Estás seguro de que deseas desactivar este calendario?',
+      'Confirmación'
+    );
+
+    if (!confirmacion) return;
+  
+    this.calendariosService.desactivarCalendario(id).subscribe({
+      next: (res) => {
+        if (res.status === 1) {
+          this.notificacion.mostrarExito(res.message || 'Calendario desactivado correctamente');
+          this.cargarCalendarios();
+        } else {
+          this.notificacion.mostrarError(res.message || 'No se pudo desactivar el calendario');
+        }
+      },
+      error: () => this.notificacion.mostrarError('Error al desactivar el calendario')      
+    });
   }
+  
 }

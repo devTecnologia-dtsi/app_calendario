@@ -26,13 +26,13 @@
       </mat-form-field>
 
       <!-- Tipo de Calendario -->
-      <mat-form-field appearance="outline" class="form-field">
+      <!-- <mat-form-field appearance="outline" class="form-field">
         <mat-label>Tipo de Calendario</mat-label>
         <mat-select formControlName="id_tipo_calendario">
           <mat-option *ngFor="let tipo of tiposCalendario" [value]="tipo.id">{{ tipo.nombre }}</mat-option>
         </mat-select>
         <mat-error *ngIf="form.get('id_tipo_calendario')?.invalid">Seleccione un tipo de calendario</mat-error>
-      </mat-form-field>
+      </mat-form-field> -->
 
       <!-- Modalidad -->
       <mat-form-field appearance="outline" class="form-field">
@@ -91,9 +91,9 @@
           <mat-card class="actividad-card">
             <mat-card-header>
               <mat-card-title>Actividad {{ i + 1 }}</mat-card-title>
-              <!-- <button mat-icon-button color="warn" (click)="eliminarActividad(i)"> -->
               <!-- <button mat-icon-button color="warn" (click)="desactivarActividad(i)"> -->
-              <button mat-icon-button color="warn" type="button" (click)="desactivarActividad(actividad.value.id)">
+              <!-- <button mat-icon-button color="warn" type="button" (click)="desactivarActividad(actividad.value.id)"> -->
+              <button mat-icon-button color="warn" type="button" (click)="eliminarActividad(i)">
                 <mat-icon>delete</mat-icon>
               </button>
             </mat-card-header>
@@ -111,8 +111,8 @@
                   <mat-card class="subactividad-card">
                     <mat-card-header>
                       <mat-card-title>Subactividad {{ j + 1 }}</mat-card-title>
-                      <!-- <button mat-icon-button color="warn" (click)="eliminarSubactividad(i, j)"> -->
-                      <button mat-icon-button color="warn" type="button" (click)="desactivarSubactividad(subactividad.value.id, actividad.value.id)">
+                      <button mat-icon-button color="warn" type="button" (click)="eliminarSubactividad(i, j)">
+                      <!-- <button mat-icon-button color="warn" type="button" (click)="desactivarSubactividad(subactividad.value.id, actividad.value.id)"> -->
                         <mat-icon>delete</mat-icon>
                       </button>
                     </mat-card-header>
@@ -136,6 +136,9 @@
                         <input matInput [matDatepicker]="pickerInicio" formControlName="fecha_inicio">
                         <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
                         <mat-datepicker #pickerInicio></mat-datepicker>
+                        <mat-error *ngIf="subactividad.get('fecha_inicio')?.hasError('fechaPasada')">
+                          {{ subactividad.get('fecha_inicio')?.getError('fechaPasada') }}
+                        </mat-error>
                       </mat-form-field>
       
                       <mat-form-field appearance="outline" class="form-field">
@@ -143,7 +146,14 @@
                         <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin">
                         <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
                         <mat-datepicker #pickerFin></mat-datepicker>
+                        <mat-error *ngIf="subactividad.get('fecha_fin')?.hasError('fechaPasada')">
+                          {{ subactividad.get('fecha_fin')?.getError('fechaPasada') }}
+                        </mat-error>
+                        <mat-error *ngIf="subactividad.get('fecha_fin')?.hasError('finAntesInicio')">
+                          {{ subactividad.get('fecha_fin')?.getError('finAntesInicio') }}
+                        </mat-error>
                       </mat-form-field>
+
                     </mat-card-content>
                   </mat-card>
                 </div>

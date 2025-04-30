@@ -1,16 +1,3 @@
-// import { Component } from '@angular/core';
-
-// @Component({
-//   selector: 'app-crear-calendarios',
-//   imports: [],
-//   templateUrl: './crear-calendarios.component.html',
-//   styleUrl: './crear-calendarios.component.css'
-// })
-// export class CrearCalendariosComponent {
-
-// }
-
-
 import { Component } from '@angular/core';
 import { CalendariosService } from '../../compartidos/servicios/calendarios.service';
 import { CalendarioCreacionDTO } from '../calendarios';
