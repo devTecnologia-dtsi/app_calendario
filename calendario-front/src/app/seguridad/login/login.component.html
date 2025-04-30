@@ -1,0 +1,44 @@
+<section class="login-container">
+    <!-- Lado Izquierdo -->
+    <div class="login-left">
+      <!-- Logo -->
+      <div class="login-logo">
+        <img
+          src="../../../assets/logoUM.png"
+          alt="Logo Uniminuto"
+          class="logo-img"
+          aria-label="Logo de la institución"
+        />
+      </div>
+  
+      <!-- Título -->
+      <h2 class="login-title">Inicia sesión</h2>
+  
+      <!-- Botón SSO -->
+      <button class="login-btn" (click)="login()" aria-label="Ingresar con cuenta Microsoft">
+        <img src="../../../assets/microsoft.webp" class="login-btn-icon" alt="Logo Microsoft" />
+        INGRESA CON MICROSOFT
+      </button>
+    </div>
+  
+    <!-- Lado Derecho: Imagen -->
+    <div class="login-right">
+      <img src="../../../assets/calendario.jpg" alt="Imagen de calendario" class="background-img" />
+    </div>
+  </section>
+  
+  <!-- Modal de carga -->
+  <nz-modal
+    [(nzVisible)]="isLoading"
+    [nzFooter]="null"
+    [nzClosable]="false"
+    [nzMaskClosable]="false"
+    [nzWidth]="150"
+    [nzCentered]="true"
+    [nzContent]="modalContent"
+  >
+    <ng-template #modalContent>
+      <nz-spin [nzSize]="'large'"></nz-spin>
+    </ng-template>
+  </nz-modal>
+  
