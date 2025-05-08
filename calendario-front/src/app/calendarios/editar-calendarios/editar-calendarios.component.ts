@@ -82,7 +82,7 @@ export class EditarCalendariosComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al cargar el calendario:', error);
-        this.router.navigate(['/']);
+        this.router.navigate(['/dashboard']);
       }
     });
   }
@@ -92,7 +92,7 @@ export class EditarCalendariosComponent implements OnInit {
     this.calendariosService.actualizarCalendario(id, calendario).subscribe({
       next: () => {
         console.log('Calendario actualizado');
-        this.router.navigate(['/']);
+        this.router.navigate(['/dashboard']);
       },
       error: (error) => {
         console.error('Error al actualizar el calendario:', error);

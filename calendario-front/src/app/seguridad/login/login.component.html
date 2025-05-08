@@ -1,44 +1,32 @@
-<section class="login-container">
+<!-- <div class="login-container">
+    <nz-card class="login-card" nzTitle="Bienvenido" [nzBordered]="false">
+      <p>Inicie sesión con su cuenta institucional</p>
+      <button nz-button nzType="primary" (click)="login()">Iniciar sesión</button>
+    </nz-card>
+  </div>
+   -->
+
+
+   <section class="login-container">
     <!-- Lado Izquierdo -->
     <div class="login-left">
-      <!-- Logo -->
-      <div class="login-logo">
-        <img
-          src="../../../assets/logoUM.png"
-          alt="Logo Uniminuto"
-          class="logo-img"
-          aria-label="Logo de la institución"
-        />
+      <!-- Círculo con Logo -->
+      <div class="logo-container">
+        <img src="logoUM.png" alt="Logo" class="logo" />
       </div>
   
       <!-- Título -->
       <h2 class="login-title">Inicia sesión</h2>
   
-      <!-- Botón SSO -->
-      <button class="login-btn" (click)="login()" aria-label="Ingresar con cuenta Microsoft">
-        <img src="../../../assets/microsoft.webp" class="login-btn-icon" alt="Logo Microsoft" />
+      <!-- Botón -->
+      <button class="btn btn-dark d-flex align-items-center" (click)="login()">
+        <img src="microsoft.webp" width="30" height="30" class="me-2" />
         INGRESA CON MICROSOFT
       </button>
     </div>
   
-    <!-- Lado Derecho: Imagen -->
+    <!-- Lado Derecho: Imagen de Fondo -->
     <div class="login-right">
-      <img src="../../../assets/calendario.jpg" alt="Imagen de calendario" class="background-img" />
+      <img src="calendario.jpg" alt="Imagen de fondo" class="background-image" />
     </div>
   </section>
-  
-  <!-- Modal de carga -->
-  <nz-modal
-    [(nzVisible)]="isLoading"
-    [nzFooter]="null"
-    [nzClosable]="false"
-    [nzMaskClosable]="false"
-    [nzWidth]="150"
-    [nzCentered]="true"
-    [nzContent]="modalContent"
-  >
-    <ng-template #modalContent>
-      <nz-spin [nzSize]="'large'"></nz-spin>
-    </ng-template>
-  </nz-modal>
-  

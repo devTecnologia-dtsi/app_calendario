@@ -3,11 +3,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink } from '@angular/router';
-import { AutorizadoComponent } from "../../../seguridad/autorizado/autorizado.component";
 
 @Component({
   selector: 'app-menu',
-  imports: [MatToolbarModule, MatIconModule, MatButtonModule, RouterLink, AutorizadoComponent],
+  imports: [MatToolbarModule, MatIconModule, MatButtonModule, RouterLink],
   templateUrl: './menu.component.html',
   styleUrl: './menu.component.css'
 })

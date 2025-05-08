@@ -81,8 +81,8 @@ switch ($metodo) {
             } else {
                 $usuario->listarUsuarios($limite, $offset);
             }
-        } 
-        
+        }
+
         elseif ($tabla === 'actividad') {
             // Ver una actividad específica o todas
             $actividad = new Actividad();
@@ -214,6 +214,18 @@ switch ($metodo) {
             $modalidad = new Modalidades();
             $modalidad->crearModalidad($dato);
         }
+
+        elseif ($tabla === 'usuarioPorCorreo') {
+            if (!isset($dato['correo'])) {
+                http_response_code(400);
+                echo json_encode(["error" => "Correo no especificado"]);
+                exit;
+            }
+        
+            $usuario = new CrudUsuario();
+            $usuario->obtenerUsuarioPorCorreo($dato['correo']);
+        }
+        
         
         else {
             insertar($dato, $tabla);

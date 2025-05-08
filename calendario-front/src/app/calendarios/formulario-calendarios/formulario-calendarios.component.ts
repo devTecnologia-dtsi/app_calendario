@@ -179,83 +179,6 @@ export class FormularioCalendariosComponent implements OnInit {
     this.getSubactividades(index).push(subactividadForm);
   }
 
-  // eliminarActividad(index: number): void {
-  //   this.actividades.removeAt(index);
-  // }
-
-  // eliminarSubactividad(index: number, subIndex: number): void {
-  //   this.getSubactividades(index).removeAt(subIndex);
-  // }
-
-  // // Desactivar actividad
-  // async desactivarActividad(id: number): Promise<void> {
-  //   const confirmacion = await this.notificacion.mostrarConfirmacion(
-  //     '¿Seguro que quieres desactivar esta actividad?',
-  //     'Confirmar desactivación'
-  //   );
-  
-  //   if (!confirmacion) return;
-  
-  //   this.actividadService.desactivarActividad(id).subscribe({
-  //     next: (respuesta) => {
-  //       if (respuesta.status === 1) {
-  //         this.notificacion.mostrarExito(respuesta.message || 'Actividad desactivada correctamente');
-          
-  //         // BUSCAR el índice actual de la actividad por ID
-  //         const index = this.actividades.controls.findIndex(
-  //           (act) => act.value.id === id
-  //         );
-  
-  //         if (index !== -1) {
-  //           this.actividades.removeAt(index);
-  //         }
-  
-  //       } else {
-  //         this.notificacion.mostrarError(respuesta.message || 'No se pudo desactivar la actividad');
-  //       }
-  //     },
-  //     error: () => this.notificacion.mostrarError('Error al desactivar la actividad')
-  //   });
-  // }
-  
-  // // Desactivar subactividad
-  // async desactivarSubactividad(idSubactividad: number, idActividad: number): Promise<void> {
-  //   const confirmacion = await this.notificacion.mostrarConfirmacion(
-  //     '¿Seguro que quieres desactivar esta subactividad?',
-  //     'Confirmar desactivación'
-  //   );
-  
-  //   if (!confirmacion) return;
-  
-  //   this.subactividadService.desactivarSubactividad(idSubactividad).subscribe({
-  //     next: (respuesta) => {
-  //       if (respuesta.status === 1) {
-  //         this.notificacion.mostrarExito(respuesta.message || 'Subactividad desactivada correctamente');
-  
-  //         // BUSCAR el índice de la actividad
-  //         const indexActividad = this.actividades.controls.findIndex(
-  //           (act) => act.value.id === idActividad
-  //         );
-  
-  //         if (indexActividad !== -1) {
-  //           const subactividadesArray = this.getSubactividades(indexActividad);
-  //           const indexSub = subactividadesArray.controls.findIndex(
-  //             (sub) => sub.value.id === idSubactividad
-  //           );
-  
-  //           if (indexSub !== -1) {
-  //             subactividadesArray.removeAt(indexSub);
-  //           }
-  //         }
-  
-  //       } else {
-  //         this.notificacion.mostrarError(respuesta.message || 'No se pudo desactivar la subactividad');
-  //       }
-  //     },
-  //     error: () => this.notificacion.mostrarError('Error al desactivar la subactividad')
-  //   });
-  // }
-
   // Eliminar o desactivar actividad
   async eliminarActividad(index: number): Promise<void> {
     const actividad = this.actividades.at(index).value;
@@ -404,7 +327,7 @@ export class FormularioCalendariosComponent implements OnInit {
       this.calendariosService.actualizarCalendario(Number(idCalendario), calendario).subscribe({
         next: () => {
           this.notificacion.mostrarExito('Calendario actualizado correctamente');
-          this.router.navigate(['/']);
+          this.router.navigate(['/dashboard']);
         },
         error: () => {
           this.notificacion.mostrarError('Error al actualizar el calendario');
@@ -415,7 +338,7 @@ export class FormularioCalendariosComponent implements OnInit {
       this.calendariosService.crearCalendario(calendario).subscribe({
         next: () => {
           this.notificacion.mostrarExito('Calendario creado correctamente');
-          this.router.navigate(['/']);
+          this.router.navigate(['/dashboard']);
         },
         error: () => {
           this.notificacion.mostrarError('Error al crear el calendario');

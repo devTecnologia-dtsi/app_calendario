@@ -13,7 +13,7 @@ export class CrearCalendariosComponent {
 
   guardarCambios(calendario: CalendarioCreacionDTO): void {
     this.calendariosService.crearCalendario(calendario).subscribe({
-      next: () => this.router.navigate(['/']),
+      next: () => this.router.navigate(['/dashboard']),
       error: (error) => console.error('Error al crear el calendario:', error)
     });
   }

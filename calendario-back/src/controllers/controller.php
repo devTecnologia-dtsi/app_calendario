@@ -13,15 +13,17 @@ include_once __DIR__ . "/../models/logs.php";
 include_once __DIR__ . "/../models/modalidades.php";
 include_once __DIR__ . "/../models/tiposPeriodo.php";
 
-// CONSULTAR
+// Consultar
 function consultar($id, $tabla, $limite = 5, $offset = 0) {
     $modelo = null;
+
     switch ($tabla) {
         case 'actividad':
             $modelo = new Actividad();
             break;
         case 'subactividad':
             $modelo = new Subactividad();
+            break;
         case 'periodo':
             $modelo = new PeriodoAcademico();
             break;
@@ -49,22 +51,22 @@ function consultar($id, $tabla, $limite = 5, $offset = 0) {
         case 'modalidad':
             $modelo = new Modalidades();
             break;
-        case 'peridoAcademico':
+        case 'periodoAcademico':
             $modelo = new PeriodoAcademico();
             break;
         case 'logs':
             $modelo = new Logs();
             break;
-        
         default:
             echo json_encode(array('ERROR' => 'No se ha encontrado la tabla'));
-            break;
+            return;
 
         if ($modelo) {
             $id ? $modelo->buscar($id) : $modelo->listar($limite, $offset);
         }
     }
 }
+
 
 // INSERTAR
 function insertar($dato, $tabla) {

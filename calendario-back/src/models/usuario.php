@@ -3,34 +3,10 @@
 include_once __DIR__ . "/../../config/conexion.php";
 include_once __DIR__ . "/../../config/cors.php";
 include_once __DIR__ ."/baseModelo.php";
+include_once __DIR__ . "/../seguridad/jwt_utils.php";
 
 class CrudUsuario extends BaseModelo
 {
-    
-    // Método para ejecutar el SP
-    // private function ejecutarSp($query, $params = []) 
-    // {
-    //     $conexion = new conexion();
-    //     $sql = $conexion->test()->prepare($query);
-    
-    //     if (!empty($params)) {
-    //         $sql->bind_param(...$params);
-    //     }
-
-    //     $sql->execute();
-    //     $result = $sql->get_result();
-    //     $sql->close(); 
-    
-    //     return $result;
-    // }
-
-    // private function responderJson($respuesta) 
-    // {
-    //     header('Content-Type: application/json; charset=utf-8');
-    //     echo json_encode($respuesta);
-    //     exit;
-    // }
-
     public function listarUsuarios($limite, $offset) {
         $conexion = new conexion();
         $sql = $conexion->test()->prepare("CALL sp_usuario('ver', NULL, NULL, NULL, NULL, NULL, NULL, ?, ?, 'jeyson.triana.m@uniminuto.edu')");
@@ -169,6 +145,54 @@ class CrudUsuario extends BaseModelo
         $respuesta = $result->fetch_assoc();
         $this->responderJson($respuesta);
     }
+
+    public function obtenerUsuarioPorCorreo($correo) {
+        $resultObtenerCorreo = $this->ejecutarSp("SELECT * FROM usuario WHERE correo = ? AND estado = 1",
+        ["s", $correo]);
+        $usuario = $resultObtenerCorreo->fetch_assoc();
+
+        if ($usuario) {
+            $token = generarJWT([
+                'id' => $usuario['id'],
+                'correo' => $usuario['correo'],
+                'id_rectoria' => $usuario['id_rectoria'],
+                'id_sede' => $usuario['id_sede'],
+                'id_rol' => $usuario['id_rol']
+            ]);
+        
+            $this->responderJson([
+                'status' => 1,
+                'message' => 'Login exitoso',
+                'token' => $token,
+                'usuario' => [
+                    'correo' => $usuario['correo'],
+                    'id_rectoria' => $usuario['id_rectoria'],
+                    'id_sede' => $usuario['id_sede'],
+                    'id_rol' => $usuario['id_rol']
+                ]
+            ]);
+        }
+        
+    
+        // if ($usuario) {
+        //     $this->responderJson([
+        //         'status' => 1,
+        //         'message' => 'Usuario encontrado',
+        //         'data' => [
+        //             'id' => $usuario['id'],
+        //             'correo' => $usuario['correo'],
+        //             'id_rectoria' => $usuario['id_rectoria'],
+        //             'id_sede' => $usuario['id_sede'],
+        //             'id_rol' => $usuario['id_rol']
+        //         ]
+        //     ]);
+         else {
+            http_response_code(401);
+            echo json_encode(['status' => 0, 'message' => 'Tu cuenta no está registrada o está inactiva']);
+        }
+    }
+    
+    
 }
 
 ?>

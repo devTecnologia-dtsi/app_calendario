@@ -7,18 +7,19 @@ import { EditarCalendariosComponent } from './calendarios/editar-calendarios/edi
 import { IndiceRolComponent } from './rol/indice-rol/indice-rol.component';
 import { LogsComponent } from './logs/logs.component';
 import { FormularioCalendariosComponent } from './calendarios/formulario-calendarios/formulario-calendarios.component';
-import { esAdminGuard } from './compartidos/guards/es-admin.guard';
 import { LoginComponent } from './seguridad/login/login.component';
 
 export const routes: Routes = [
-    {path: '', component: LandingPageComponent},
+    {path: 'dashboard', component: LandingPageComponent},
     {path: 'calendarios/crear/:tipo', component: FormularioCalendariosComponent},
     {path: 'calendarios/editar/:id', component: EditarCalendariosComponent},
-    {path: 'rol', component: IndiceRolComponent, canActivate: [esAdminGuard]},
-    {path: 'usuarios', component: IndiceUsuariosComponent, canActivate: [esAdminGuard]},
+    // {path: 'rol', component: IndiceRolComponent, canActivate: [MsalGuard]},
+    // {path: 'usuarios', component: IndiceUsuariosComponent, canActivate: [MsalGuard]},
+    {path: 'rol', component: IndiceRolComponent},
+    {path: 'usuarios', component: IndiceUsuariosComponent},
     {path: 'usuarios/crear', component: CrearUsuariosComponent},
     {path: 'usuarios/editar/:id', component: EditarUsuariosComponent},
     {path: 'logs', component: LogsComponent},
     {path: 'login', component: LoginComponent},
-    {path: '**', redirectTo: ''},
+    {path: '**', redirectTo: 'login'},
 ];
