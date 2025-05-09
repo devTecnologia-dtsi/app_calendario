@@ -47,10 +47,6 @@ export class IndiceRolComponent implements OnInit, AfterViewInit {
     'Leer',
     'Actualizar',
     'Borrar',
-    'Actividad',
-    'Subactividad',
-    'Calendario',
-    'Sistema',
     'Acciones'
   ];
   fuenteDatos = new MatTableDataSource<RolDTO>([]);

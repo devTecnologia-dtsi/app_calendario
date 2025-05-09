@@ -6,32 +6,11 @@ include_once __DIR__ . "/baseModelo.php";
 
 class Rol extends BaseModelo
 {
-    // private function ejecutarSP($query, $params = []) {
-    //     $conexion = new conexion();
-    //     $sql = $conexion->test()->prepare($query);
-
-    //     if (!empty($params)) {
-    //         $sql->bind_param(...$params);
-    //     }
-
-    //     $sql->execute();
-    //     $result = $sql->get_result();
-    //     $sql->close();
-
-    //     return $result;
-    // }
-
-    // private function responderJson($respuesta)  {
-    //     header('Content-Type: application/json; charset=utf-8');
-    //     echo json_encode($respuesta);
-    //     exit;
-    // }
-
     public function listarRol() {
         try {
+
             // Llamada al SP
-            // $sql = $conexion->test()->prepare("CALL sp_rol('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'sistema@uniminuto.edu')");
-            $result = $this->ejecutarSP("CALL sp_rol('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')");
+            $result = $this->ejecutarSP("CALL sp_rol('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
 
             // Obtener roles
             $roles = $result->fetch_all(MYSQLI_ASSOC);
@@ -53,9 +32,11 @@ class Rol extends BaseModelo
 
     public function consultarRol($id) {
         try {
+
             // Llamada al SP
-            $result = $this->ejecutarSP("CALL sp_rol('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
-            ["i", $id]);
+            $result = $this->ejecutarSP("CALL sp_rol('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL)",
+            ["i", 
+                    $id]);
             $rol = $result->fetch_assoc();
             $result->close();
 
@@ -83,20 +64,21 @@ class Rol extends BaseModelo
 
     public function actualizarRol($id, $dato) {
         try {
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
             // Llamada al SP
             $result = $this->ejecutarSP(
-                "CALL sp_rol('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, 'jeyson.triana.m@uniminuto.edu')",
+                "CALL sp_rol('actualizar', ?, ?, ?, ?, ?, NULL, ?)",
                 [
-                    'iiiiiiiii',
+                    'iiiiis',
                     $id,
                     $dato['crear'],
                     $dato['leer'],
                     $dato['actualizar'],
                     $dato['borrar'],
-                    $dato['actividad'],
-                    $dato['subactividad'],
-                    $dato['calendario'],
-                    $dato['sistema']
+                    $usuarioAuth
                 ]
             );
     

@@ -147,50 +147,34 @@ class CrudUsuario extends BaseModelo
     }
 
     public function obtenerUsuarioPorCorreo($correo) {
-        $resultObtenerCorreo = $this->ejecutarSp("SELECT * FROM usuario WHERE correo = ? AND estado = 1",
-        ["s", $correo]);
-        $usuario = $resultObtenerCorreo->fetch_assoc();
-
-        if ($usuario) {
-            $token = generarJWT([
-                'id' => $usuario['id'],
-                'correo' => $usuario['correo'],
-                'id_rectoria' => $usuario['id_rectoria'],
-                'id_sede' => $usuario['id_sede'],
-                'id_rol' => $usuario['id_rol']
-            ]);
-        
-            $this->responderJson([
-                'status' => 1,
-                'message' => 'Login exitoso',
-                'token' => $token,
-                'usuario' => [
-                    'correo' => $usuario['correo'],
-                    'id_rectoria' => $usuario['id_rectoria'],
-                    'id_sede' => $usuario['id_sede'],
-                    'id_rol' => $usuario['id_rol']
-                ]
-            ]);
-        }
-        
+        // Ejecutar consulta para obtener todos los permisos del usuario
+        $resultObtenerCorreo = $this->ejecutarSp(
+            "SELECT * FROM usuario WHERE correo = ? AND estado = 1",
+            ["s", $correo]
+        );
     
-        // if ($usuario) {
-        //     $this->responderJson([
-        //         'status' => 1,
-        //         'message' => 'Usuario encontrado',
-        //         'data' => [
-        //             'id' => $usuario['id'],
-        //             'correo' => $usuario['correo'],
-        //             'id_rectoria' => $usuario['id_rectoria'],
-        //             'id_sede' => $usuario['id_sede'],
-        //             'id_rol' => $usuario['id_rol']
-        //         ]
-        //     ]);
-         else {
+        $permisos = $resultObtenerCorreo->fetch_all(MYSQLI_ASSOC);
+    
+        if (count($permisos) === 0) {
             http_response_code(401);
-            echo json_encode(['status' => 0, 'message' => 'Tu cuenta no está registrada o está inactiva']);
+            echo json_encode(["error" => "No tienes permisos asignados"]);
+            exit;
         }
+    
+        // Generar token con todos los permisos del usuario
+        $token = generarJWT([
+            'correo' => $correo,
+            'permisos' => $permisos
+        ]);
+    
+        $this->responderJson([
+            "status" => 1,
+            "message" => "Login exitoso",
+            "token" => $token,
+            "usuario" => $permisos
+        ]);
     }
+    
     
     
 }
