@@ -8,6 +8,7 @@ import { IndiceRolComponent } from './rol/indice-rol/indice-rol.component';
 import { LogsComponent } from './logs/logs.component';
 import { FormularioCalendariosComponent } from './calendarios/formulario-calendarios/formulario-calendarios.component';
 import { LoginComponent } from './seguridad/login/login.component';
+import { RolGuard } from './seguridad/rol.guard';
 
 export const routes: Routes = [
     {path: 'dashboard', component: LandingPageComponent},
@@ -15,11 +16,11 @@ export const routes: Routes = [
     {path: 'calendarios/editar/:id', component: EditarCalendariosComponent},
     // {path: 'rol', component: IndiceRolComponent, canActivate: [MsalGuard]},
     // {path: 'usuarios', component: IndiceUsuariosComponent, canActivate: [MsalGuard]},
-    {path: 'rol', component: IndiceRolComponent},
-    {path: 'usuarios', component: IndiceUsuariosComponent},
-    {path: 'usuarios/crear', component: CrearUsuariosComponent},
-    {path: 'usuarios/editar/:id', component: EditarUsuariosComponent},
-    {path: 'logs', component: LogsComponent},
+    {path: 'rol', component: IndiceRolComponent, canActivate: [RolGuard]},
+    {path: 'usuarios', component: IndiceUsuariosComponent, canActivate: [RolGuard]},
+    {path: 'usuarios/crear', component: CrearUsuariosComponent, canActivate: [RolGuard]},
+    {path: 'usuarios/editar/:id', component: EditarUsuariosComponent, canActivate: [RolGuard]},
+    {path: 'logs', component: LogsComponent, canActivate: [RolGuard]},
     {path: 'login', component: LoginComponent},
     {path: '**', redirectTo: 'login'},
 ];

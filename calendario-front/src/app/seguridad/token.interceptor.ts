@@ -5,22 +5,20 @@ import { AuthService } from './auth.service';
 
 @Injectable()
 export class TokenInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+  constructor(private auth: AuthService) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const token = this.authService.getToken();
+    const jwtToken = this.auth.getToken();
 
-    // Si hay token, clonar la solicitud y agregar encabezado Authorization
-    if (token) {
+    if (jwtToken) {
       const authReq = req.clone({
         setHeaders: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${jwtToken}`
         }
       });
       return next.handle(authReq);
     }
 
-    // Si no hay token, pasar la solicitud original
     return next.handle(req);
   }
 }

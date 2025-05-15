@@ -4,10 +4,6 @@ export interface RolCreacionDTO {
     leer: number;
     actualizar: number;
     borrar: number;
-    actividad: number;
-    subactividad: number;
-    calendario: number;
-    sistema: number;
     nombre: string;
     [key: string]: number | string;
 }
@@ -21,9 +17,6 @@ export interface RolDTO{
     crear: number; 
     actualizar: number;
     borrar: number;
-    actividad: number;
-    subactividad: number;
-    calendario: number;
     sistema: number;
     [key: string]: number | string; // Firma de índice para permitir acceso dinámico
 }

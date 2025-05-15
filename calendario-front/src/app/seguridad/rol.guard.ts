@@ -1,21 +1,26 @@
-import { inject } from '@angular/core';
-import { CanActivateFn, Router } from '@angular/router';
+import { inject, Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
 import { AuthService } from './auth.service';
+import { NotificacionService } from '../compartidos/servicios/notificacion.service';
 
-// export const rolGuard: CanActivateFn = (rolesPermitidos: number[]) => {
-export const rolGuard = (rolesPermitidos: number[]) => {
-  return (): boolean => {
-    const auth = inject(AuthService);
-    const router = inject(Router);
+@Injectable({ providedIn: 'root' })
+export class RolGuard implements CanActivate {
+  
+  // Inyección de dependencias
+  private notificacionService = inject(NotificacionService);
+  private auth = inject(AuthService);
+  private router = inject(Router);
 
-    const usuario = auth.getUsuarioInfo();
+  canActivate(): boolean {
+    const rolesPermitidos = [1]; // solo admins
+    const tienePermiso = this.auth.getRoles().some(r => rolesPermitidos.includes(r));
 
-    if (usuario?.id_rol && rolesPermitidos.includes(usuario.id_rol)) {
-      return true;
+    if (!tienePermiso) {
+      this.notificacionService.mostrarError('No tienes permiso para acceder a esta sección');
+      this.router.navigate(['/dashboard']);
+      return false;
     }
 
-    // Si no tiene permiso, redirigir
-    router.navigate(['/no-autorizado']);
-    return false;
-  };
-};
+    return true;
+  }
+}

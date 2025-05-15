@@ -91,10 +91,6 @@ export class IndiceRolComponent implements OnInit, AfterViewInit {
       leer: rol.leer,
       actualizar: rol.actualizar,
       borrar: rol.borrar,
-      actividad: rol.actividad,
-      subactividad: rol.subactividad,
-      calendario: rol.calendario,
-      sistema: rol.sistema,
       nombre: rol.nombre
     };
 

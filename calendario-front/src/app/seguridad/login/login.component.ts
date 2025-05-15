@@ -1,16 +1,22 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { NzCardModule } from 'ng-zorro-antd/card';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { AuthService } from '../auth.service';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { NotificacionService } from '../../compartidos/servicios/notificacion.service';
 
 @Component({
   selector: 'app-login',
   imports: [
     CommonModule,
     NzCardModule,
-    NzButtonModule],
+    NzButtonModule,
+    MatButtonModule,
+    MatIconModule
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css'
 })
@@ -18,14 +24,16 @@ import { AuthService } from '../auth.service';
 export class LoginComponent {
   cargando = false;
 
-  constructor(
-    private authService: AuthService,
-    private router: Router
-  ) {}
+  // Inyección de dependencias
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private NotificacionService = inject(NotificacionService);
 
   async login(): Promise<void> {
-    this.cargando = true;
 
+    if (this.cargando) return;
+    
+    this.cargando = true;
     try {
       // 1. Iniciar sesión con Microsoft
       await this.authService.iniciarSesion();
@@ -37,13 +45,15 @@ export class LoginComponent {
       if (validado) {
         this.router.navigate(['/dashboard']);
       } else {
-        alert('Tu cuenta no está registrada en la base de datos.');
+        // alert('Tu cuenta no está registrada en la base de datos.');
+        this.NotificacionService.mostrarError('Tu cuenta no está registrada en la base de datos.');
         await this.authService.cerrarSesion(); // Para cerrar sesión de Microsoft si no existe en BD
       }
 
     } catch (error) {
       console.error('Error en login:', error);
-      alert('Error al iniciar sesión. Intenta nuevamente.');
+      this.NotificacionService.mostrarError('Error al iniciar sesión. Intenta nuevamente.');
+      // alert('Error al iniciar sesión. Intenta nuevamente.');
     } finally {
       this.cargando = false;
     }

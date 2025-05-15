@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { MsalService } from '@azure/msal-angular';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../../environments/environment.development';
@@ -7,12 +7,27 @@ import { firstValueFrom } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+
+  // URL del endpoint de inicio de sesión
   private readonly loginEndpoint = `${environment.apiUrl}usuarioPorCorreo`;
 
-  constructor(
-    private msal: MsalService,
-    private http: HttpClient
-  ) {}
+  // Inyección de dependencias
+  private msal = inject(MsalService); 
+  private http = inject(HttpClient);
+
+  constructor() {
+    // Verifica si el usuario ya está autenticado al cargar la aplicación
+    const token = this.getToken();
+    if (token) {
+      this.msal.instance.setActiveAccount(this.msal.instance.getAllAccounts()[0]);
+    }
+  }
+
+  private getUsuarioRaw(): any[] {
+    const raw = localStorage.getItem('usuario_info');
+    return raw ? JSON.parse(raw) : [];
+  }
+
 
   get activeAccount(): AccountInfo | null {
     return this.msal.instance.getActiveAccount();
@@ -72,4 +87,24 @@ export class AuthService {
   estaAutenticado(): boolean {
     return !!this.getToken();
   }
+
+  tieneRol(rol: number): boolean {
+    return this.getRoles().includes(rol);
+  }
+
+  getRoles(): number[] {
+    return [...new Set(this.getUsuarioRaw().map((u) => u.id_rol))];
+  }
+
+  getSedes(): number[] {
+    const usuario = JSON.parse(localStorage.getItem('usuario_info') || '[]') as { id_sede: number }[];
+    return [...new Set(usuario.map((p) => p.id_sede))];
+  }
+
+  getRectorias(): number[] {
+    const usuario = JSON.parse(localStorage.getItem('usuario_info') || '[]') as { id_rectoria: number }[];
+    return [...new Set(usuario.map((p) => p.id_rectoria))];
+  }
+
+
 }

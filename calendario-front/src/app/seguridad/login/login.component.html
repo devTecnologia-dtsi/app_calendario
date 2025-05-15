@@ -1,32 +1,26 @@
-<!-- <div class="login-container">
-    <nz-card class="login-card" nzTitle="Bienvenido" [nzBordered]="false">
-      <p>Inicie sesión con su cuenta institucional</p>
-      <button nz-button nzType="primary" (click)="login()">Iniciar sesión</button>
-    </nz-card>
-  </div>
-   -->
-
-
-   <section class="login-container">
-    <!-- Lado Izquierdo -->
-    <div class="login-left">
-      <!-- Círculo con Logo -->
-      <div class="logo-container">
-        <img src="logoUM.png" alt="Logo" class="logo" />
-      </div>
-  
-      <!-- Título -->
-      <h2 class="login-title">Inicia sesión</h2>
-  
-      <!-- Botón -->
-      <button class="btn btn-dark d-flex align-items-center" (click)="login()">
-        <img src="microsoft.webp" width="30" height="30" class="me-2" />
-        INGRESA CON MICROSOFT
-      </button>
+<section class="login-container">
+  <!-- Lado Izquierdo -->
+  <div class="login-left">
+    
+    <!-- Círculo con Logo -->
+    <div class="logo-container">
+      <img src="logoUM.png" alt="Logo" class="logo" />
     </div>
+  
+    <!-- Título -->
+    <h2 class="login-title">Inicia sesión</h2>
+
+    <!-- Botón -->
+    <!-- <button mat-raised-button color="primary" (click)="login()"> -->
+    <button mat-raised-button [disabled]="cargando" (click)="login()">
+      <mat-icon>mail</mat-icon>
+      INGRESA CON MICROSOFT
+    </button>
+
+  </div>
   
     <!-- Lado Derecho: Imagen de Fondo -->
-    <div class="login-right">
-      <img src="calendario.jpg" alt="Imagen de fondo" class="background-image" />
-    </div>
-  </section>
+  <div class="login-right">
+    <img src="calendario.jpg" class="background-image" />
+  </div>
+</section>
