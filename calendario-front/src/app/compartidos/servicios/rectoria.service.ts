@@ -31,6 +31,12 @@ export class RectoriaService {
     );
   }
 
+  listarRectoriasPorUsuario(): Observable<RespuestaAPI> {
+    return this.http.get<RespuestaAPI>(`${this.urlBase}rectoriasPorUsuario`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
   private handleError(error: HttpErrorResponse) {
     let errorMessage = 'Ocurrió un error inesperado';
     if (error.error instanceof ErrorEvent) {

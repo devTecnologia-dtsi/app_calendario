@@ -18,14 +18,12 @@ import { NotificacionService } from '../../compartidos/servicios/notificacion.se
 ]
 })
 
-
 export class EditarCalendariosComponent implements OnInit {
 
   // Propiedades
   modelo?: CalendarioCreacionDTO;
   calendario?: CalendarioDTO;
   errores: string[] = [];
-
 
   // Inyecciones de dependencias
   private calendariosService = inject(CalendariosService);

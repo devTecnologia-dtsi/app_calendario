@@ -39,8 +39,13 @@ switch ($metodo) {
             } else {
                 $rectoria->listarRectorias();
             }
-        } 
-        
+        }
+
+        elseif ($tabla === 'rectoriasPorUsuario') {
+            $rectoria = new Rectoria();
+            $rectoria->listarRectoriasPorUsuario();
+        }
+
         elseif ($tabla === 'sede') {
             //Consultar sedes
             $sede = new Sede();
@@ -63,6 +68,12 @@ switch ($metodo) {
             }
         } 
         
+        elseif ($tabla === 'sedesPorUsuario') {
+            // Listar sedes por usuario
+            $sede = new Sede();
+            $sede->listarSedesPorUsuario();
+        }
+
         elseif ($tabla === 'rol') {
             // Consultar rol específico o todos
             $rol = new Rol();
@@ -141,10 +152,10 @@ switch ($metodo) {
             $periodo = new PeriodoAcademico();
             if ($id) {
                 // Consultar periodo por ID
-                $periodo->buscarPeriodo($id);
+                $periodo->buscarPeriodoAcademico($id);
             } else {
                 // Listar todos los periodos
-                $periodo->listarPeriodos();
+                $periodo->listarPeriodosAcademicos();
             }
         }
 
@@ -200,7 +211,7 @@ switch ($metodo) {
         elseif ($tabla === 'periodo') {
             // Insertar periodo
             $periodo = new PeriodoAcademico();
-            $periodo->crearPeriodo($dato);
+            $periodo->crearPeriodoAcademico($dato);
         }
 
         elseif ($tabla === 'calendario') {
@@ -268,7 +279,7 @@ switch ($metodo) {
         else if ($tabla === 'periodoAcademico') {
             // Actualizar periodo
             $periodo = new PeriodoAcademico();
-            $periodo->actualizarPeriodo($id, $dato);
+            $periodo->actualizarPeriodoAcademico($id, $dato);
         }
 
         elseif ($tabla === 'calendario') {
@@ -328,7 +339,7 @@ switch ($metodo) {
         elseif ($tabla === 'periodoAcademico') {
             // Deshabilitar periodo academico
             $periodo = new PeriodoAcademico();
-            $periodo->deshabilitarPeriodo($id);
+            $periodo->deshabilitarPeriodoAcademico($id);
         }
 
         else {
@@ -364,7 +375,7 @@ switch ($metodo) {
         elseif ($tabla === 'periodoAcademico') {
             // Eliminar periodo
             $periodo = new PeriodoAcademico();
-            $periodo->eliminarPeriodo($id);
+            $periodo->eliminarPeriodoAcademico($id);
         }
 
         elseif ($tabla === 'calendario') {

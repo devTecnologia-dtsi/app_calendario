@@ -6,33 +6,10 @@ include_once __DIR__ ."/baseModelo.php";
 
 class PeriodoAcademico extends BaseModelo
 {
-    // private function ejecutarSp($query, $params = [])
-    // {
-    //     $conexion = new conexion();
-    //     $sql = $conexion->test()->prepare($query);
-
-    //     if (!empty($params)) {
-    //         $sql->bind_param(...$params);
-    //     }
-
-    //     $sql->execute();
-    //     $result = $sql->get_result();
-    //     $sql->close();
-
-    //     return $result;
-    // }
-
-    // private function responderJson($respuesta)
-    // {
-    //     header('Content-Type: application/json; charset=utf-8');
-    //     echo json_encode($respuesta);
-    //     exit;
-    // }
-
-    public function listarPeriodos()
+    public function listarPeriodosAcademicos()
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_periodo('listar', NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')");
+            $result = $this->ejecutarSp("CALL sp_periodo_academico('listar', NULL, NULL, NULL, NULL, NULL)");
             $periodos = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
 
@@ -49,11 +26,13 @@ class PeriodoAcademico extends BaseModelo
         }
     }
 
-    public function buscarPeriodo($id)
+    public function buscarPeriodoAcademico($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_periodo('listar', ?, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-                ["i", $id]);
+            $result = $this->ejecutarSp("CALL sp_periodo_academico('listar', ?, NULL, NULL, NULL, NULL)",
+            ["i",
+            $id
+        ]);
             $periodo = $result->fetch_assoc();
             $result->close();
 
@@ -77,11 +56,20 @@ class PeriodoAcademico extends BaseModelo
         }
     }
 
-    public function crearPeriodo($data)
+    public function crearPeriodoAcademico($data)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_periodo('insertar', NULL, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
-                ["iii", $data['anio'], $data['periodo'], $data['estado']]);
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $result = $this->ejecutarSp("CALL sp_periodo('insertar', NULL, ?, ?, ?, ?)",
+            ["iiis",
+                $data['anio'],
+                $data['periodo'], 
+                $data['estado'],
+                $usuarioAuth
+            ]);
 
             $respuesta = $result->fetch_assoc();
             $this->responderJson($respuesta);
@@ -93,11 +81,21 @@ class PeriodoAcademico extends BaseModelo
         }
     }
 
-    public function actualizarPeriodo($id, $data)
+    public function actualizarPeriodoAcademico($id, $data)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_periodo('actualizar', ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
-                ["iiii", $id, $data['anio'], $data['periodo'], $data['estado']]);
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $result = $this->ejecutarSp("CALL sp_periodo('actualizar', ?, ?, ?, ?, ?)",
+            ["iiiis", 
+                $id, 
+                $data['anio'], 
+                $data['periodo'], 
+                $data['estado'],
+                $usuarioAuth
+            ]);
 
             $respuesta = $result->fetch_assoc();
             $this->responderJson($respuesta);
@@ -109,11 +107,18 @@ class PeriodoAcademico extends BaseModelo
         }
     }
 
-    public function deshabilitarPeriodo($id)
+    public function deshabilitarPeriodoAcademico($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_periodo('deshabilitar', ?, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-                ["i", $id]);
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $result = $this->ejecutarSp("CALL sp_periodo('deshabilitar', ?, NULL, NULL, NULL, ?)",
+            ["is", 
+                $id,
+                $usuarioAuth
+                
+            ]);
 
             $respuesta = $result->fetch_assoc();
             $this->responderJson($respuesta);
@@ -125,11 +130,18 @@ class PeriodoAcademico extends BaseModelo
         }
     }
 
-    public function eliminarPeriodo($id)
+    public function eliminarPeriodoAcademico($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_periodo('eliminar', ?, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-                ["i", $id]);
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $result = $this->ejecutarSp("CALL sp_periodo('eliminar', ?, NULL, NULL, NULL, ?)",
+                ["is",
+                $id,
+                $usuarioAuth
+            ]);
 
             $respuesta = $result->fetch_assoc();
             $this->responderJson($respuesta);

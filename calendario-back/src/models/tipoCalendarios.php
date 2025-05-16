@@ -6,27 +6,6 @@ include_once __DIR__ . "/baseModelo.php";
 
 class TipoCalendarios extends BaseModelo
 {
-//     private function ejecutarSP($query, $params = []) {
-//         $conexion = new conexion();
-//         $sql = $conexion->test()->prepare($query);
-
-//         if (!empty($params)) {
-//             $sql->bind_param(...$params);
-//         }
-
-//         $sql->execute();
-//         $result = $sql->get_result();
-//         $sql->close();
-
-//         return $result;
-//     }
-
-//     private function responderJson($respuesta) {
-//         header('Content-Type: application/json; charset=utf-8');
-//         echo json_encode($respuesta);
-//         exit;
-//     }
-
     public function listarTipoCalendario() {
         try {
             $result = $this->ejecutarSP("CALL sp_tipoCalendario('listar', NULL)");

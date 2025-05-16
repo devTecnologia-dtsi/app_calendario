@@ -31,7 +31,10 @@ class Calendario extends BaseModelo
     {
         try {
             // Consultar el calendario base
-            $result = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')", ["i", $id]);
+            $result = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+            ["i",
+            $id
+        ]);
             $calendario = $result->fetch_assoc();
             $result->close();
     
@@ -79,6 +82,7 @@ class Calendario extends BaseModelo
     public function insertarCalendario($data)
     {
         if (
+
             empty($data['id_usuario']) || 
             empty($data['id_rectoria']) || 
             empty($data['id_sede']) || 
@@ -96,11 +100,15 @@ class Calendario extends BaseModelo
         }
     
         try {
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
             // Crear calendario base
             $resultado = $this->ejecutarSp(
-                "CALL sp_calendario('insertar', NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                "CALL sp_calendario('insertar', NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [
-                    'iiiiiiiii',
+                    'iiiiiiiiis',
                     $data['id_usuario'],
                     $data['id_rectoria'],
                     $data['id_sede'],
@@ -109,7 +117,8 @@ class Calendario extends BaseModelo
                     $data['id_periodo_academico'],
                     $data['id_tipo_periodo'],
                     $data['estado'],
-                    $data['en_sede']
+                    $data['en_sede'],
+                    $usuarioAuth
                 ]
             );
             $res = $resultado->fetch_assoc();
@@ -120,12 +129,13 @@ class Calendario extends BaseModelo
             if (isset($data['actividades']) && is_array($data['actividades'])) {
                 foreach ($data['actividades'] as $actividad) {
                     $resActividad = $this->ejecutarSp(
-                        "CALL sp_actividad('insertar', NULL, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                        "CALL sp_actividad('insertar', NULL, ?, ?, ?, ?)",
                         [
-                            'iss',
+                            'isss',
                             $idCalendario,
                             $actividad['titulo'],
-                            $actividad['estado']
+                            $actividad['estado'],
+                            $usuarioAuth
                         ]
                     );
                     $actividadCreada = $resActividad->fetch_assoc();
@@ -136,15 +146,16 @@ class Calendario extends BaseModelo
                     if (isset($actividad['subactividades']) && is_array($actividad['subactividades'])) {
                         foreach ($actividad['subactividades'] as $subactividad) {
                             $this->ejecutarSp(
-                                "CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, 'jeyson.triana.m@uniminuto.edu')",
+                                "CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, ?)",
                                 [
-                                    'ississ',
+                                    'ississs',
                                     $idActividad,
                                     $subactividad['nombre'],
                                     $subactividad['descripcion'],
                                     $subactividad['estado'],
                                     $subactividad['fecha_inicio'],
-                                    $subactividad['fecha_fin']
+                                    $subactividad['fecha_fin'],
+                                    $usuarioAuth
                                 ]
                             )->close();
                         }
@@ -185,11 +196,15 @@ class Calendario extends BaseModelo
         }
     
         try {
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
             // 1. Actualizar calendario
             $this->ejecutarSp(
-                "CALL sp_calendario('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                "CALL sp_calendario('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [
-                    'iiiiiiiiii',
+                    'iiiiiiiiiis',
                     $id,
                     $data['id_usuario'],
                     $data['id_rectoria'],
@@ -199,7 +214,8 @@ class Calendario extends BaseModelo
                     $data['id_periodo_academico'],
                     $data['id_tipo_periodo'],
                     $data['estado'],
-                    $data['en_sede']
+                    $data['en_sede'],
+                    $usuarioAuth
                 ]
             )->close();
     
@@ -210,26 +226,27 @@ class Calendario extends BaseModelo
                     if (isset($actividad['id']) && $actividad['id'] > 0) {
                         // Actualizar actividad
                         $this->ejecutarSp(
-                            "CALL sp_actividad('actualizar', ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                            "CALL sp_actividad('actualizar', ?, ?, ?, ?, ?)",
                             [
-                                'iisi',
+                                'iisis',
                                 $actividad['id'],
                                 $id,
                                 $actividad['titulo'],
-                                $actividad['estado']
-                                // 'jeyson.triana@uniminuto.edu'
+                                $actividad['estado'],
+                                $usuarioAuth
                             ]
                         )->close();
                         $idActividad = $actividad['id'];
                     } else {
                         // Insertar nueva actividad
                         $resAct = $this->ejecutarSp(
-                            "CALL sp_actividad('insertar', NULL, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
+                            "CALL sp_actividad('insertar', NULL, ?, ?, ?, ?)",
                             [
-                                'iss',
+                                'isss',
                                 $id,
                                 $actividad['titulo'],
-                                $actividad['estado']
+                                $actividad['estado'],
+                                $usuarioAuth
                             ]
                         );
                         $actividadInsertada = $resAct->fetch_assoc();
@@ -244,30 +261,32 @@ class Calendario extends BaseModelo
                             if (isset($subactividad['id']) && $subactividad['id'] > 0) {
                                 // Actualizar subactividad
                                 $this->ejecutarSp(
-                                    "CALL sp_subactividad('actualizar', ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana.m@uniminuto.edu')",
+                                    "CALL sp_subactividad('actualizar', ?, ?, ?, ?, ?, ?, ?, ?)",
                                     [
-                                        'iississ',
+                                        'iississs',
                                         $subactividad['id'],
                                         $idActividad,
                                         $subactividad['nombre'],
                                         $subactividad['descripcion'],
                                         $subactividad['estado'],
                                         $subactividad['fecha_inicio'],
-                                        $subactividad['fecha_fin']
+                                        $subactividad['fecha_fin'],
+                                        $usuarioAuth
                                     ]
                                 )->close();
                             } else {
                                 // Insertar nueva subactividad
                                 $this->ejecutarSp(
-                                    "CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, 'jeyson.triana.m@uniminuto.edu')",
+                                    "CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, ?)",
                                     [
-                                        'ississ',
+                                        'ississs',
                                         $idActividad,
                                         $subactividad['nombre'],
                                         $subactividad['descripcion'],
                                         $subactividad['estado'],
                                         $subactividad['fecha_inicio'],
-                                        $subactividad['fecha_fin']
+                                        $subactividad['fecha_fin'],
+                                        $usuarioAuth
                                     ]
                                 )->close();
                             }
@@ -291,8 +310,15 @@ class Calendario extends BaseModelo
     public function deshabilitarCalendario($id)
     {
         try {
-            $resultDesactivarCalendario = $this->ejecutarSp("CALL sp_calendario('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-                ["i", $id]);
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $resultDesactivarCalendario = $this->ejecutarSp("CALL sp_calendario('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
+                ["is", 
+                $id,
+                $usuarioAuth
+            ]);
             
             $respuesta = $resultDesactivarCalendario->fetch_assoc();
             $this->responderJson($respuesta);
@@ -309,8 +335,15 @@ class Calendario extends BaseModelo
     public function eliminarCalendario($id)
     {
         try {
-            $respuestaEliminarCalendario = $this->ejecutarSp("CALL sp_calendario('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-                ["i", $id]);
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $respuestaEliminarCalendario = $this->ejecutarSp("CALL sp_calendario('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
+                ["is", 
+                $id,
+                $usuarioAuth
+            ]);
 
                 // Capturar respuesta del SP
             $respuesta = $respuestaEliminarCalendario->fetch_assoc();

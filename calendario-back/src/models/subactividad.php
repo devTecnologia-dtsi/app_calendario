@@ -65,14 +65,18 @@ class Subactividad extends BaseModelo
 
         try {
 
-            $resultado = $this->ejecutarSp("CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, 'jeyson.triana.m@uniminuto.edu')",
-                ["ississ",
-                $dato['id_actividad'],
-                $dato['nombre'],
-                $dato['descripcion'],
-                $dato['estado'],
-                $dato['fecha_inicio'],
-                $dato['fecha_fin'],
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $resultado = $this->ejecutarSp("CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, ?)",
+                ["ississs",
+                    $dato['id_actividad'],
+                    $dato['nombre'],
+                    $dato['descripcion'],
+                    $dato['estado'],
+                    $dato['fecha_inicio'],
+                    $dato['fecha_fin'],
+                    $usuarioAuth
                 ]);
             $respuesta = $resultado->fetch_assoc();
             $resultado->close();
@@ -97,15 +101,19 @@ class Subactividad extends BaseModelo
 
         try {
 
-            $resultado = $this->ejecutarSp("CALL sp_subactividad('actualizar', ?, ?, ?, ?, ?, ?, ?, 'jeyson.triana.m@uniminuto.edu')",
-                ["iississ",
-                $id,
-                $dato['id_actividad'],
-                $dato['nombre'],
-                $dato['descripcion'],
-                $dato['estado'],
-                $dato['fecha_inicio'],
-                $dato['fecha_fin'],
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $resultado = $this->ejecutarSp("CALL sp_subactividad('actualizar', ?, ?, ?, ?, ?, ?, ?, ?)",
+                ["iississs",
+                    $id,
+                    $dato['id_actividad'],
+                    $dato['nombre'],
+                    $dato['descripcion'],
+                    $dato['estado'],
+                    $dato['fecha_inicio'],
+                    $dato['fecha_fin'],
+                    $usuarioAuth
                 ]);
             $respuesta = $resultado->fetch_assoc();
             $resultado->close();
@@ -122,8 +130,15 @@ class Subactividad extends BaseModelo
     public function deshabilitarSubactividad($id)
     {
         try {
-            $resultado = $this->ejecutarSp("CALL sp_subactividad('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
-             ["i", $id]);
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $resultado = $this->ejecutarSp("CALL sp_subactividad('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
+            ["is", 
+                $id,
+                $usuarioAuth
+            ]);
             $respuesta = $resultado->fetch_assoc();
             $resultado->close();
 
@@ -139,8 +154,16 @@ class Subactividad extends BaseModelo
     public function eliminarSubactividad($id)
     {
         try {
-            $resultado = $this->ejecutarSp("CALL sp_subactividad('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
-            ["i", $id]);
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $resultado = $this->ejecutarSp("CALL sp_subactividad('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
+            ["is", 
+                $id,
+                $usuarioAuth
+
+            ]);
             $respuesta = $resultado->fetch_assoc();
             $resultado->close();
 

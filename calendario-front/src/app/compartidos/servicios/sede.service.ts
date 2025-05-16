@@ -32,7 +32,14 @@ export class SedeService {
     );
   }
 
-    listarSedesPorRectoria(id_rectoria: number): Observable<RespuestaAPI> {
+  listarSedesPorUsuario(): Observable<RespuestaAPI> {
+    return this.http.get<RespuestaAPI>(`${this.urlBase}sedesPorUsuario`).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+
+  listarSedesPorRectoria(id_rectoria: number): Observable<RespuestaAPI> {
     return this.http.get<RespuestaAPI>(`${this.urlBase}sedesPorRectoria/${id_rectoria}`).pipe(
       catchError(this.handleError)
     );

@@ -65,12 +65,16 @@ class Actividad extends BaseModelo
             ]);
         }
         try {
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
             $result = $this->ejecutarSp(
-                "CALL sp_actividad('insertar', NULL, ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
-                ["iss", 
+                "CALL sp_actividad('insertar', NULL, ?, ?, ?, ?)",
+                ["isss", 
                     $dato['id_calendario'], 
                     $dato['titulo'], 
-                    $dato['estado']
+                    $dato['estado'],
+                    $usuarioAuth
                 ]
             );
 
@@ -95,8 +99,19 @@ class Actividad extends BaseModelo
     public function actualizarActividad($id, $dato)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('actualizar', ?, ?, ?, ?, 'jeyson.triana@uniminuto.edu')", 
-            ["iisis", $id, $dato['id_calendario'], $dato['titulo'], $dato['estado'], $dato['correo']]);
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            // Validar datos requeridos
+            $result = $this->ejecutarSp("CALL sp_actividad('actualizar', ?, ?, ?, ?, ?)", 
+            ["iisis", 
+                $id, 
+                $dato['id_calendario'], 
+                $dato['titulo'], 
+                $dato['estado'], 
+                $usuarioAuth
+            ]);
         
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();
@@ -113,8 +128,15 @@ class Actividad extends BaseModelo
     public function desactivarActividad($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('deshabilitar', ?, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-                ["i", $id]);
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $result = $this->ejecutarSp("CALL sp_actividad('deshabilitar', ?, NULL, NULL, NULL, ?)",
+                ["is", 
+                $id,
+                $usuarioAuth
+            ]);
 
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();
@@ -131,8 +153,15 @@ class Actividad extends BaseModelo
     public function eliminarActividad($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('eliminar', ?, NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-                ["i", $id]);
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $result = $this->ejecutarSp("CALL sp_actividad('eliminar', ?, NULL, NULL, NULL, ?)",
+                ["is", 
+                $id,
+                $usuarioAuth
+            ]);
 
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();

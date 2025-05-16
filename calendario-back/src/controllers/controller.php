@@ -4,7 +4,6 @@ include_once __DIR__ . "/../models/subactividad.php";
 include_once __DIR__ . "/../models/periodoAcademico.php";
 include_once __DIR__ . "/../models/calendario.php";
 include_once __DIR__ . "/../models/usuario.php";
-include_once __DIR__ . "/../models/Rolcalendario.php";
 include_once __DIR__ . "/../models/rectoria.php";
 include_once __DIR__ . "/../models/sede.php";
 include_once __DIR__ . "/../models/rol.php";
@@ -36,10 +35,16 @@ function consultar($id, $tabla, $limite = 5, $offset = 0) {
         case 'rectoria':
             $modelo = new Rectoria();
             break;
+        case 'rectoriasPorUsuario':
+            $modelo = new Rectoria();
+            break;
         case 'sede':
             $modelo = new Sede();
             break;
         case 'sedesPorRectoria':
+            $modelo = new Sede();
+            break;
+        case 'sedesPorUsuario':
             $modelo = new Sede();
             break;
         case 'rol':
@@ -80,7 +85,7 @@ function insertar($dato, $tabla) {
             $subactividad->crearSubactividad($dato);
         case 'periodo':
             $periodo = new PeriodoAcademico();
-            $periodo->crearPeriodo($dato);
+            $periodo->crearPeriodoAcademico($dato);
             break;
         case 'calendario':
             $calendario = new Calendario();
@@ -105,7 +110,7 @@ function actualizar($id, $dato, $tabla) {
             break;
         case 'periodoAcademico':
             $periodo = new PeriodoAcademico();
-            $periodo->actualizarPeriodo($$id, $dato);
+            $periodo->actualizarPeriodoAcademico($$id, $dato);
             break;
         case 'calendario':
             $calendario = new Calendario();
@@ -150,7 +155,7 @@ function desactivar($id, $tabla) {
             break;
         case 'periodoAcademico':
             $periodo = new PeriodoAcademico();
-            $periodo->deshabilitarPeriodo($id);
+            $periodo->deshabilitarPeriodoAcademico($id);
             break;
 
         default:
@@ -168,7 +173,7 @@ function eliminar($id, $tabla) {
             break;
         case 'periodoAcademico':
             $periodo = new PeriodoAcademico();
-            $periodo->eliminarPeriodo($id);
+            $periodo->eliminarPeriodoAcademico($id);
             break;
         case 'calendario':
             $calendario = new Calendario();

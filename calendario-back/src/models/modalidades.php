@@ -6,33 +6,10 @@ include_once __DIR__ . "/baseModelo.php";
 
 class Modalidades extends BaseModelo
 {
-    // private function ejecutarSp($query, $params = [])
-    // {
-    //     $conexion = new conexion();
-    //     $sql = $conexion->test()->prepare($query);
-
-    //     if (!empty($params)) {
-    //         $sql->bind_param(...$params);
-    //     }
-
-    //     $sql->execute();
-    //     $result = $sql->get_result();
-    //     $sql->close();
-
-    //     return $result;
-    // }
-
-    // private function responderJson($respuesta)
-    // {
-    //     header('Content-Type: application/json; charset=utf-8');
-    //     echo json_encode($respuesta);
-    //     exit;
-    // }
-
     public function listarModalidades()
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_modalidades('listar', NULL, NULL, NULL, 'jeyson.triana@uniminuto.edu')");
+            $result = $this->ejecutarSp("CALL sp_modalidades('listar', NULL, NULL, NULL, NULL)");
             $modalidades = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
 
@@ -52,7 +29,7 @@ class Modalidades extends BaseModelo
     public function buscarModalidad($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_modalidades('listar', ?, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
+            $result = $this->ejecutarSp("CALL sp_modalidades('listar', ?, NULL, NULL, NULL)",
                 ["i", $id]);
             $modalidad = $result->fetch_assoc();
             $result->close();
@@ -80,10 +57,16 @@ class Modalidades extends BaseModelo
     public function crearModalidad($data)
     {
         try {
-            $resultCrearModalidad = $this->ejecutarSp("CALL sp_modalidades('insertar', NULL, ?, ?, 'jeyson.triana@uniminuto.edu')",
-                ["si",
+
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $resultCrearModalidad = $this->ejecutarSp("CALL sp_modalidades('insertar', NULL, ?, ?, ?)",
+                ["sis",
                 $data['nombre'],
-                $data['estado']]);
+                $data['estado'],
+                $usuarioAuth
+            ]);
             
             // Capturar respuesta del SP
             $respuesta = $resultCrearModalidad->fetch_assoc();
@@ -100,11 +83,16 @@ class Modalidades extends BaseModelo
     public function actualizarModalidad($id, $data)
     {
         try {
-            $resultActualizarModalidad = $this->ejecutarSp("CALL sp_modalidades('actualizar', ?, ?, ?, 'jeyson.triana@uniminuto.edu')",
-                ["isi",
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $resultActualizarModalidad = $this->ejecutarSp("CALL sp_modalidades('actualizar', ?, ?, ?, ?)",
+                ["isis",
                 $id,
                 $data['nombre'],
-                $data['estado']]);
+                $data['estado'],
+                $usuarioAuth
+            ]);
 
             // Capturar respuesta del SP
             $respuesta = $resultActualizarModalidad->fetch_assoc();
@@ -121,8 +109,14 @@ class Modalidades extends BaseModelo
     public function desactivarModalidad($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_modalidades('deshabilitar', ?, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-                ["i", $id]);
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $result = $this->ejecutarSp("CALL sp_modalidades('deshabilitar', ?, NULL, NULL, ?)",
+                ["is",
+                $id,
+                $usuarioAuth
+            ]);
 
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();
@@ -139,8 +133,14 @@ class Modalidades extends BaseModelo
     public function eliminarModalidad($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_modalidades('eliminar', ?, NULL, NULL, 'jeyson.triana@uniminuto.edu')",
-                ["i", $id]);
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            $result = $this->ejecutarSp("CALL sp_modalidades('eliminar', ?, NULL, NULL, ?)",
+                ["is",
+                $id,
+                $usuarioAuth
+            ]);
 
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();

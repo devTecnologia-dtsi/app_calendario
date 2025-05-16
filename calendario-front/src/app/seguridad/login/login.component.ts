@@ -35,6 +35,9 @@ export class LoginComponent {
     
     this.cargando = true;
     try {
+
+      await this.authService.cargarPermisosRoles();
+
       // 1. Iniciar sesión con Microsoft
       await this.authService.iniciarSesion();
 
@@ -45,7 +48,6 @@ export class LoginComponent {
       if (validado) {
         this.router.navigate(['/dashboard']);
       } else {
-        // alert('Tu cuenta no está registrada en la base de datos.');
         this.NotificacionService.mostrarError('Tu cuenta no está registrada en la base de datos.');
         await this.authService.cerrarSesion(); // Para cerrar sesión de Microsoft si no existe en BD
       }
@@ -53,7 +55,6 @@ export class LoginComponent {
     } catch (error) {
       console.error('Error en login:', error);
       this.NotificacionService.mostrarError('Error al iniciar sesión. Intenta nuevamente.');
-      // alert('Error al iniciar sesión. Intenta nuevamente.');
     } finally {
       this.cargando = false;
     }

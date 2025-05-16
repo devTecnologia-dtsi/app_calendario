@@ -1,3 +1,52 @@
+// import { Component, OnInit, inject } from '@angular/core';
+// import { Router } from '@angular/router';
+// import { MsalService } from '@azure/msal-angular';
+// import { RouterOutlet } from '@angular/router';
+// import { MenuComponent } from "./compartidos/componentes/menu/menu.component";
+// import { HttpClientModule } from '@angular/common/http';
+// import { CommonModule } from '@angular/common';
+
+// @Component({
+//   selector: 'app-root',
+//   standalone: true,
+//   imports: [
+//     RouterOutlet,
+//     MenuComponent,
+//     HttpClientModule,
+//     CommonModule
+//   ],
+//   templateUrl: './app.component.html',
+//   styleUrl: './app.component.css'
+// })
+// export class AppComponent implements OnInit {
+
+//   private authService = inject(MsalService);
+//   private router = inject(Router);
+
+//   get mostrarMenu(): boolean {
+//     // Agregar más rutas si se necesitan ocultar el menú en otras páginas
+//     return this.router.url !== '/login';
+//   }
+
+//   ngOnInit() {
+//     this.authService.instance.handleRedirectPromise().then((result) => {
+//       if (result !== null && result.account !== null) {
+//         this.authService.instance.setActiveAccount(result.account);
+//         this.router.navigate(['/dashboard']); // o la ruta que tengas
+//       } else {
+//         const activeAccount = this.authService.instance.getActiveAccount();
+//         if (!activeAccount && this.authService.instance.getAllAccounts().length > 0) {
+//           this.authService.instance.setActiveAccount(this.authService.instance.getAllAccounts()[0]);
+//         }
+//       }
+//     });
+//   }
+// }
+
+
+
+
+
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { MsalService } from '@azure/msal-angular';
@@ -5,6 +54,7 @@ import { RouterOutlet } from '@angular/router';
 import { MenuComponent } from "./compartidos/componentes/menu/menu.component";
 import { HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { AuthService } from './seguridad/auth.service'; // ✅
 
 @Component({
   selector: 'app-root',
@@ -19,24 +69,25 @@ import { CommonModule } from '@angular/common';
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-
-  private authService = inject(MsalService);
+  private authService = inject(AuthService); // 🔁 authService propio, no directamente Msal
+  private msal = inject(MsalService);
   private router = inject(Router);
 
   get mostrarMenu(): boolean {
-    // Puedes agregar más rutas si necesitas ocultar el menú en otras páginas
     return this.router.url !== '/login';
   }
 
-  ngOnInit() {
-    this.authService.instance.handleRedirectPromise().then((result) => {
+  ngOnInit(): void {
+    this.authService.validarSesionPeriodicamente(); 
+
+    this.msal.instance.handleRedirectPromise().then((result) => {
       if (result !== null && result.account !== null) {
-        this.authService.instance.setActiveAccount(result.account);
-        this.router.navigate(['/dashboard']); // o la ruta que tengas
+        this.msal.instance.setActiveAccount(result.account);
+        this.router.navigate(['/dashboard']);
       } else {
-        const activeAccount = this.authService.instance.getActiveAccount();
-        if (!activeAccount && this.authService.instance.getAllAccounts().length > 0) {
-          this.authService.instance.setActiveAccount(this.authService.instance.getAllAccounts()[0]);
+        const activeAccount = this.msal.instance.getActiveAccount();
+        if (!activeAccount && this.msal.instance.getAllAccounts().length > 0) {
+          this.msal.instance.setActiveAccount(this.msal.instance.getAllAccounts()[0]);
         }
       }
     });

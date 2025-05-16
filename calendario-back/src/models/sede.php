@@ -7,27 +7,6 @@ include_once __DIR__ . "/baseModelo.php";
 class Sede extends BaseModelo
 {
 
-    // private function ejecutarSP($query, $params = []) {
-    //     $conexion = new conexion();
-    //     $sql = $conexion->test()->prepare($query);
-        
-    //     if (!empty($params)) {
-    //         $sql->bind_param(...$params);
-    //     }
-
-    //     $sql->execute();
-    //     $result = $sql->get_result();
-    //     $sql->close();
-
-    //     return $result;
-    // }
-
-    // private function responderJson($respuesta) {
-    //     header('Content-Type: application/json; charset=utf-8');
-    //     echo json_encode($respuesta);
-    //     exit;
-    // }
-
     public function listarSedes() {
         try {
             $result = $this->ejecutarSP("CALL sp_sede('listar', NULL, NULL)");
@@ -106,6 +85,27 @@ class Sede extends BaseModelo
                 'status' => 0,
                 'message' => 'Error al listar sedes por rectoría: ' . $e->getMessage()
             ]);
+        }
+    }
+
+    public function listarSedesPorUsuario() {
+        try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $permisos = $datos->permisos ?? [];
+            $ids = array_unique(array_map(fn($p) => $p->id_sede, $permisos));
+            if (empty($ids)) throw new Exception("Sin permisos");
+
+            $placeholders = implode(',', array_fill(0, count($ids), '?'));
+            $tipos = str_repeat('i', count($ids));
+            $sql = "SELECT id, nombre, id_rectoria FROM sede WHERE id IN ($placeholders)";
+            $result = $this->ejecutarSP($sql, [$tipos, ...$ids]);
+            $this->responderJson([
+                'status' => 1,
+                'message' => 'OK',
+                'data' => $result->fetch_all(MYSQLI_ASSOC)
+            ]);
+        } catch (Exception $e) {
+            $this->responderJson(['status' => 0, 'message' => $e->getMessage()]);
         }
     }
 }

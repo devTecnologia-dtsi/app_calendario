@@ -133,6 +133,32 @@ abstract class BaseModelo
             exit;
         }
     }
+
+    protected function obtenerDatosDesdeToken() {
+    $headers = getallheaders();
+    $authHeader = $headers['Authorization'] ?? '';
+
+    if (preg_match('/Bearer\s(\S+)/', $authHeader, $matches)) {
+        $token = $matches[1];
+
+        try {
+            $config = require __DIR__ . '/../../config/config.php';
+
+            $secret = $config['jwt_secret'];
+            $decoded = JWT::decode($token, new Key($secret, 'HS256'));
+            return $decoded->data ?? null;
+        } catch (Exception $e) {
+            http_response_code(401);
+            echo json_encode(["error" => "Token inválido: " . $e->getMessage()]);
+            exit;
+        }
+    } else {
+        http_response_code(401);
+        echo json_encode(["error" => "Token no proporcionado"]);
+        exit;
+    }
+}
+
 }
 
 ?>

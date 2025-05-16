@@ -9,7 +9,7 @@ class CrudUsuario extends BaseModelo
 {
     public function listarUsuarios($limite, $offset) {
         $conexion = new conexion();
-        $sql = $conexion->test()->prepare("CALL sp_usuario('ver', NULL, NULL, NULL, NULL, NULL, NULL, ?, ?, 'jeyson.triana.m@uniminuto.edu')");
+        $sql = $conexion->test()->prepare("CALL sp_usuario('ver', NULL, NULL, NULL, NULL, NULL, NULL, ?, ?, NULL)");
         $sql->bind_param("ii", $limite, $offset);
         $sql->execute();
     
@@ -33,7 +33,7 @@ class CrudUsuario extends BaseModelo
     }
     
     public function consultarUsuario($id) {
-        $result = $this->ejecutarSp("CALL sp_usuario('ver_id', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
+        $result = $this->ejecutarSp("CALL sp_usuario('ver_id', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
         ["i",$id]);
         $usuario = $result->fetch_assoc();
         
@@ -48,22 +48,26 @@ class CrudUsuario extends BaseModelo
     {
         try {
 
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
             // Autocompletar dominio si no está incluido
             $correo = $dato['correo_nuevo'];
             if (!str_ends_with($correo, '@uniminuto.edu')) {
                 $correo .= '@uniminuto.edu';
             }
 
-            $result = $this->ejecutarSP("CALL sp_usuario('insertar', NULL, ?, ?, ?, ?, ?, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
+            $result = $this->ejecutarSP("CALL sp_usuario('insertar', NULL, ?, ?, ?, ?, ?, NULL, NULL, ?)",
              [
-                'siiii',
+                'siiiis',
                 // En caso de implemetación sin dominio
                 // $correo,
                 $dato['correo_nuevo'], 
                 $dato['estado'], 
                 $dato['id_rectoria'],
                 $dato['id_sede'],
-                $dato['id_rol']
+                $dato['id_rol'],
+                $usuarioAuth
             ]);
 
             // Capturar respuesta del SP
@@ -96,6 +100,9 @@ class CrudUsuario extends BaseModelo
     {
         try {
 
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
             // Autocompletar dominio si no está incluido
             $correo = $dato['correo_nuevo'];
             if (!str_ends_with($correo, '@uniminuto.edu')) {
@@ -103,20 +110,18 @@ class CrudUsuario extends BaseModelo
             }
 
             // Ejecutar SP
-            $result = $this->ejecutarSP(
-                "CALL sp_usuario('actualizar', ?, ?, ?, ?, ?, ?, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
-                [
-                    'isiiii',
-                    $id,
-                    // En caso de implemetación sin dominio
-                    // $correo,
-                    $dato['correo_nuevo'],
-                    $dato['estado'],
-                    $dato['id_rectoria'],
-                    $dato['id_sede'],
-                    $dato['id_rol']
-                ]
-            );
+            $result = $this->ejecutarSP("CALL sp_usuario('actualizar', ?, ?, ?, ?, ?, ?, NULL, NULL, ?)",
+            ['isiiiis',
+                        $id,
+                        // En caso de implemetación sin dominio
+                        // $correo,
+                        $dato['correo_nuevo'],
+                        $dato['estado'],
+                        $dato['id_rectoria'],
+                        $dato['id_sede'],
+                        $dato['id_rol'],
+                        $usuarioAuth
+            ]);
     
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();
@@ -132,18 +137,55 @@ class CrudUsuario extends BaseModelo
     }
     
     public function desactivarUsuario($id){
-        $result = $this->ejecutarSp("CALL sp_usuario('desactivar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana.m@uniminuto.edu' )",
-         ["i", $id]);
-         $respuesta = $result->fetch_assoc();
-         $this->responderJson($respuesta);
+
+        try {
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            // Ejecutar SP
+            $result = $this->ejecutarSP("CALL sp_usuario('desactivar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
+            ["is", 
+                $id,
+                $usuarioAuth
+            ]);
+
+            $respuesta = $result->fetch_assoc();
+            $this->responderJson($respuesta);
+
+        } catch (Exception $e) {
+            http_response_code(400);
+            $this->responderJSON([
+                'error' => true,
+                'message' => $e->getMessage()
+            ]);  
+        }
     }
 
     // No se usa, pero se deja funcional en caso de implementación
     public function eliminarUsuario($id) {
-        $result = $this->ejecutarSP("CALL sp_usuario('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'jeyson.triana.m@uniminuto.edu')",
-         ["i", $id]);
-        $respuesta = $result->fetch_assoc();
-        $this->responderJson($respuesta);
+
+        try {
+            // Obtener correo desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+            // Ejecutar SP
+            $result = $this->ejecutarSP("CALL sp_usuario('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
+            ["is", 
+                $id,
+                $usuarioAuth
+            ]);
+
+            $respuesta = $result->fetch_assoc();
+            $this->responderJson($respuesta);
+
+        } catch (Exception $e) {
+            http_response_code(400);
+            $this->responderJSON([
+                'error' => true,
+                'message' => $e->getMessage()
+            ]);  
+        }
+
     }
 
     public function obtenerUsuarioPorCorreo($correo) {
@@ -174,9 +216,6 @@ class CrudUsuario extends BaseModelo
             "usuario" => $permisos
         ]);
     }
-    
-    
-    
 }
 
 ?>

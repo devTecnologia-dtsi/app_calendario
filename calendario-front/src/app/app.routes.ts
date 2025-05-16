@@ -9,10 +9,13 @@ import { LogsComponent } from './logs/logs.component';
 import { FormularioCalendariosComponent } from './calendarios/formulario-calendarios/formulario-calendarios.component';
 import { LoginComponent } from './seguridad/login/login.component';
 import { RolGuard } from './seguridad/rol.guard';
+import { CalendarioGuard } from './seguridad/calendario.guard';
 
 export const routes: Routes = [
+    {path: 'login', component: LoginComponent},
     {path: 'dashboard', component: LandingPageComponent},
-    {path: 'calendarios/crear/:tipo', component: FormularioCalendariosComponent},
+    // {path: 'calendarios/crear/:tipo', component: FormularioCalendariosComponent},
+    {path: 'calendarios/crear/:tipo', component: FormularioCalendariosComponent, canActivate: [CalendarioGuard] },
     {path: 'calendarios/editar/:id', component: EditarCalendariosComponent},
     // {path: 'rol', component: IndiceRolComponent, canActivate: [MsalGuard]},
     // {path: 'usuarios', component: IndiceUsuariosComponent, canActivate: [MsalGuard]},
@@ -21,6 +24,5 @@ export const routes: Routes = [
     {path: 'usuarios/crear', component: CrearUsuariosComponent, canActivate: [RolGuard]},
     {path: 'usuarios/editar/:id', component: EditarUsuariosComponent, canActivate: [RolGuard]},
     {path: 'logs', component: LogsComponent, canActivate: [RolGuard]},
-    {path: 'login', component: LoginComponent},
     {path: '**', redirectTo: 'login'},
 ];
