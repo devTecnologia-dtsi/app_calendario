@@ -7,30 +7,61 @@ include_once __DIR__ . "/../seguridad/jwt_utils.php";
 
 class CrudUsuario extends BaseModelo
 {
-    public function listarUsuarios($limite, $offset) {
-        $conexion = new conexion();
-        $sql = $conexion->test()->prepare("CALL sp_usuario('ver', NULL, NULL, NULL, NULL, NULL, NULL, ?, ?, NULL)");
-        $sql->bind_param("ii", $limite, $offset);
-        $sql->execute();
+    // public function listarUsuarios($limite, $offset) {
+    //     $conexion = new conexion();
+    //     $sql = $conexion->test()->prepare("CALL sp_usuario('ver', NULL, NULL, NULL, NULL, NULL, NULL, ?, ?, NULL)");
+    //     $sql->bind_param("ii", $limite, $offset);
+    //     $sql->execute();
     
-        // Obtener usuarios
-        $result = $sql->get_result();
-        $usuarios = $result->fetch_all(MYSQLI_ASSOC);
-        $result->close();
+    //     // Obtener usuarios
+    //     $result = $sql->get_result();
+    //     $usuarios = $result->fetch_all(MYSQLI_ASSOC);
+    //     $result->close();
         
-        // Mover puntero al siguiente resultado (el total)
-        $sql->next_result();
-        $totalResult = $sql->get_result();
-        $totalUsuarios = $totalResult->fetch_assoc()['total'];
+    //     // Mover puntero al siguiente resultado (el total)
+    //     $sql->next_result();
+    //     $totalResult = $sql->get_result();
+    //     $totalUsuarios = $totalResult->fetch_assoc()['total'];
     
-        // Respuesta
-        $this->responderJson([
-            'status' => 1,
-            'message' => 'Usuarios listados correctamente',
-            'total' => $totalUsuarios,
-            'data' => $usuarios
-        ]);
-    }
+    //     // Respuesta
+    //     $this->responderJson([
+    //         'status' => 1,
+    //         'message' => 'Usuarios listados correctamente',
+    //         'total' => $totalUsuarios,
+    //         'data' => $usuarios
+    //     ]);
+    // }
+
+    public function listarUsuarios($limite, $offset) {
+    $conexion = new conexion();
+
+    // Filtro opcional desde query param
+    $filtro = isset($_GET['filtro']) ? $_GET['filtro'] : null;
+
+    // Preparar SP con filtro
+    $sql = $conexion->test()->prepare("CALL sp_usuario('ver', NULL, NULL, NULL, NULL, NULL, NULL, ?, ?, ?)");
+    $sql->bind_param("iis", $limite, $offset, $filtro);
+    $sql->execute();
+
+    // Resultado de usuarios
+    $result = $sql->get_result();
+    $usuarios = $result->fetch_all(MYSQLI_ASSOC);
+    $result->close();
+
+    // Resultado del total
+    $sql->next_result();
+    $totalResult = $sql->get_result();
+    $totalUsuarios = $totalResult->fetch_assoc()['total'];
+
+    // Respuesta JSON
+    $this->responderJson([
+        'status' => 1,
+        'message' => 'Usuarios listados correctamente',
+        'total' => $totalUsuarios,
+        'data' => $usuarios
+    ]);
+}
+
     
     public function consultarUsuario($id) {
         $result = $this->ejecutarSp("CALL sp_usuario('ver_id', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",

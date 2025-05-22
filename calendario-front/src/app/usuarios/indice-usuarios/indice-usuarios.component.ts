@@ -30,6 +30,8 @@ import { NotificacionService } from '../../compartidos/servicios/notificacion.se
   styleUrls: ['./indice-usuarios.component.css']
 })
 export class IndiceUsuariosComponent implements OnInit {
+
+  filtroActual = '';
   
   // Inyecciones de servicios
   usuarioService = inject(UsuarioService);
@@ -58,7 +60,7 @@ export class IndiceUsuariosComponent implements OnInit {
     const limite = this.pageSize;
     const offset = this.pageIndex * this.pageSize;
 
-    this.usuarioService.listarUsuarios(limite, offset).subscribe({
+    this.usuarioService.listarUsuarios(limite, offset, this.filtroActual).subscribe({
       next: (respuesta) => {
         if (respuesta.status === 1) {
           this.usuarios = Array.isArray(respuesta.data) ? respuesta.data : [];
@@ -81,9 +83,15 @@ export class IndiceUsuariosComponent implements OnInit {
 
   // Filtro de búsqueda
   aplicarFiltro(event: Event) {
-    const filtroValor = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filtroValor.trim().toLowerCase();
+    this.filtroActual = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    this.pageIndex = 0; // Reiniciar a primera página
+    this.listarUsuarios();
   }
+
+  // aplicarFiltro(event: Event) {
+  //   const filtroValor = (event.target as HTMLInputElement).value;
+  //   this.dataSource.filter = filtroValor.trim().toLowerCase();
+  // }
 
   // Desactivar usuario
   async desactivarUsuario(id: number) {

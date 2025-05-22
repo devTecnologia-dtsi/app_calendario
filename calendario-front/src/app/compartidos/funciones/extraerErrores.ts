@@ -1,5 +1,5 @@
 export function extraerErrores(obj: any): string[] {
-    const err = obj?.error?.errors; // Asegurar que existe `errors`
+    const err = obj?.error?.errors;
     let mensajeDeError: string[] = [];
 
     if (err && typeof err === 'object') {

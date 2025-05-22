@@ -40,14 +40,14 @@ export class LandingPageComponent implements OnInit {
     this.calendariosService.listarCalendarios().subscribe(res => {
       const calendarios = Array.isArray(res.data) ? res.data : [];
 
-      console.log('Correo usuario:', correoUsuario);
-      console.log('Calendarios recibidos:', calendarios);
+      // console.log('Correo usuario:', correoUsuario);
+      // console.log('Calendarios recibidos:', calendarios);
 
       const visibles = calendarios.filter((cal: any) =>
         cal.correo_organizador === correoUsuario
       );
 
-      console.log('Calendarios visibles:', visibles);
+      // console.log('Calendarios visibles:', visibles);
 
       this.calendariosAcademicos = visibles.filter(c => c.tipo_calendario.toLowerCase() === 'académico');
       this.calendariosFinancieros = visibles.filter(c => c.tipo_calendario.toLowerCase() === 'financiero');

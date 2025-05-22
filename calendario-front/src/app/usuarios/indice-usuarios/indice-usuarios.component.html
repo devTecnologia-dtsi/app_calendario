@@ -13,9 +13,16 @@
 
 <div>
   <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 indice-elementos">
-    <ng-container matColumnDef="id">
+    <!-- <ng-container matColumnDef="id">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Id </th>
       <td mat-cell *matCellDef="let elemento"> {{elemento.id}} </td>
+    </ng-container> -->
+
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> # </th>
+      <td mat-cell *matCellDef="let elemento; let i = index">
+        {{ pageIndex * pageSize + i + 1 }}
+      </td>
     </ng-container>
 
     <ng-container matColumnDef="correo">
