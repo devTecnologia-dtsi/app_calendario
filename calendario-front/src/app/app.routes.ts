@@ -14,11 +14,8 @@ import { CalendarioGuard } from './seguridad/calendario.guard';
 export const routes: Routes = [
     {path: 'login', component: LoginComponent},
     {path: 'dashboard', component: LandingPageComponent},
-    // {path: 'calendarios/crear/:tipo', component: FormularioCalendariosComponent},
     {path: 'calendarios/crear/:tipo', component: FormularioCalendariosComponent, canActivate: [CalendarioGuard] },
     {path: 'calendarios/editar/:id', component: EditarCalendariosComponent},
-    // {path: 'rol', component: IndiceRolComponent, canActivate: [MsalGuard]},
-    // {path: 'usuarios', component: IndiceUsuariosComponent, canActivate: [MsalGuard]},
     {path: 'rol', component: IndiceRolComponent, canActivate: [RolGuard]},
     {path: 'usuarios', component: IndiceUsuariosComponent, canActivate: [RolGuard]},
     {path: 'usuarios/crear', component: CrearUsuariosComponent, canActivate: [RolGuard]},

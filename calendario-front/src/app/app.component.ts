@@ -69,7 +69,7 @@ import { AuthService } from './seguridad/auth.service'; // ✅
   styleUrl: './app.component.css'
 })
 export class AppComponent implements OnInit {
-  private authService = inject(AuthService); // 🔁 authService propio, no directamente Msal
+  private authService = inject(AuthService); // AuthService propio, no directamente Msal
   private msal = inject(MsalService);
   private router = inject(Router);
 

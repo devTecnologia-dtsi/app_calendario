@@ -7,6 +7,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
 import { NotificacionService } from '../compartidos/servicios/notificacion.service';
 import { AuthService } from '../seguridad/auth.service';
+import { CargandoComponent } from "../compartidos/componentes/cargando/cargando.component";
 
 @Component({
   selector: 'app-landing-page',
@@ -16,8 +17,9 @@ import { AuthService } from '../seguridad/auth.service';
     MatCardModule,
     MatButtonModule,
     MatIconModule,
-    CommonModule
-  ],
+    CommonModule,
+    CargandoComponent
+],
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.css']
 })
@@ -25,6 +27,7 @@ export class LandingPageComponent implements OnInit {
   calendariosAcademicos: any[] = [];
   calendariosFinancieros: any[] = [];
   calendariosGrados: any[] = [];
+  cargando = false;
 
   private calendariosService = inject(CalendariosService);
   private notificacion = inject(NotificacionService);
@@ -37,6 +40,7 @@ export class LandingPageComponent implements OnInit {
   cargarCalendarios(): void {
     const correoUsuario = this.authService.activeAccount?.username;
 
+    this.cargando = true;
     this.calendariosService.listarCalendarios().subscribe(res => {
       const calendarios = Array.isArray(res.data) ? res.data : [];
 
@@ -52,6 +56,11 @@ export class LandingPageComponent implements OnInit {
       this.calendariosAcademicos = visibles.filter(c => c.tipo_calendario.toLowerCase() === 'académico');
       this.calendariosFinancieros = visibles.filter(c => c.tipo_calendario.toLowerCase() === 'financiero');
       this.calendariosGrados = visibles.filter(c => c.tipo_calendario.toLowerCase() === 'grados');
+      this.cargando = false;
+    }, error => {
+      this.notificacion.mostrarError('Error al cargar los calendarios');
+      console.error('Error al cargar los calendarios:', error);
+      this.cargando = false;
     });
   }
 

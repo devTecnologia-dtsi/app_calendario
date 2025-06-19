@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: ./calendario-front
+    container_name: calendario_front
+    ports:
+      - "8085:8085"
+    depends_on:
+      - backend
+    networks:
+      - calendario_network
+
+  backend:
+    build: ./calendario-back
+    container_name: calendario_back
+    ports:
+      - "8086:8086"
+    volumes:
+      - ./calendario-back:/var/www
+    networks:
+      - calendario_network
+
+networks:
+  calendario_network:
+    driver: bridge

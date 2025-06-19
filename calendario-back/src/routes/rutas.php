@@ -5,7 +5,9 @@ include_once __DIR__ . "/../../config/cors.php";
 
 // Detectar método HTTP y path
 $metodo = $_SERVER['REQUEST_METHOD'];
-$path = $_SERVER['PATH_INFO'] ?? '/';
+// $path = $_SERVER['PATH_INFO'] ?? '/';
+$path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
+// var_dump($_SERVER['PATH_INFO']);
 
 // Extraer partes del path
 $partesPath = explode('/', trim($path, '/'));

@@ -341,4 +341,8 @@ export class FormularioCalendariosComponent implements OnInit {
       });
     }
   }
+
+  cancelar() {
+    this.router.navigate(['/dashboard']);
+  }
 }

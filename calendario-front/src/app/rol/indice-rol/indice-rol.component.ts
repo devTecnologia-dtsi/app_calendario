@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, inject } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 import { RolService } from '../../compartidos/servicios/rol.service';
 import { NotificacionService } from '../../compartidos/servicios/notificacion.service';
 import { extraerErrores } from '../../compartidos/funciones/extraerErrores';
+import { CargandoComponent } from "../../compartidos/componentes/cargando/cargando.component";
 
 @Component({
   selector: 'app-indice-rol',
@@ -32,7 +33,8 @@ import { extraerErrores } from '../../compartidos/funciones/extraerErrores';
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-  ],
+    CargandoComponent
+],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './indice-rol.component.html',
   styleUrls: ['./indice-rol.component.css']
@@ -41,6 +43,7 @@ export class IndiceRolComponent implements OnInit, AfterViewInit {
   
   // Propiedades
   errores: string[] = [];
+  cargando = false;
   columnasMostradas: string[] = [
     'Nombre',
     'Crear',
@@ -54,6 +57,7 @@ export class IndiceRolComponent implements OnInit, AfterViewInit {
   // Inyección de dependencias
   private notificacionService = inject(NotificacionService);
   private rolService = inject(RolService);
+  private cd =  inject(ChangeDetectorRef);
 
   // Métodos del ciclo de vida
   ngOnInit(): void {
@@ -65,18 +69,25 @@ export class IndiceRolComponent implements OnInit, AfterViewInit {
 
   // Métodos
   cargarRoles(): void {
+    this.cargando = true;
+    console.log('Cargando roles...');
     this.rolService.listarRoles().subscribe({
       next: (response) => {
+        console.log('Respuesta recibida:', response);
         if (response && Array.isArray(response.data)) {
           this.fuenteDatos.data = response.data;
         } else {
           this.fuenteDatos.data = [];
           this.notificacionService.mostrarError('No se encontraron roles.');
         }
+        this.cargando = false;
+        this.cd.markForCheck(); // Asegura que la vista se actualice
       },
       error: (error) => {
         console.error('Error al cargar roles:', error);
         this.notificacionService.mostrarError('Error al cargar los roles.');
+        this.cargando = false;
+        this.cd.markForCheck(); // Asegura que la vista se actualice
       }
     });
   }

@@ -13,6 +13,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { UsuarioDTO } from '../usuario';
 import { UsuarioService } from '../../compartidos/servicios/usuario.service';
 import { NotificacionService } from '../../compartidos/servicios/notificacion.service';
+import { CargandoComponent } from "../../compartidos/componentes/cargando/cargando.component";
 
 @Component({
   selector: 'app-indice-usuarios',
@@ -25,13 +26,14 @@ import { NotificacionService } from '../../compartidos/servicios/notificacion.se
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatTooltipModule],
+    MatTooltipModule, CargandoComponent],
   templateUrl: './indice-usuarios.component.html',
   styleUrls: ['./indice-usuarios.component.css']
 })
 export class IndiceUsuariosComponent implements OnInit {
 
   filtroActual = '';
+  cargando = false;
   
   // Inyecciones de servicios
   usuarioService = inject(UsuarioService);
@@ -57,6 +59,7 @@ export class IndiceUsuariosComponent implements OnInit {
 
   // Obtener usuarios paginados
   listarUsuarios() {
+    this.cargando = true;
     const limite = this.pageSize;
     const offset = this.pageIndex * this.pageSize;
 
@@ -69,6 +72,7 @@ export class IndiceUsuariosComponent implements OnInit {
         } else {
           this.notificacionService.mostrarAdvertencia(respuesta.message || 'No se encontraron usuarios', 'Aviso');
         }
+        this.cargando = false;
       },
       error: (error) => this.notificacionService.mostrarError('Error al listar usuarios')
     });

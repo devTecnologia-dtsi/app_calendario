@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { CargandoComponent } from "../compartidos/componentes/cargando/cargando.component";
 
 @Component({
   selector: 'app-logs',
@@ -20,8 +21,9 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatTooltipModule
-  ],
+    MatTooltipModule,
+    CargandoComponent
+],
   templateUrl: './logs.component.html',
   styleUrl: './logs.component.css'
 })
@@ -29,13 +31,14 @@ export class LogsComponent implements OnInit{
 
   // Inyecciones de servicios
   logsService = inject(LogsService);
-    notificacionService = inject(NotificacionService);
+  notificacionService = inject(NotificacionService);
   
 
   // Propiedades
   logs : LogsDTO[] = [];
   dataSource = new MatTableDataSource<LogsDTO>();
   columnasAMostrar = ['id', 'estado', 'fecha', 'descripcion', 'correo'];
+  cargando = false;
 
   // Control de paginación
   totalLogs = 0;
@@ -51,6 +54,7 @@ export class LogsComponent implements OnInit{
 
   // Obtener logs paginados
   listarLogs() {
+    this.cargando = true;
     const limite = this.pageSize;
     const offset = this.pageIndex * this.pageSize;
 
@@ -64,6 +68,7 @@ export class LogsComponent implements OnInit{
         } else {
           this.notificacionService.mostrarAdvertencia(respuesta.message || 'No se encontraron logs', 'Aviso');
         }
+        this.cargando = false;
       },
       error: (error) => this.notificacionService.mostrarError('Error al listar logs')
     });

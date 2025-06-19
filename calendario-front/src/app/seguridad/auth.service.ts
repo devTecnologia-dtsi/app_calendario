@@ -1,10 +1,11 @@
 import { inject, Injectable } from '@angular/core';
 import { MsalService } from '@azure/msal-angular';
 import { HttpClient } from '@angular/common/http';
-import { environment } from '../../environments/environment.development';
+import { environment } from '../../environments/environment';
 import { AccountInfo } from '@azure/msal-browser';
 import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
+import { NotificacionService } from '../compartidos/servicios/notificacion.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -16,6 +17,7 @@ export class AuthService {
   private msal = inject(MsalService); 
   private http = inject(HttpClient);
   private router = inject(Router);
+  private notificacionService = inject(NotificacionService);
 
   constructor() {
     // Verifica si el usuario ya está autenticado al cargar la aplicación
@@ -69,7 +71,7 @@ export class AuthService {
           localStorage.setItem('jwt_token', respuesta.token);
           localStorage.setItem('usuario_info', JSON.stringify(respuesta.usuario));
         } catch (e) {
-          console.error('Error guardando en localStorage:', e);
+          // console.error('Error guardando en localStorage:', e);
           return false;
         }
         return true;
@@ -79,7 +81,7 @@ export class AuthService {
         return false;
       }
     } catch (error) {
-      console.error('Error al validar con backend:', error);
+      // console.error('Error al validar con backend:', error);
       this.cerrarSesion();
       return false;
     }
@@ -154,7 +156,8 @@ export class AuthService {
         );
 
         if (!respuesta || !respuesta.token || !respuesta.usuario) {
-          console.warn('Sesión inválida detectada. Cerrando sesión.');
+          // console.warn('Sesión inválida detectada. Cerrando sesión.');
+          this.notificacionService.mostrarError('Sesión inválida. Por favor, inicia sesión nuevamente.');
           this.cerrarSesion();
         }
 

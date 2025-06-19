@@ -1,47 +1,55 @@
 <h2>Logs</h2>
 
-<div>
-    <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 indice-elementos">
-        <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef> Id </th>
-            <td mat-cell *matCellDef="let log"> {{log.id}} </td>
-        </ng-container>
+@if (cargando) {
+    <app-cargando></app-cargando>
+}
+@else {
+    <div>
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z8 indice-elementos">
+            <ng-container matColumnDef="id">
+                <th mat-header-cell *matHeaderCellDef> Id </th>
+                <td mat-cell *matCellDef="let log"> {{log.id}} </td>
+            </ng-container>
 
-        <ng-container matColumnDef="estado">
-            <th mat-header-cell *matHeaderCellDef> Estado </th>
-            <td mat-cell *matCellDef="let log"> {{log.estado}}</td>
-        </ng-container>
+            <ng-container matColumnDef="estado">
+                <th mat-header-cell *matHeaderCellDef> Estado </th>
+                <td mat-cell *matCellDef="let log"> {{log.estado}}</td>
+            </ng-container>
 
-        <ng-container matColumnDef="fecha">
-            <th mat-header-cell *matHeaderCellDef> Fecha </th>
-            <td mat-cell *matCellDef="let log"> {{log.fecha}}</td>
-        </ng-container>
+            <ng-container matColumnDef="fecha">
+                <th mat-header-cell *matHeaderCellDef> Fecha </th>
+                <td mat-cell *matCellDef="let log"> {{log.fecha}}</td>
+            </ng-container>
 
-        <ng-container matColumnDef="descripcion">
-            <th mat-header-cell *matHeaderCellDef> Descripción </th>
-            <td mat-cell *matCellDef="let log"> {{log.descripcion}}</td>
-        </ng-container>
+            <ng-container matColumnDef="descripcion">
+                <th mat-header-cell *matHeaderCellDef> Descripción </th>
+                <td mat-cell *matCellDef="let log"> {{log.descripcion}}</td>
+            </ng-container>
 
-        <ng-container matColumnDef="correo">
-            <th mat-header-cell *matHeaderCellDef> Correo </th>
-            <td mat-cell *matCellDef="let log"> {{log.correo}}</td>
-        </ng-container>
+            <ng-container matColumnDef="correo">
+                <th mat-header-cell *matHeaderCellDef> Correo </th>
+                <td mat-cell *matCellDef="let log"> {{log.correo}}</td>
+            </ng-container>
 
-        <tr mat-header-row *matHeaderRowDef="columnasAMostrar"></tr>
-        <tr mat-row *matRowDef="let row; columns: columnasAMostrar;"></tr>
+            <tr mat-header-row *matHeaderRowDef="columnasAMostrar"></tr>
+            <tr mat-row *matRowDef="let row; columns: columnasAMostrar;"></tr>
 
-    </table>
+        </table>
 
-    <mat-paginator
-        [length]="totalLogs"
-        [pageSize]="pageSize"
-        [pageIndex]="pageIndex"
-        [pageSizeOptions]="[5, 10, 20]"
-        showFirstLastButtons
-        (page)="handlePageEvent($event)">
-    </mat-paginator>
-  
+        <mat-paginator
+            [length]="totalLogs"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            [pageSizeOptions]="[5, 10, 20]"
+            showFirstLastButtons
+            (page)="handlePageEvent($event)">
+        </mat-paginator>
+    
 
-</div>
+    </div>
+}
+
+
+
 
 
