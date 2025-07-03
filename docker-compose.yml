@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   frontend:
     build: ./calendario-front
@@ -16,8 +14,6 @@ services:
     container_name: calendario_back
     ports:
       - "8086:8086"
-    volumes:
-      - ./calendario-back:/var/www
     networks:
       - calendario_network
 

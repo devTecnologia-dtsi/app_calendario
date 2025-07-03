@@ -40,7 +40,7 @@ RUN echo 'DB_HOST=10.0.20.189\n\
           DB_USER=root\n\
           DB_PASSWORD=Jailton81*\n\
           DB_PORT=3306\n\
-          JWT_SECRET_KEY=SuperClaveUltraSecreta123!\n\' > config/.env
+          JWT_SECRET_KEY=SuperClaveUltraSecreta123!' > config/.env
  
 # Puerto (8086) y VirtualHost
 RUN echo 'ServerName localhost\n\
