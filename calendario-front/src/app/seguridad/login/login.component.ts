@@ -43,6 +43,7 @@ export class LoginComponent {
 
       // 2. Validar con tu backend si el usuario existe
       const validado = await this.authService.validarConBackend();
+      console.log('Resultado de validarConBackend:', validado);
 
       // 3. Redirigir si todo va bien
       if (validado) {
