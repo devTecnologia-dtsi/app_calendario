@@ -1,7 +1,7 @@
 export const environment = {
     production: true,
     // URL base del backend de la aplicación
-    apiUrl: 'http://localhost:82/',
+    apiUrl: 'http://localhost:82/api/',
   
     // URL de redirección del frontend (app Angular)
     baseUrl: 'http://localhost:8084',

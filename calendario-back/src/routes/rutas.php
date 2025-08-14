@@ -11,9 +11,9 @@ $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
 
 // Extraer partes del path
 $partesPath = explode('/', trim($path, '/'));
-$tabla = $partesPath[0] ?? null;
-$accion = $partesPath[1] ?? null;
-$id = isset($partesPath[1]) && is_numeric($partesPath[1]) ? intval($partesPath[1]) : null;
+$tabla = $partesPath[1] ?? null;
+$accion = $partesPath[2] ?? null;
+$id = isset($partesPath[2]) && is_numeric($partesPath[2]) ? intval($partesPath[2]) : null;
 
 // Captura de parámetros limite y offset desde la URL (paginación)
 $limite = isset($_GET['limite']) ? intval($_GET['limite']) : 10;
