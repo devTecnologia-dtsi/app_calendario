@@ -1,8 +1,7 @@
 export const environment = {
     production: true,
     // URL base del backend de la aplicación
-    // apiUrl: 'https://testcalendarios.uniminuto.edu/api/',
-    apiUrl: 'https://10.0.26.31:8086/',
+    apiUrl: 'https://testcalendarios.uniminuto.edu/api/',
   
     // URL de redirección del frontend (app Angular)
     baseUrl: 'https://testcalendarios.uniminuto.edu',
