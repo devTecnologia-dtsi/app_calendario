@@ -10,8 +10,12 @@
     <!-- Título -->
     <h2 class="login-title">Inicia sesión</h2>
 
-    <!-- Botón -->
-    <button mat-raised-button [disabled]="cargando" (click)="login()">
+    <!-- Botón con clase personalizada -->
+    <button 
+      mat-raised-button 
+      class="login-button"
+      [disabled]="cargando" 
+      (click)="login()">
       <mat-icon>mail</mat-icon>
       INGRESA CON MICROSOFT
     </button>
@@ -20,6 +24,6 @@
   
     <!-- Lado Derecho: Imagen de Fondo -->
   <div class="login-right">
-    <img src="calendario.jpg" class="background-image" />
+    <img src="calendario.jpg" alt="Calendario" class="background-image" />
   </div>
 </section>
