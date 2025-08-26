@@ -27,45 +27,114 @@ class Calendario extends BaseModelo
         }
     }
 
+    // public function consultarCalendarioParaEdicion($id)
+    // {
+    //     try {
+    //         // Consultar el calendario base
+    //         $result = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+    //         ["i",
+    //         $id
+    //     ]);
+    //         $calendario = $result->fetch_assoc();
+    //         $result->close();
+    
+    //         if (!$calendario) {
+    //             return $this->responderJson([
+    //                 'status' => 0,
+    //                 'message' => 'Calendario no encontrado'
+    //             ]);
+    //         }
+    
+    //         // Consultar actividades
+    //         $actividades = $this->ejecutarSp("CALL sp_actividad('listar_por_calendario', NULL, ?, NULL, NULL, NULL)",
+    //         ["i", $id]);
+    //         $actividadesArray = [];
+    
+    //         while ($actividad = $actividades->fetch_assoc()) {
+    //             // Consultar subactividades por cada actividad
+    //             $subactividades = $this->ejecutarSp("CALL sp_subactividad('listar_por_actividad', NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL)",
+    //             ["i", $actividad['id']]);
+    //             $subactividadesArray = [];
+    
+    //             while ($sub = $subactividades->fetch_assoc()) {
+    //                 $subactividadesArray[] = $sub;
+    //             }
+    
+    //             $actividad['subactividades'] = $subactividadesArray;
+    //             $actividadesArray[] = $actividad;
+    //         }
+    
+    //         $calendario['actividades'] = $actividadesArray;
+    
+    //         return $this->responderJson([
+    //             'status' => 1,
+    //             'message' => 'Calendario a editar obtenido',
+    //             'data' => $calendario
+    //         ]);
+    //     } catch (Exception $e) {
+    //         return $this->responderJson([
+    //             'status' => 0,
+    //             'message' => 'Error al obtener el calendario: ' . $e->getMessage()
+    //         ]);
+    //     }
+    // }
+
     public function consultarCalendarioParaEdicion($id)
     {
         try {
+            // Obtener correo del usuario autenticado desde el token
+            $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
             // Consultar el calendario base
-            $result = $this->ejecutarSp("CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
-            ["i",
-            $id
-        ]);
+            $result = $this->ejecutarSp(
+                "CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+                ["i", $id]
+            );
             $calendario = $result->fetch_assoc();
             $result->close();
-    
+
             if (!$calendario) {
+                http_response_code(404); // Calendario no encontrado
                 return $this->responderJson([
                     'status' => 0,
                     'message' => 'Calendario no encontrado'
                 ]);
             }
-    
+
+            // Validar que el calendario pertenece al usuario autenticado
+            if ($calendario['correo_usuario'] !== $usuarioAuth) {
+                http_response_code(403); // No autorizado
+                return $this->responderJson([
+                    'status' => 0,
+                    'message' => 'No tienes permiso para editar este calendario.'
+                ]);
+            }
+
             // Consultar actividades
-            $actividades = $this->ejecutarSp("CALL sp_actividad('listar_por_calendario', NULL, ?, NULL, NULL, NULL)",
-            ["i", $id]);
+            $actividades = $this->ejecutarSp(
+                "CALL sp_actividad('listar_por_calendario', NULL, ?, NULL, NULL, NULL)",
+                ["i", $id]
+            );
             $actividadesArray = [];
-    
+
             while ($actividad = $actividades->fetch_assoc()) {
                 // Consultar subactividades por cada actividad
-                $subactividades = $this->ejecutarSp("CALL sp_subactividad('listar_por_actividad', NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL)",
-                ["i", $actividad['id']]);
+                $subactividades = $this->ejecutarSp(
+                    "CALL sp_subactividad('listar_por_actividad', NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL)",
+                    ["i", $actividad['id']]
+                );
                 $subactividadesArray = [];
-    
+
                 while ($sub = $subactividades->fetch_assoc()) {
                     $subactividadesArray[] = $sub;
                 }
-    
+
                 $actividad['subactividades'] = $subactividadesArray;
                 $actividadesArray[] = $actividad;
             }
-    
+
             $calendario['actividades'] = $actividadesArray;
-    
+
             return $this->responderJson([
                 'status' => 1,
                 'message' => 'Calendario a editar obtenido',
@@ -177,6 +246,136 @@ class Calendario extends BaseModelo
         }
     }
  
+    // public function actualizarCalendarioCompleto($id, $data)
+    // {
+    //     if (
+    //         empty($data['id_usuario']) || 
+    //         empty($data['id_rectoria']) || 
+    //         empty($data['id_sede']) || 
+    //         empty($data['id_tipo_calendario']) || 
+    //         empty($data['id_modalidad']) || 
+    //         empty($data['id_periodo_academico']) || 
+    //         !isset($data['estado'])
+    //     ) {
+    //         $this->responderJson([
+    //             'status' => 0,
+    //             'message' => 'Faltan datos requeridos para actualizar el calendario'
+    //         ]);
+    //         return;
+    //     }
+    
+    //     try {
+
+    //         // Obtener correo desde el token
+    //         $usuarioAuth = $this->obtenerCorreoDesdeToken();
+
+    //         // 1. Actualizar calendario
+    //         $this->ejecutarSp(
+    //             "CALL sp_calendario('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+    //             [
+    //                 'iiiiiiiiiis',
+    //                 $id,
+    //                 $data['id_usuario'],
+    //                 $data['id_rectoria'],
+    //                 $data['id_sede'],
+    //                 $data['id_tipo_calendario'],
+    //                 $data['id_modalidad'],
+    //                 $data['id_periodo_academico'],
+    //                 $data['id_tipo_periodo'],
+    //                 $data['estado'],
+    //                 $data['en_sede'],
+    //                 $usuarioAuth
+    //             ]
+    //         )->close();
+    
+    //         // 2. Procesar actividades
+    //         if (isset($data['actividades']) && is_array($data['actividades'])) {
+    //             foreach ($data['actividades'] as $actividad) {
+    
+    //                 if (isset($actividad['id']) && $actividad['id'] > 0) {
+    //                     // Actualizar actividad
+    //                     $this->ejecutarSp(
+    //                         "CALL sp_actividad('actualizar', ?, ?, ?, ?, ?)",
+    //                         [
+    //                             'iisis',
+    //                             $actividad['id'],
+    //                             $id,
+    //                             $actividad['titulo'],
+    //                             $actividad['estado'],
+    //                             $usuarioAuth
+    //                         ]
+    //                     )->close();
+    //                     $idActividad = $actividad['id'];
+    //                 } else {
+    //                     // Insertar nueva actividad
+    //                     $resAct = $this->ejecutarSp(
+    //                         "CALL sp_actividad('insertar', NULL, ?, ?, ?, ?)",
+    //                         [
+    //                             'isss',
+    //                             $id,
+    //                             $actividad['titulo'],
+    //                             $actividad['estado'],
+    //                             $usuarioAuth
+    //                         ]
+    //                     );
+    //                     $actividadInsertada = $resAct->fetch_assoc();
+    //                     $idActividad = $actividadInsertada['id_actividad'];
+    //                     $resAct->close();
+    //                 }
+    
+    //                 // 3. Procesar subactividades
+    //                 if (isset($actividad['subactividades']) && is_array($actividad['subactividades'])) {
+    //                     foreach ($actividad['subactividades'] as $subactividad) {
+    
+    //                         if (isset($subactividad['id']) && $subactividad['id'] > 0) {
+    //                             // Actualizar subactividad
+    //                             $this->ejecutarSp(
+    //                                 "CALL sp_subactividad('actualizar', ?, ?, ?, ?, ?, ?, ?, ?)",
+    //                                 [
+    //                                     'iississs',
+    //                                     $subactividad['id'],
+    //                                     $idActividad,
+    //                                     $subactividad['nombre'],
+    //                                     $subactividad['descripcion'],
+    //                                     $subactividad['estado'],
+    //                                     $subactividad['fecha_inicio'],
+    //                                     $subactividad['fecha_fin'],
+    //                                     $usuarioAuth
+    //                                 ]
+    //                             )->close();
+    //                         } else {
+    //                             // Insertar nueva subactividad
+    //                             $this->ejecutarSp(
+    //                                 "CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, ?)",
+    //                                 [
+    //                                     'ississs',
+    //                                     $idActividad,
+    //                                     $subactividad['nombre'],
+    //                                     $subactividad['descripcion'],
+    //                                     $subactividad['estado'],
+    //                                     $subactividad['fecha_inicio'],
+    //                                     $subactividad['fecha_fin'],
+    //                                     $usuarioAuth
+    //                                 ]
+    //                             )->close();
+    //                         }
+    //                     }
+    //                 }
+    //             }
+    //         }
+    
+    //         $this->responderJson([
+    //             'status' => 1,
+    //             'message' => 'Calendario actualizado exitosamente.'
+    //         ]);
+    //     } catch (Exception $e) {
+    //         $this->responderJson([
+    //             'status' => 0,
+    //             'message' => 'Error al actualizar calendario completo: ' . $e->getMessage()
+    //         ]);
+    //     }
+    // }
+
     public function actualizarCalendarioCompleto($id, $data)
     {
         if (
@@ -194,13 +393,42 @@ class Calendario extends BaseModelo
             ]);
             return;
         }
-    
-        try {
 
-            // Obtener correo desde el token
+        try {
+            // iniciar transacción
+            $this->conexion->begin_transaction();
+
+            // Obtener correo del usuario autenticado
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            // 1. Actualizar calendario
+            // Validar que el calendario pertenece al usuario autenticado
+            $result = $this->ejecutarSp(
+                "CALL sp_calendario('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)",
+                ['i', $id]
+            );
+            $calendario = $result->fetch_assoc();
+            $result->close();
+            mysqli_next_result($this->conexion);
+
+            if (!$calendario) {
+                $this->conexion->rollback(); // revertir
+                $this->responderJson([
+                    'status' => 0,
+                    'message' => 'Calendario no encontrado.'
+                ]);
+                return;
+            }
+
+            if ($calendario['correo_usuario'] !== $usuarioAuth) {
+                $this->conexion->rollback(); // revertir
+                $this->responderJson([
+                    'status' => 0,
+                    'message' => 'No tienes permiso para modificar este calendario.'
+                ]);
+                return;
+            }
+
+            // 1️ Actualizar calendario base
             $this->ejecutarSp(
                 "CALL sp_calendario('actualizar', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 [
@@ -218,13 +446,13 @@ class Calendario extends BaseModelo
                     $usuarioAuth
                 ]
             )->close();
-    
-            // 2. Procesar actividades
+            mysqli_next_result($this->conexion);
+
+            // 2️ Procesar actividades
             if (isset($data['actividades']) && is_array($data['actividades'])) {
                 foreach ($data['actividades'] as $actividad) {
-    
                     if (isset($actividad['id']) && $actividad['id'] > 0) {
-                        // Actualizar actividad
+                        // actualizar
                         $this->ejecutarSp(
                             "CALL sp_actividad('actualizar', ?, ?, ?, ?, ?)",
                             [
@@ -236,9 +464,10 @@ class Calendario extends BaseModelo
                                 $usuarioAuth
                             ]
                         )->close();
+                        mysqli_next_result($this->conexion);
                         $idActividad = $actividad['id'];
                     } else {
-                        // Insertar nueva actividad
+                        // insertar
                         $resAct = $this->ejecutarSp(
                             "CALL sp_actividad('insertar', NULL, ?, ?, ?, ?)",
                             [
@@ -252,14 +481,14 @@ class Calendario extends BaseModelo
                         $actividadInsertada = $resAct->fetch_assoc();
                         $idActividad = $actividadInsertada['id_actividad'];
                         $resAct->close();
+                        mysqli_next_result($this->conexion);
                     }
-    
-                    // 3. Procesar subactividades
+
+                    // 3️ Procesar subactividades
                     if (isset($actividad['subactividades']) && is_array($actividad['subactividades'])) {
                         foreach ($actividad['subactividades'] as $subactividad) {
-    
                             if (isset($subactividad['id']) && $subactividad['id'] > 0) {
-                                // Actualizar subactividad
+                                // actualizar
                                 $this->ejecutarSp(
                                     "CALL sp_subactividad('actualizar', ?, ?, ?, ?, ?, ?, ?, ?)",
                                     [
@@ -274,8 +503,9 @@ class Calendario extends BaseModelo
                                         $usuarioAuth
                                     ]
                                 )->close();
+                                mysqli_next_result($this->conexion);
                             } else {
-                                // Insertar nueva subactividad
+                                // insertar
                                 $this->ejecutarSp(
                                     "CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, ?)",
                                     [
@@ -289,24 +519,31 @@ class Calendario extends BaseModelo
                                         $usuarioAuth
                                     ]
                                 )->close();
+                                mysqli_next_result($this->conexion);
                             }
                         }
                     }
                 }
             }
-    
+
+            // Confirmar transacción
+            $this->conexion->commit();
+
             $this->responderJson([
                 'status' => 1,
                 'message' => 'Calendario actualizado exitosamente.'
             ]);
         } catch (Exception $e) {
+            // Revertir en caso de error
+            $this->conexion->rollback();
             $this->responderJson([
                 'status' => 0,
                 'message' => 'Error al actualizar calendario completo: ' . $e->getMessage()
             ]);
         }
     }
-    
+
+
     public function deshabilitarCalendario($id)
     {
         try {

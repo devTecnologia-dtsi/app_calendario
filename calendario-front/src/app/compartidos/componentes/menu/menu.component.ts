@@ -23,6 +23,10 @@ export class MenuComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  nombreUsuario: string | null = null;
+  correoUsuario: string | null = null;
+  fotoUsuario: string | null = null;
+
   esAdmin(): boolean {
     return this.authService.getRoles().includes(1); // id_rol = 1 es admin
   }
@@ -30,4 +34,11 @@ export class MenuComponent {
   cerrarSesion(): void {
     this.authService.cerrarSesion();
   }
+
+  // async ngOnInit() {
+  //   this.nombreUsuario = this.authService.getNombreUsuario();
+  //   this.correoUsuario = this.authService.getEmailUsuario();
+  //   this.fotoUsuario = await this.authService.getFotoUsuario();
+  // }
+
 }

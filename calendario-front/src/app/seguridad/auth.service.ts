@@ -41,6 +41,9 @@ export class AuthService {
     const result = await firstValueFrom(this.msal.loginPopup());
     if (result?.account) {
       this.msal.instance.setActiveAccount(result.account);
+
+      // Iniciar detección de inactividad
+      this.iniciarDeteccionInactividad();
     }
   }
 
@@ -143,6 +146,8 @@ export class AuthService {
   }
 
   validarSesionPeriodicamente(): void {
+    let fallosConsecutivos = 0;
+
     setInterval(async () => {
       const token = this.getToken();
       if (!token) return;
@@ -155,20 +160,97 @@ export class AuthService {
           this.http.post(`${this.loginEndpoint}`, { correo: cuenta.username })
         );
 
-        if (!respuesta || !respuesta.token || !respuesta.usuario) {
-          // console.warn('Sesión inválida detectada. Cerrando sesión.');
-          this.notificacionService.mostrarError('Sesión inválida. Por favor, inicia sesión nuevamente.');
-          this.cerrarSesion();
+        if (!respuesta?.token || !respuesta?.usuario) {
+          fallosConsecutivos++;
+          if (fallosConsecutivos >= 3) { // solo cerrar si falla 3 veces seguidas
+            this.notificacionService.mostrarError('Sesión inválida. Por favor, inicia sesión nuevamente.');
+            this.cerrarSesion();
+          }
+          return;
         }
 
+        // resetear contador si salió bien
+        fallosConsecutivos = 0;
+
         localStorage.setItem('usuario_info', JSON.stringify(respuesta.usuario));
-        localStorage.setItem('jwt_token', respuesta.token); // Opcional si cambia
+        localStorage.setItem('jwt_token', respuesta.token);
 
       } catch (error) {
-        console.error('Error al validar sesión periódica:', error);
-        this.cerrarSesion();
+        console.error('Error validando sesión periódica:', error);
+        fallosConsecutivos++;
+        if (fallosConsecutivos >= 3) {
+          this.cerrarSesion();
+        }
       }
-    }, 20 * 60 * 1000); // Cada 20 minutos
+    }, 10 * 60 * 1000); // Cada 10 minutos
+  }
+
+  async refrescarPermisosSiEsNecesario(): Promise<void> {
+    const ultimaCarga = Number(localStorage.getItem('ultima_carga_permisos') || 0);
+    const ahora = Date.now();
+
+    // Solo recargar si pasaron más de 10 minutos
+    if (ahora - ultimaCarga > 10 * 60 * 1000) {
+      try {
+        const roles = await firstValueFrom(this.http.get<any>(`${environment.apiUrl}rol`));
+        localStorage.setItem('permisos_roles', JSON.stringify(roles.data));
+        localStorage.setItem('ultima_carga_permisos', ahora.toString());
+      } catch (err) {
+        console.error('Error refrescando permisos:', err);
+      }
+    }
+  }
+
+  private inactividadTimer: any;
+
+  iniciarDeteccionInactividad(): void {
+    const limiteInactividad = 2 * 60 * 1000; // 2 minutos
+
+    const reiniciarTimer = () => {
+      if (this.inactividadTimer) clearTimeout(this.inactividadTimer);
+      this.inactividadTimer = setTimeout(() => {
+        this.notificacionService.mostrarError('Sesión cerrada por inactividad.');
+        this.cerrarSesion();
+      }, limiteInactividad);
+    };
+
+    // Detectar actividad del usuario
+    ['mousemove', 'keydown', 'click'].forEach(evento => {
+      window.addEventListener(evento, reiniciarTimer);
+    });
+
+    reiniciarTimer(); // inicia el contador apenas entra
+  }
+
+  // Obteniendo datos del usuario desde MSAL
+  getNombreUsuario(): string | null {
+    return this.activeAccount?.name || null;
+  }
+
+  getEmailUsuario(): string | null {
+    return this.activeAccount?.username || null;
+  }
+
+  async getFotoUsuario(): Promise<string | null> {
+    const token = await this.msal.instance.acquireTokenSilent({
+      scopes: ["User.Read"]
+    });
+
+    if (!token) return null;
+
+    try {
+      const fotoBlob = await firstValueFrom(
+        this.http.get('https://graph.microsoft.com/v1.0/me/photo/$value', {
+          headers: { Authorization: `Bearer ${token.accessToken}` },
+          responseType: 'blob'
+        })
+      );
+
+      return URL.createObjectURL(fotoBlob);
+    } catch (error) {
+      console.error('Error obteniendo foto de usuario:', error);
+      return null;
+    }
   }
 
 }

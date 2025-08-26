@@ -1,4 +1,4 @@
-import { AbstractControl, ValidationErrors } from '@angular/forms';
+import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 // Valida que la fecha no sea anterior a hoy
 export function fechaNoPasadaValidator(control: AbstractControl): ValidationErrors | null {
@@ -27,3 +27,13 @@ export function fechaFinPosteriorValidator(fechaInicioKey: string) {
     return null;
   };
 }
+
+// Valida que el campo no sea solo espacios en blanco
+export function noSoloEspaciosValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    if (control.value === null || control.value === undefined) return null;
+    const esSoloEspacios = typeof control.value === 'string' && control.value.trim().length === 0;
+    return esSoloEspacios ? { soloEspacios: true } : null;
+  };
+}
+

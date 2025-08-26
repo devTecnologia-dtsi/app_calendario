@@ -1,7 +1,7 @@
 <form (submit)="guardarCambios()" [formGroup]="form">
   <mat-form-field appearance="outline">
     <mat-label>Correo</mat-label>
-    <input matInput [formControl]="form.controls.correo_nuevo" placeholder="ejemplo@uniminuto.edu">
+    <input matInput [formControl]="form.controls.correo_nuevo" placeholder="ejemplo@uniminuto.edu" maxlength="40">
     <mat-error>{{obtenerErrorCampoCorreo()}}</mat-error>
   </mat-form-field>
 

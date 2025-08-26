@@ -29,7 +29,8 @@ export class NotificacionService {
     Swal.fire({
       icon: 'error',
       title: titulo,
-      text: mensaje
+      text: mensaje,
+      timer: 5000
     });
   }
 

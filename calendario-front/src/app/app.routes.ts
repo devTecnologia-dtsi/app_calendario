@@ -10,10 +10,11 @@ import { FormularioCalendariosComponent } from './calendarios/formulario-calenda
 import { LoginComponent } from './seguridad/login/login.component';
 import { RolGuard } from './seguridad/rol.guard';
 import { CalendarioGuard } from './seguridad/calendario.guard';
+import { AuthGuard } from './seguridad/auth.guard';
 
 export const routes: Routes = [
     {path: 'login', component: LoginComponent},
-    {path: 'dashboard', component: LandingPageComponent},
+    {path: 'dashboard', component: LandingPageComponent, canActivate: [AuthGuard]},
     {path: 'calendarios/crear/:tipo', component: FormularioCalendariosComponent, canActivate: [CalendarioGuard] },
     {path: 'calendarios/editar/:id', component: EditarCalendariosComponent},
     {path: 'rol', component: IndiceRolComponent, canActivate: [RolGuard]},

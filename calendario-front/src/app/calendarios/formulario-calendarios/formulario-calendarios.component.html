@@ -70,7 +70,7 @@
         <!-- En sede -->
       <mat-form-field appearance="outline" class="form-field">
         <mat-label>¿En sede?</mat-label>
-        <mat-select formControlName="in_sede">
+        <mat-select formControlName="en_sede">
           <mat-option [value]="1">Sí</mat-option>
           <mat-option [value]="0">No</mat-option>
         </mat-select>
@@ -99,8 +99,10 @@
               <!-- Título de la actividad -->
               <mat-form-field appearance="outline" class="form-field">
                 <mat-label>Título</mat-label>
-                <input matInput formControlName="titulo">
+                <input matInput formControlName="titulo" maxlength="255" (input)="actividad.get('titulo')?.markAsTouched()"/>
                 <mat-error *ngIf="actividad.get('titulo')?.invalid">El título es requerido</mat-error>
+                <mat-error *ngIf="actividad.get('titulo')?.hasError('soloEspacios')">El título no puede ser solo espacios en blanco </mat-error>
+                <mat-error *ngIf="actividad.get('titulo')?.hasError('maxlength')">El título no puede exceder los 255 caracteres</mat-error>
               </mat-form-field>
       
               <!-- Subactividades -->
@@ -117,14 +119,17 @@
                       <!-- Nombre de la subactividad -->
                       <mat-form-field appearance="outline" class="form-field">
                         <mat-label>Nombre</mat-label>
-                        <input matInput formControlName="nombre">
+                        <input matInput formControlName="nombre" maxlength="255" (input)="subactividad.get('nombre')?.markAsTouched()"/>
                         <mat-error *ngIf="subactividad.get('nombre')?.invalid">El nombre es requerido</mat-error>
+                        <mat-error *ngIf="subactividad.get('nombre')?.hasError('soloEspacios')">El nombre no puede ser solo espacios en blanco </mat-error>
+                        <mat-error *ngIf="subactividad.get('nombre')?.hasError('maxlength')">El nombre no puede exceder los 255 caracteres</mat-error>
                       </mat-form-field>
       
                       <!-- Descripción -->
                       <mat-form-field appearance="outline" class="form-field">
                         <mat-label>Descripción</mat-label>
-                        <textarea matInput formControlName="descripcion"></textarea>
+                        <textarea matInput maxlength="255" formControlName="descripcion"></textarea>
+                        <mat-error *ngIf="subactividad.get('descripcion')?.hasError('maxlength')">La descripción no puede exceder los 255 caracteres</mat-error>
                       </mat-form-field>
       
                       <!-- Fechas -->

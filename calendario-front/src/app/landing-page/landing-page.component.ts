@@ -33,7 +33,11 @@ export class LandingPageComponent implements OnInit {
   private notificacion = inject(NotificacionService);
   private authService = inject(AuthService);
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+
+    // Validar si han cambiado los permisos del usuario
+    await this.authService.refrescarPermisosSiEsNecesario();
+
     this.cargarCalendarios();
   }
 
