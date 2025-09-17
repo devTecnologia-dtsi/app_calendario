@@ -1,43 +1,44 @@
 <mat-toolbar color="primary" class="menu-bar">
-  <!-- Sección izquierda -->
-  <span>
+  <!-- Menú izquierdo -->
+  <div class="menu-izquierda">
     <a routerLink="/dashboard" mat-button>
       <mat-icon>calendar_month</mat-icon>
       Calendarios
     </a>
-  </span>
 
-  <!-- Sección de administración, solo visible para admin -->
-  <ng-container *ngIf="esAdmin()">
-    <a routerLink="/rol" mat-button>
-      <mat-icon>groups</mat-icon> Roles
-    </a>
+    <ng-container *ngIf="esAdmin()">
+      <a routerLink="/rol" mat-button>
+        <mat-icon>groups</mat-icon>
+        Roles
+      </a>
 
-    <a routerLink="/usuarios" mat-button>
-      <mat-icon>person</mat-icon> Usuarios
-    </a>
+      <a routerLink="/usuarios" mat-button>
+        <mat-icon>person</mat-icon>
+        Usuarios
+      </a>
 
-    <a routerLink="/logs" mat-button>
-      <mat-icon>list_alt</mat-icon> Logs
-    </a>
-  </ng-container>
+      <a routerLink="/logs" mat-button>
+        <mat-icon>list_alt</mat-icon>
+        Logs
+      </a>
+    </ng-container>
+  </div>
 
-  <!-- Espaciador -->
-  <span class="spacer"></span>
+  <!-- Logo centrado -->
+  <div class="menu-logo">
+    <img src="logo-blanco-uniminuto.png" alt="Logo Uniminuto" />
+  </div>
 
-  <!-- Cerrar sesión -->
-  <button mat-button color="warn" (click)="cerrarSesion()">
-    <mat-icon>logout</mat-icon> Cerrar sesión
-  </button>
-
-  <!-- <div class="usuario-info">
-    <img *ngIf="fotoUsuario" [src]="fotoUsuario" alt="Foto" class="foto-usuario" />
-    <div>
-      <div class="nombre">{{ nombreUsuario }}</div>
-      <div class="correo">{{ correoUsuario }}</div>
-    </div>
-  </div> -->
-  <!-- <button mat-icon-button (click)="cerrarSesion()">
-    <mat-icon>logout</mat-icon>
-  </button> -->
+  <!-- Usuario a la derecha -->
+  <div class="menu-derecha">
+    <button mat-button [matMenuTriggerFor]="menuUsuario" class="usuario-btn">
+      <span class="correo">{{ correoUsuario }}</span>
+    </button>
+    <mat-menu #menuUsuario="matMenu">
+      <button mat-menu-item (click)="cerrarSesion()">
+        <mat-icon>logout</mat-icon>
+        <span>Cerrar sesión</span>
+      </button>
+    </mat-menu>
+  </div>
 </mat-toolbar>

@@ -1,9 +1,10 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatMenuModule } from '@angular/material/menu';
 import { AuthService } from '../../../seguridad/auth.service';
 
 @Component({
@@ -15,30 +16,24 @@ import { AuthService } from '../../../seguridad/auth.service';
     MatToolbarModule,
     MatIconModule,
     MatButtonModule,
+    MatMenuModule
   ],
   templateUrl: './menu.component.html',
   styleUrls: ['./menu.component.css'],
 })
 export class MenuComponent {
   private authService = inject(AuthService);
-  private router = inject(Router);
 
-  nombreUsuario: string | null = null;
-  correoUsuario: string | null = null;
-  fotoUsuario: string | null = null;
+  get correoUsuario(): string | null {
+    return this.authService.getEmailUsuario();
+  }
 
   esAdmin(): boolean {
-    return this.authService.getRoles().includes(1); // id_rol = 1 es admin
+    return this.authService.esAdmin();
   }
 
   cerrarSesion(): void {
     this.authService.cerrarSesion();
   }
-
-  // async ngOnInit() {
-  //   this.nombreUsuario = this.authService.getNombreUsuario();
-  //   this.correoUsuario = this.authService.getEmailUsuario();
-  //   this.fotoUsuario = await this.authService.getFotoUsuario();
-  // }
-
 }
+

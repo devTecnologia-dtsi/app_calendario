@@ -91,7 +91,7 @@
           <mat-card class="actividad-card">
             <mat-card-header>
               <mat-card-title>Actividad {{ i + 1 }}</mat-card-title>
-              <button mat-icon-button color="warn" type="button" (click)="eliminarActividad(i)">
+              <button mat-icon-button color="warn" type="button" (click)="eliminarActividad(i)" aria-label="Eliminar actividad">
                 <mat-icon>delete</mat-icon>
               </button>
             </mat-card-header>
@@ -101,8 +101,12 @@
                 <mat-label>Título</mat-label>
                 <input matInput formControlName="titulo" maxlength="255" (input)="actividad.get('titulo')?.markAsTouched()"/>
                 <mat-error *ngIf="actividad.get('titulo')?.invalid">El título es requerido</mat-error>
-                <mat-error *ngIf="actividad.get('titulo')?.hasError('soloEspacios')">El título no puede ser solo espacios en blanco </mat-error>
-                <mat-error *ngIf="actividad.get('titulo')?.hasError('maxlength')">El título no puede exceder los 255 caracteres</mat-error>
+                <mat-error *ngIf="actividad.get('titulo')?.hasError('soloEspacios')">
+                  El título no puede ser solo espacios en blanco 
+                </mat-error>
+                <mat-error *ngIf="actividad.get('titulo')?.hasError('maxlength')">
+                  El título no puede exceder los 255 caracteres
+                </mat-error>
               </mat-form-field>
       
               <!-- Subactividades -->
@@ -121,15 +125,21 @@
                         <mat-label>Nombre</mat-label>
                         <input matInput formControlName="nombre" maxlength="255" (input)="subactividad.get('nombre')?.markAsTouched()"/>
                         <mat-error *ngIf="subactividad.get('nombre')?.invalid">El nombre es requerido</mat-error>
-                        <mat-error *ngIf="subactividad.get('nombre')?.hasError('soloEspacios')">El nombre no puede ser solo espacios en blanco </mat-error>
-                        <mat-error *ngIf="subactividad.get('nombre')?.hasError('maxlength')">El nombre no puede exceder los 255 caracteres</mat-error>
+                        <mat-error *ngIf="subactividad.get('nombre')?.hasError('soloEspacios')">
+                          El nombre no puede ser solo espacios en blanco 
+                        </mat-error>
+                        <mat-error *ngIf="subactividad.get('nombre')?.hasError('maxlength')">
+                          El nombre no puede exceder los 255 caracteres
+                        </mat-error>
                       </mat-form-field>
       
                       <!-- Descripción -->
                       <mat-form-field appearance="outline" class="form-field">
                         <mat-label>Descripción</mat-label>
                         <textarea matInput maxlength="255" formControlName="descripcion"></textarea>
-                        <mat-error *ngIf="subactividad.get('descripcion')?.hasError('maxlength')">La descripción no puede exceder los 255 caracteres</mat-error>
+                        <mat-error *ngIf="subactividad.get('descripcion')?.hasError('maxlength')">
+                          La descripción no puede exceder los 255 caracteres
+                        </mat-error>
                       </mat-form-field>
       
                       <!-- Fechas -->
@@ -139,7 +149,7 @@
                         <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
                         <mat-datepicker #pickerInicio></mat-datepicker>
                         <mat-error *ngIf="subactividad.get('fecha_inicio')?.hasError('fechaPasada')">
-                          {{ subactividad.get('fecha_inicio')?.getError('fechaPasada') }}
+                          La fecha Inicio no puede ser menor que hoy
                         </mat-error>
                       </mat-form-field>
       
@@ -148,12 +158,15 @@
                         <input matInput [matDatepicker]="pickerFin" formControlName="fecha_fin">
                         <mat-datepicker-toggle matSuffix [for]="pickerFin"></mat-datepicker-toggle>
                         <mat-datepicker #pickerFin></mat-datepicker>
+
                         <mat-error *ngIf="subactividad.get('fecha_fin')?.hasError('fechaPasada')">
-                          {{ subactividad.get('fecha_fin')?.getError('fechaPasada') }}
+                          La fecha de Fin no puede ser menor a la fecha de inicio.
                         </mat-error>
-                        <mat-error *ngIf="subactividad.get('fecha_fin')?.hasError('finAntesInicio')">
-                          {{ subactividad.get('fecha_fin')?.getError('finAntesInicio') }}
+
+                        <mat-error *ngIf="subactividad.get('fecha_fin')?.getError('finAntesInicio')">
+                          La fecha Fin no puede ser menor a la fecha de hoy.
                         </mat-error>
+
                       </mat-form-field>
 
                     </mat-card-content>
@@ -167,9 +180,9 @@
       </div> 
 
   <!-- Botón Guardar -->
-<button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Guardar</button>
+<button mat-raised-button color="primary" type="submit" [disabled]="form.invalid && form.touched">Guardar</button>
 
 <!-- Botón Cancelar -->
-<button mat-raised-button color="red" type="button" (click)="cancelar()">Cancelar</button>
+<button mat-raised-button class="boton-cancelar" type="button" (click)="cancelar()">Cancelar</button>
 
 

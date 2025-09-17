@@ -508,13 +508,18 @@ export class FormularioCalendariosComponent implements OnInit {
   }
 
   private crearSubactividadForm(sub?: any): FormGroup {
+    const fecha_inicio_original = sub?.fecha_inicio ? new Date(sub.fecha_inicio) : undefined;
+    const fecha_fin_original = sub?.fecha_fin ? new Date(sub.fecha_fin) : undefined;
+
     return this.fb.group({
       id: [sub?.id],
       nombre: [ sub?.nombre ?? '', [Validators.required, Validators.maxLength(254), noSoloEspaciosValidator()]],
       descripcion: [ sub?.descripcion ?? '', [Validators.maxLength(254)]],
-      fecha_inicio: [ sub?.fecha_inicio ? new Date(sub.fecha_inicio) : null, [fechaNoPasadaValidator]],
-      fecha_fin: [ sub?.fecha_fin ? new Date(sub.fecha_fin) : null, [fechaNoPasadaValidator, fechaFinPosteriorValidator('fecha_inicio')]],
-      estado: [sub?.estado ?? 1]
+      // fecha_inicio: [ sub?.fecha_inicio ? new Date(sub.fecha_inicio) : null, [fechaNoPasadaValidator]],
+      // fecha_fin: [ sub?.fecha_fin ? new Date(sub.fecha_fin) : null, [fechaNoPasadaValidator, fechaFinPosteriorValidator('fecha_inicio')]],
+    fecha_inicio: [fecha_inicio_original ?? null,[fechaNoPasadaValidator(fecha_inicio_original)]],
+    fecha_fin: [fecha_fin_original ?? null,[fechaNoPasadaValidator(fecha_fin_original), fechaFinPosteriorValidator('fecha_inicio')]],
+    estado: [sub?.estado ?? 1]
     });
   }
 

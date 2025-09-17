@@ -29,3 +29,11 @@ mat-form-field {
 .indice-elementos a {
     margin-right: 1rem;
 }
+
+.mat-mdc-raised-button.boton-cancelar:hover {
+    color: red;
+}
+
+button.mat-mdc-button.boton-eliminar:hover {
+    color: red
+}

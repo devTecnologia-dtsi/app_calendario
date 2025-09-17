@@ -8,6 +8,7 @@ import { RouterModule } from '@angular/router';
 import { NotificacionService } from '../compartidos/servicios/notificacion.service';
 import { AuthService } from '../seguridad/auth.service';
 import { CargandoComponent } from "../compartidos/componentes/cargando/cargando.component";
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-landing-page',
@@ -19,7 +20,7 @@ import { CargandoComponent } from "../compartidos/componentes/cargando/cargando.
     MatIconModule,
     CommonModule,
     CargandoComponent
-],
+  ],
   templateUrl: './landing-page.component.html',
   styleUrls: ['./landing-page.component.css']
 })
@@ -34,9 +35,8 @@ export class LandingPageComponent implements OnInit {
   private authService = inject(AuthService);
 
   async ngOnInit(): Promise<void> {
-
-    // Validar si han cambiado los permisos del usuario
-    await this.authService.refrescarPermisosSiEsNecesario();
+    // Validar si han cambiado los permisos del usuario (con caché de 10 min)
+    await this.authService.cargarPermisosRoles();
 
     this.cargarCalendarios();
   }
@@ -45,27 +45,29 @@ export class LandingPageComponent implements OnInit {
     const correoUsuario = this.authService.activeAccount?.username;
 
     this.cargando = true;
-    this.calendariosService.listarCalendarios().subscribe(res => {
-      const calendarios = Array.isArray(res.data) ? res.data : [];
+    this.calendariosService.listarCalendarios()
+      .pipe(finalize(() => this.cargando = false))
+      .subscribe({
+        next: (res) => {
+          const calendarios = Array.isArray(res.data) ? res.data : [];
 
-      // console.log('Correo usuario:', correoUsuario);
-      // console.log('Calendarios recibidos:', calendarios);
+          // console.log('Correo usuario:', correoUsuario);
+          // console.log('Calendarios recibidos:', calendarios);
 
-      const visibles = calendarios.filter((cal: any) =>
-        cal.correo_organizador === correoUsuario
-      );
+          const visibles = calendarios.filter((cal: any) =>
+            cal.correo_organizador === correoUsuario
+          );
 
-      // console.log('Calendarios visibles:', visibles);
-
-      this.calendariosAcademicos = visibles.filter(c => c.tipo_calendario.toLowerCase() === 'académico');
-      this.calendariosFinancieros = visibles.filter(c => c.tipo_calendario.toLowerCase() === 'financiero');
-      this.calendariosGrados = visibles.filter(c => c.tipo_calendario.toLowerCase() === 'grados');
-      this.cargando = false;
-    }, error => {
-      this.notificacion.mostrarError('Error al cargar los calendarios');
-      console.error('Error al cargar los calendarios:', error);
-      this.cargando = false;
-    });
+          // Normalizar tipo_calendario
+          this.calendariosAcademicos = visibles.filter(c => c.tipo_calendario?.toLowerCase() === 'académico');
+          this.calendariosFinancieros = visibles.filter(c => c.tipo_calendario?.toLowerCase() === 'financiero');
+          this.calendariosGrados = visibles.filter(c => c.tipo_calendario?.toLowerCase() === 'grados');
+        },
+        error: (err) => {
+          this.notificacion.mostrarError('Error al cargar los calendarios');
+          console.error('Error al cargar los calendarios:', err);
+        }
+      });
   }
 
   puedeCrear(tipo: 'academico' | 'financiero' | 'grados'): boolean {

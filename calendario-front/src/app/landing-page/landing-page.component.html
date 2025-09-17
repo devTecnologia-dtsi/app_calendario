@@ -1,102 +1,3 @@
-<!-- <div class="calendarios-container"> -->
-
-  <!-- BOTONES DE CREACIÓN -->
-  <!-- <div class="botones-crear mb-4" style="display: flex; gap: 10px; flex-wrap: wrap;">
-    <button *ngIf="puedeCrear('academico')" mat-raised-button color="primary" [routerLink]="['/calendarios/crear', 'academico']">
-      Crear Calendario Académico
-    </button>
-    <button *ngIf="puedeCrear('financiero')" mat-raised-button color="accent" [routerLink]="['/calendarios/crear', 'financiero']">
-      Crear Calendario Financiero
-    </button>
-    <button *ngIf="puedeCrear('grados')" mat-raised-button color="warn" [routerLink]="['/calendarios/crear', 'grados']">
-      Crear Calendario de Grados
-    </button>
-  </div> -->
-
-  <!-- CALENDARIOS ACADÉMICOS -->
-  <!-- <h2 *ngIf="puedeVer('academico')">Académicos</h2>
-  <p *ngIf="puedeVer('academico') && calendariosAcademicos.length === 0">No hay calendarios académicos disponibles.</p>
-  <div *ngIf="puedeVer('academico')" class="calendarios-grid">
-    <mat-card *ngFor="let calendario of calendariosAcademicos" class="calendario-card">
-      <mat-card-header>
-        <mat-card-title>{{ calendario.nombreActividad }}</mat-card-title>
-        <mat-card-subtitle>{{ calendario.usuario }}</mat-card-subtitle>
-      </mat-card-header>
-      <img mat-card-image [src]="calendario.imagen || 'academico 2.jpg'" alt="Imagen del calendario">
-      <mat-card-content>
-        <p>Rectoría: {{ calendario.rectoria }}</p>
-        <p>Sede: {{ calendario.sede }}</p>
-        <p>Fecha de creación: {{ calendario.fecha_creacion }}</p>
-        <p>Modalidad: {{ calendario.modalidad }}</p>
-        <p>Periodo académico: {{ calendario.periodo_academico }}</p>
-        <p>Tipo de periodo: {{ calendario.tipos_periodo }}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button *ngIf="puedeActualizar('academico')" mat-button color="primary" [routerLink]="['/calendarios/editar', calendario.id_calendario]">Editar</button>
-        <button *ngIf="puedeEliminar('academico')" mat-button color="warn" (click)="desactivarCalendario(calendario.id_calendario)">Eliminar</button>
-      </mat-card-actions>
-    </mat-card>
-  </div> -->
-
-  <!-- CALENDARIOS FINANCIEROS -->
-  <!-- <h2 *ngIf="puedeVer('financiero')">Financieros</h2>
-  <p *ngIf="puedeVer('financiero') && calendariosFinancieros.length === 0">No hay calendarios financieros disponibles.</p>
-  <div *ngIf="puedeVer('financiero')" class="calendarios-grid">
-    <mat-card *ngFor="let calendario of calendariosFinancieros" class="calendario-card">
-      <mat-card-header>
-        <mat-card-title>{{ calendario.nombreActividad }}</mat-card-title>
-        <mat-card-subtitle>{{ calendario.usuario }}</mat-card-subtitle>
-      </mat-card-header>
-      <img mat-card-image [src]="calendario.imagen || 'financiero.avif'" alt="Imagen del calendario">
-      <mat-card-content>
-        <p>Rectoría: {{ calendario.rectoria }}</p>
-        <p>Sede: {{ calendario.sede }}</p>
-        <p>Fecha de creación: {{ calendario.fecha_creacion }}</p>
-        <p>Modalidad: {{ calendario.modalidad }}</p>
-        <p>Periodo académico: {{ calendario.periodo_academico }}</p>
-        <p>Tipo de periodo: {{ calendario.tipos_periodo }}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button *ngIf="puedeActualizar('financiero')" mat-button color="primary" [routerLink]="['/calendarios/editar', calendario.id_calendario]">Editar</button>
-        <button *ngIf="puedeEliminar('financiero')" mat-button color="warn" (click)="desactivarCalendario(calendario.id_calendario)">Eliminar</button>
-      </mat-card-actions>
-    </mat-card>
-  </div> -->
-
-  <!-- CALENDARIOS DE GRADOS -->
-  <!-- <h2 *ngIf="puedeVer('grados')">Grados</h2>
-  <p *ngIf="puedeVer('grados') && calendariosGrados.length === 0">No hay calendarios de grados disponibles.</p>
-  <div *ngIf="puedeVer('grados')" class="calendarios-grid">
-    <mat-card *ngFor="let calendario of calendariosGrados" class="calendario-card">
-      <mat-card-header>
-        <mat-card-title>{{ calendario.nombreActividad }}</mat-card-title>
-        <mat-card-subtitle>{{ calendario.usuario }}</mat-card-subtitle>
-      </mat-card-header>
-      <img mat-card-image [src]="calendario.imagen || 'grados.jpg'" alt="Imagen del calendario">
-      <mat-card-content>
-        <p>Rectoría: {{ calendario.rectoria }}</p>
-        <p>Sede: {{ calendario.sede }}</p>
-        <p>Fecha de creación: {{ calendario.fecha_creacion }}</p>
-        <p>Modalidad: {{ calendario.modalidad }}</p>
-        <p>Periodo académico: {{ calendario.periodo_academico }}</p>
-        <p>Tipo de periodo: {{ calendario.tipos_periodo }}</p>
-      </mat-card-content>
-      <mat-card-actions>
-        <button *ngIf="puedeActualizar('grados')" mat-button color="primary" [routerLink]="['/calendarios/editar', calendario.id_calendario]">Editar</button>
-        <button *ngIf="puedeEliminar('grados')" mat-button color="warn" (click)="desactivarCalendario(calendario.id_calendario)">Eliminar</button>
-      </mat-card-actions>
-    </mat-card>
-  </div>
-
-</div> -->
-
-
-
-
-
-
-
-
 <div class="calendarios-container">
 
   <!-- BOTONES DE CREACIÓN -->
@@ -156,7 +57,7 @@
                   <button mat-button color="primary" [routerLink]="['/calendarios/editar', calendario.id_calendario]">Editar</button>
                 }
                 @if (puedeEliminar('academico')) {
-                  <button mat-button color="warn" (click)="desactivarCalendario(calendario.id_calendario)">Eliminar</button>
+                  <button mat-button class="boton-eliminar" (click)="desactivarCalendario(calendario.id_calendario)">Eliminar</button>
                 }
               </mat-card-actions>
             </mat-card>
@@ -203,7 +104,7 @@
                 }
 
                 @if (puedeEliminar('financiero')) {
-                  <button mat-button color="warn" (click)="desactivarCalendario(calendario.id_calendario)">Eliminar</button>
+                  <button mat-button class="boton-eliminar" (click)="desactivarCalendario(calendario.id_calendario)">Eliminar</button>
                 }
               </mat-card-actions>
             </mat-card>
@@ -246,7 +147,7 @@
                   <button mat-button color="primary" [routerLink]="['/calendarios/editar', calendario.id_calendario]">Editar</button>
                 }
                 @if (puedeEliminar('grados')) {
-                  <button mat-button color="warn" (click)="desactivarCalendario(calendario.id_calendario)">Eliminar</button>
+                  <button mat-button class="boton-eliminar" (click)="desactivarCalendario(calendario.id_calendario)">Eliminar</button>
                 }
               </mat-card-actions>
             </mat-card>

@@ -1,15 +1,21 @@
 import { AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 
 // Valida que la fecha no sea anterior a hoy
-export function fechaNoPasadaValidator(control: AbstractControl): ValidationErrors | null {
-  const valor = control.value;
-  if (!valor) return null;
+export function fechaNoPasadaValidator(valorInicial?: Date): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const valor = control.value;
+    if (!valor) return null;
 
-  const fecha = new Date(valor);
-  const hoy = new Date();
-  hoy.setHours(0, 0, 0, 0);
+    const fecha = new Date(valor);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
 
-  return fecha < hoy ? { fechaPasada: 'La fecha no puede ser menor que hoy' } : null;
+    if (valorInicial && fecha.getTime() === new Date(valorInicial).getTime()) {
+      return null;
+    }
+
+    return fecha < hoy ? { fechaPasada: true } : null;
+  };
 }
 
 // Valida que la fecha fin no sea anterior a fecha inicio
@@ -19,9 +25,10 @@ export function fechaFinPosteriorValidator(fechaInicioKey: string) {
 
     const fechaFin = control.value;
     const fechaInicio = control.parent.get(fechaInicioKey)?.value;
+    
 
     if (fechaInicio && fechaFin && new Date(fechaFin) < new Date(fechaInicio)) {
-      return { finAntesInicio: 'La fecha fin no puede ser anterior a la fecha inicio' };
+      return { finAntesInicio: true };
     }
 
     return null;

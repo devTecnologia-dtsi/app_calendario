@@ -24,38 +24,34 @@ import { NotificacionService } from '../../compartidos/servicios/notificacion.se
 export class LoginComponent {
   cargando = false;
 
-  // Inyección de dependencias
   private authService = inject(AuthService);
   private router = inject(Router);
-  private NotificacionService = inject(NotificacionService);
+  private notificacionService = inject(NotificacionService);
 
   async login(): Promise<void> {
-
     if (this.cargando) return;
-    
+
     this.cargando = true;
     try {
-
-      await this.authService.cargarPermisosRoles();
-
-      // 1. Iniciar sesión con Microsoft
+      // 1. Iniciar sesión con Microsoft (loginPopup)
       await this.authService.iniciarSesion();
 
       // 2. Validar con tu backend si el usuario existe
       const validado = await this.authService.validarConBackend();
-      console.log('Resultado de validarConBackend:', validado);
 
-      // 3. Redirigir si todo va bien
       if (validado) {
-        this.router.navigate(['/dashboard']);
-      } else {
-        this.NotificacionService.mostrarError('Tu cuenta no está registrada en la base de datos.');
-        await this.authService.cerrarSesion(); // Para cerrar sesión de Microsoft si no existe en BD
-      }
+        // 3. Cargar permisos solo si el usuario está validado
+        await this.authService.cargarPermisosRoles();
 
+        // 4. Redirigir al dashboard
+        await this.router.navigate(['/dashboard']);
+      } else {
+        this.notificacionService.mostrarError('Tu cuenta no está registrada en la base de datos.');
+        await this.authService.cerrarSesion();
+      }
     } catch (error) {
       console.error('Error en login:', error);
-      this.NotificacionService.mostrarError('Error al iniciar sesión. Intenta nuevamente.');
+      this.notificacionService.mostrarError('Error al iniciar sesión. Intenta nuevamente.');
     } finally {
       this.cargando = false;
     }

@@ -7,57 +7,94 @@ import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { NotificacionService } from '../compartidos/servicios/notificacion.service';
 
+// Interfaces 
+export interface Usuario {
+  id: number;
+  id_rol: number;
+  id_sede: number;
+  id_rectoria: number;
+  correo: string;
+  nombre: string;
+  [key: string]: any;
+}
+
+export interface Rol {
+  id: number;
+  nombre: string;
+  crear?: number;
+  leer?: number;
+  actualizar?: number;
+  borrar?: number;
+}
+
+export interface RespuestaAuth {
+  status: number;
+  token?: string;
+  usuario?: Usuario[];
+  message?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-
-  // URL del endpoint de inicio de sesión
   private readonly loginEndpoint = `${environment.apiUrl}usuarioPorCorreo`;
 
-  // Inyección de dependencias
-  private msal = inject(MsalService); 
+  private msal = inject(MsalService);
   private http = inject(HttpClient);
   private router = inject(Router);
   private notificacionService = inject(NotificacionService);
 
+  private inactividadTimer: any;
+  private validacionInterval: any;
+  private eventosActividad: string[] = ['mousemove', 'keydown', 'click'];
+
   constructor() {
-    // Verifica si el usuario ya está autenticado al cargar la aplicación
     const token = this.getToken();
     if (token) {
       this.msal.instance.setActiveAccount(this.msal.instance.getAllAccounts()[0]);
     }
   }
 
-  private getUsuarioRaw(): any[] {
-    const raw = localStorage.getItem('usuario_info');
-    return raw ? JSON.parse(raw) : [];
+  // LocalStorage
+  private guardarLS(key: string, value: any): void {
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (e) {
+      console.error(`Error guardando ${key} en localStorage:`, e);
+    }
   }
 
+  private obtenerLS<T>(key: string, defecto: T): T {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : defecto;
+    } catch {
+      return defecto;
+    }
+  }
 
+  private limpiarLS(): void {
+    localStorage.clear();
+  }
+
+  // Autenticación  
   get activeAccount(): AccountInfo | null {
     return this.msal.instance.getActiveAccount();
   }
 
   async iniciarSesion(): Promise<void> {
-    const result = await firstValueFrom(this.msal.loginPopup());
-    if (result?.account) {
-      this.msal.instance.setActiveAccount(result.account);
+    try {
+      const result = await firstValueFrom(
+        this.msal.loginPopup({ scopes: ['User.Read'] })
+      );
 
-      // Iniciar detección de inactividad
-      this.iniciarDeteccionInactividad();
+      if (result?.account) {
+        this.msal.instance.setActiveAccount(result.account);
+        this.iniciarDeteccionInactividad();
+      }
+    } catch (error) {
+      console.error('Error en loginPopup:', error);
+      this.router.navigate(['/login']);
     }
-  }
-
-  async cargarPermisosRoles(): Promise<void> {
-    const roles = await firstValueFrom(this.http.get<any>(`${environment.apiUrl}rol`));
-    localStorage.setItem('permisos_roles', JSON.stringify(roles.data));
-  }
-
-  cerrarSesion(): void {
-    localStorage.clear();
-    this.msal.logoutRedirect({
-      postLogoutRedirectUri: `${window.location.origin}/login`
-    });
-
   }
 
   async validarConBackend(): Promise<boolean> {
@@ -65,42 +102,55 @@ export class AuthService {
     if (!account) return false;
 
     try {
-      const respuesta: any = await firstValueFrom(
-        this.http.post(this.loginEndpoint, { correo: account.username })
+      const respuesta = await firstValueFrom(
+        this.http.post<RespuestaAuth>(this.loginEndpoint, { correo: account.username })
       );
 
-      if (respuesta?.token) {
-        try {
-          localStorage.setItem('jwt_token', respuesta.token);
-          localStorage.setItem('usuario_info', JSON.stringify(respuesta.usuario));
-        } catch (e) {
-          // console.error('Error guardando en localStorage:', e);
-          return false;
-        }
+      if (respuesta?.token && respuesta?.usuario) {
+        this.guardarLS('jwt_token', respuesta.token);
+        this.guardarLS('usuario_info', respuesta.usuario);
         return true;
       } else {
-        alert('Tu cuenta no está registrada en la base de datos.');
+        this.notificacionService.mostrarError('Tu cuenta no está registrada en la base de datos.');
         this.cerrarSesion();
         return false;
       }
     } catch (error) {
-      // console.error('Error al validar con backend:', error);
+      console.error('Error al validar con backend:', error);
       this.cerrarSesion();
       return false;
     }
   }
 
-  getToken(): string | null {
-    return localStorage.getItem('jwt_token');
+  cerrarSesion(): void {
+    this.limpiarLS();
+
+    // detener intervalos/timers
+    if (this.validacionInterval) {
+      clearInterval(this.validacionInterval);
+      this.validacionInterval = null;
+    }
+
+    if (this.inactividadTimer) {
+      clearTimeout(this.inactividadTimer);
+      this.inactividadTimer = null;
+    }
+
+    // quitar listeners de actividad
+    this.eventosActividad.forEach(evento => {
+      window.removeEventListener(evento, this.activityHandler);
+    });
+
+    // cerrar sesión en MSAL
+    this.msal.logoutRedirect({
+      postLogoutRedirectUri: `${window.location.origin}/login`
+    });
   }
 
-  getUsuarioInfo(): any {
-    const raw = localStorage.getItem('usuario_info');
-    return raw ? JSON.parse(raw) : null;
-  }
-
-  estaAutenticado(): boolean {
-    return !!this.getToken();
+  // Roles y permisos  
+  async cargarPermisosRoles(): Promise<void> {
+    const roles = await firstValueFrom(this.http.get<{ data: Rol[] }>(`${environment.apiUrl}rol`));
+    this.guardarLS('permisos_roles', roles.data);
   }
 
   tieneRol(rol: number): boolean {
@@ -108,47 +158,60 @@ export class AuthService {
   }
 
   getRoles(): number[] {
-    return [...new Set(this.getUsuarioRaw().map((u) => u.id_rol))];
+    return [...new Set(this.getUsuarioInfo().map(u => u.id_rol))];
   }
 
-  getIdUsuario(): number | null {
-    const raw = localStorage.getItem('usuario_info');
-    const permisos = raw ? JSON.parse(raw) : [];
-    return permisos.length ? permisos[0].id : null;
-  }
+  tienePermisoPara(
+    tipo: 'academico' | 'financiero' | 'grados',
+    permiso: 'crear' | 'leer' | 'actualizar' | 'borrar'
+  ): boolean {
+    const rolesUsuario = this.getRoles();
+    const permisos = this.obtenerLS<Rol[]>('permisos_roles', []);
 
-  getSedesUnicas(): number[] {
-    const usuario = JSON.parse(localStorage.getItem('usuario_info') || '[]') as { id_sede: number }[];
-    return [...new Set(usuario.map((p: any) => p.id_sede))];
-  }
-
-  getRectoriasUnicas(): number[] {
-    const usuario = JSON.parse(localStorage.getItem('usuario_info') || '[]') as { id_rectoria: number }[];
-    return [...new Set(usuario.map((p: any) => p.id_rectoria))];
-  }
-
-  tienePermisoPara(tipo: 'academico' | 'financiero' | 'grados', permiso: 'crear' | 'leer' | 'actualizar' | 'borrar'): boolean {
-    const rolesUsuario = this.getRoles(); // viene del token (id_rol[])
-    const permisos = JSON.parse(localStorage.getItem('permisos_roles') || '[]');
-
-    // Mapeo de tipo calendario a nombre del rol
     const rolEsperado: Record<string, string> = {
       academico: 'academicos',
       financiero: 'financiero',
       grados: 'grados'
     };
 
-    return permisos.some((p: { id: number; nombre: string; [key: string]: any }) =>
+    return permisos.some(p =>
       rolesUsuario.includes(p.id) &&
       p.nombre === rolEsperado[tipo] &&
       p[permiso] === 1
     );
   }
 
+  // Usuario  
+  getToken(): string | null {
+    return this.obtenerLS<string | null>('jwt_token', null);
+  }
+
+  getUsuarioInfo(): Usuario[] {
+    return this.obtenerLS<Usuario[]>('usuario_info', []);
+  }
+
+  getIdUsuario(): number | null {
+    const usuarios = this.getUsuarioInfo();
+    return usuarios.length ? usuarios[0].id : null;
+  }
+
+  getSedesUnicas(): number[] {
+    return [...new Set(this.getUsuarioInfo().map(u => u.id_sede))];
+  }
+
+  getRectoriasUnicas(): number[] {
+    return [...new Set(this.getUsuarioInfo().map(u => u.id_rectoria))];
+  }
+
+  estaAutenticado(): boolean {
+    return !!this.getToken();
+  }
+
+  // Validación periódica  
   validarSesionPeriodicamente(): void {
     let fallosConsecutivos = 0;
 
-    setInterval(async () => {
+    this.validacionInterval = setInterval(async () => {
       const token = this.getToken();
       if (!token) return;
 
@@ -156,24 +219,22 @@ export class AuthService {
         const cuenta = this.activeAccount;
         if (!cuenta) throw new Error('Sin cuenta activa');
 
-        const respuesta: any = await firstValueFrom(
-          this.http.post(`${this.loginEndpoint}`, { correo: cuenta.username })
+        const respuesta = await firstValueFrom(
+          this.http.post<RespuestaAuth>(this.loginEndpoint, { correo: cuenta.username })
         );
 
         if (!respuesta?.token || !respuesta?.usuario) {
           fallosConsecutivos++;
-          if (fallosConsecutivos >= 3) { // solo cerrar si falla 3 veces seguidas
-            this.notificacionService.mostrarError('Sesión inválida. Por favor, inicia sesión nuevamente.');
+          if (fallosConsecutivos >= 3) {
+            this.notificacionService.mostrarError('Sesión inválida. Inicia sesión nuevamente.');
             this.cerrarSesion();
           }
           return;
         }
 
-        // resetear contador si salió bien
         fallosConsecutivos = 0;
-
-        localStorage.setItem('usuario_info', JSON.stringify(respuesta.usuario));
-        localStorage.setItem('jwt_token', respuesta.token);
+        this.guardarLS('usuario_info', respuesta.usuario);
+        this.guardarLS('jwt_token', respuesta.token);
 
       } catch (error) {
         console.error('Error validando sesión periódica:', error);
@@ -182,18 +243,18 @@ export class AuthService {
           this.cerrarSesion();
         }
       }
-    }, 10 * 60 * 1000); // Cada 10 minutos
+    }, 10 * 60 * 1000); // 10 minutos
   }
 
+  // Permisos cacheados  
   async refrescarPermisosSiEsNecesario(): Promise<void> {
     const ultimaCarga = Number(localStorage.getItem('ultima_carga_permisos') || 0);
     const ahora = Date.now();
 
-    // Solo recargar si pasaron más de 10 minutos
     if (ahora - ultimaCarga > 10 * 60 * 1000) {
       try {
-        const roles = await firstValueFrom(this.http.get<any>(`${environment.apiUrl}rol`));
-        localStorage.setItem('permisos_roles', JSON.stringify(roles.data));
+        const roles = await firstValueFrom(this.http.get<{ data: Rol[] }>(`${environment.apiUrl}rol`));
+        this.guardarLS('permisos_roles', roles.data);
         localStorage.setItem('ultima_carga_permisos', ahora.toString());
       } catch (err) {
         console.error('Error refrescando permisos:', err);
@@ -201,56 +262,96 @@ export class AuthService {
     }
   }
 
-  private inactividadTimer: any;
+  // Inactividad
+    
+  // Propiedades 
+  private detectandoInactividad = false;
+  private lastActivity = Date.now();
+  private inactivityTimeoutMs = 5 * 60 * 1000; // 5 minutos
+  private checkIntervalMs = 10 * 1000; // comprobación cada 10s
+  private checkIntervalRef: any = null;
 
-  iniciarDeteccionInactividad(): void {
-    const limiteInactividad = 2 * 60 * 1000; // 2 minutos
+  // eventos que actualizan actividad
+  private activityEvents = [
+    'mousemove', 'mousedown', 'keydown', 'scroll',
+    'touchstart', 'touchmove', 'pointermove', 'wheel', 'click'
+  ];
 
-    const reiniciarTimer = () => {
-      if (this.inactividadTimer) clearTimeout(this.inactividadTimer);
-      this.inactividadTimer = setTimeout(() => {
+  private readonly listenerOptions: AddEventListenerOptions = { passive: true };
+
+  private activityHandler = (): void => {
+    this.lastActivity = Date.now();
+  };
+
+  // handler para visibility change
+  private visibilityHandler = (): void => {
+    if (!document.hidden) {
+      // al volver a la pestaña revisamos si ya pasó el timeout
+      const elapsed = Date.now() - this.lastActivity;
+      if (elapsed > this.inactivityTimeoutMs) {
         this.notificacionService.mostrarError('Sesión cerrada por inactividad.');
         this.cerrarSesion();
-      }, limiteInactividad);
-    };
+      } else {
+        // si no ha pasado, actualizamos lastActivity para evitar logout inmediato
+        this.lastActivity = Date.now();
+      }
+    } else {
+      // Al ocultar la pestaña registrar la marca de tiempo
+      // this.hiddenAt = Date.now();
+    }
+  };
 
-    // Detectar actividad del usuario
-    ['mousemove', 'keydown', 'click'].forEach(evento => {
-      window.addEventListener(evento, reiniciarTimer);
+  // --- iniciar detección ---
+  iniciarDeteccionInactividad(timeoutMs?: number, checkIntervalMs?: number): void {
+    if (this.detectandoInactividad) return; // evita registros duplicados
+    if (timeoutMs) this.inactivityTimeoutMs = timeoutMs;
+    if (checkIntervalMs) this.checkIntervalMs = checkIntervalMs;
+
+    this.detectandoInactividad = true;
+    this.lastActivity = Date.now();
+
+    // registrar listeners de actividad
+    this.activityEvents.forEach(evt => {
+      document.addEventListener(evt, this.activityHandler, this.listenerOptions);
     });
 
-    reiniciarTimer(); // inicia el contador apenas entra
+    // evento visibilidad
+    document.addEventListener('visibilitychange', this.visibilityHandler);
+
+    // comprobación periódica
+    this.checkIntervalRef = setInterval(() => {
+      if (Date.now() - this.lastActivity > this.inactivityTimeoutMs) {
+        this.notificacionService.mostrarError('Sesión cerrada por inactividad.');
+        this.cerrarSesion();
+      }
+    }, this.checkIntervalMs);
   }
 
-  // Obteniendo datos del usuario desde MSAL
-  getNombreUsuario(): string | null {
-    return this.activeAccount?.name || null;
+  // --- detener detección ---
+  detenerDeteccionInactividad(): void {
+    if (!this.detectandoInactividad) return;
+
+    this.activityEvents.forEach(evt => {
+      document.removeEventListener(evt, this.activityHandler, this.listenerOptions);
+    });
+
+    document.removeEventListener('visibilitychange', this.visibilityHandler);
+
+    if (this.checkIntervalRef) {
+      clearInterval(this.checkIntervalRef);
+      this.checkIntervalRef = null;
+    }
+
+    this.detectandoInactividad = false;
+  }
+
+  // Métodos  
+  esAdmin(): boolean {
+    return this.getRoles().includes(1); // id_rol = 1 es admin
   }
 
   getEmailUsuario(): string | null {
-    return this.activeAccount?.username || null;
+    return this.activeAccount?.username ?? null;
   }
-
-  async getFotoUsuario(): Promise<string | null> {
-    const token = await this.msal.instance.acquireTokenSilent({
-      scopes: ["User.Read"]
-    });
-
-    if (!token) return null;
-
-    try {
-      const fotoBlob = await firstValueFrom(
-        this.http.get('https://graph.microsoft.com/v1.0/me/photo/$value', {
-          headers: { Authorization: `Bearer ${token.accessToken}` },
-          responseType: 'blob'
-        })
-      );
-
-      return URL.createObjectURL(fotoBlob);
-    } catch (error) {
-      console.error('Error obteniendo foto de usuario:', error);
-      return null;
-    }
-  }
-
+  
 }
