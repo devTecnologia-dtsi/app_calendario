@@ -1,6 +1,13 @@
 <h2 class="titulo-formulario">{{ tituloFormulario }}</h2>
 
 <form [formGroup]="form" (ngSubmit)="guardar()">
+  <!-- <pre>{{ form.status }} | touched: {{ form.touched }} | dirty: {{ form.dirty }}</pre>
+  <ul>
+    <li *ngFor="let c of form.controls | keyvalue">
+      {{ c.key }} => status: {{ c.value.status }} | value: {{ c.value.value }} | errors: {{ c.value.errors | json }}
+    </li>
+  </ul> -->
+
   <!-- Información General del Calendario -->
   <mat-card class="form-card">
     <mat-card-header>
@@ -180,7 +187,7 @@
       </div> 
 
   <!-- Botón Guardar -->
-<button mat-raised-button color="primary" type="submit" [disabled]="form.invalid && form.touched">Guardar</button>
+<button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">Guardar</button>
 
 <!-- Botón Cancelar -->
 <button mat-raised-button class="boton-cancelar" type="button" (click)="cancelar()">Cancelar</button>

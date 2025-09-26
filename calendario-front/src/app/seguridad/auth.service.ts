@@ -51,6 +51,7 @@ export class AuthService {
     const token = this.getToken();
     if (token) {
       this.msal.instance.setActiveAccount(this.msal.instance.getAllAccounts()[0]);
+      this.iniciarDeteccionInactividad();
     }
   }
 
@@ -109,6 +110,10 @@ export class AuthService {
       if (respuesta?.token && respuesta?.usuario) {
         this.guardarLS('jwt_token', respuesta.token);
         this.guardarLS('usuario_info', respuesta.usuario);
+
+        // Reiniciar detección siempre que la sesión se valide
+        this.detenerDeteccionInactividad();
+        this.iniciarDeteccionInactividad();
         return true;
       } else {
         this.notificacionService.mostrarError('Tu cuenta no está registrada en la base de datos.');
@@ -123,6 +128,7 @@ export class AuthService {
   }
 
   cerrarSesion(): void {
+    this.detenerDeteccionInactividad();
     this.limpiarLS();
 
     // detener intervalos/timers
@@ -271,10 +277,13 @@ export class AuthService {
   private checkIntervalMs = 10 * 1000; // comprobación cada 10s
   private checkIntervalRef: any = null;
 
-  // eventos que actualizan actividad
+  // Eventos que actualizan actividad
   private activityEvents = [
-    'mousemove', 'mousedown', 'keydown', 'scroll',
-    'touchstart', 'touchmove', 'pointermove', 'wheel', 'click'
+    'click',
+    'mousemove',
+    'keydown',
+    'mousedown',
+    'touchstart'
   ];
 
   private readonly listenerOptions: AddEventListenerOptions = { passive: true };
@@ -283,25 +292,18 @@ export class AuthService {
     this.lastActivity = Date.now();
   };
 
-  // handler para visibility change
+  // Handler para visibility change
   private visibilityHandler = (): void => {
     if (!document.hidden) {
-      // al volver a la pestaña revisamos si ya pasó el timeout
       const elapsed = Date.now() - this.lastActivity;
       if (elapsed > this.inactivityTimeoutMs) {
         this.notificacionService.mostrarError('Sesión cerrada por inactividad.');
         this.cerrarSesion();
-      } else {
-        // si no ha pasado, actualizamos lastActivity para evitar logout inmediato
-        this.lastActivity = Date.now();
       }
-    } else {
-      // Al ocultar la pestaña registrar la marca de tiempo
-      // this.hiddenAt = Date.now();
     }
   };
 
-  // --- iniciar detección ---
+  // Iniciar detección
   iniciarDeteccionInactividad(timeoutMs?: number, checkIntervalMs?: number): void {
     if (this.detectandoInactividad) return; // evita registros duplicados
     if (timeoutMs) this.inactivityTimeoutMs = timeoutMs;
@@ -310,15 +312,15 @@ export class AuthService {
     this.detectandoInactividad = true;
     this.lastActivity = Date.now();
 
-    // registrar listeners de actividad
+    // Registrar listeners de actividad
     this.activityEvents.forEach(evt => {
       document.addEventListener(evt, this.activityHandler, this.listenerOptions);
     });
 
-    // evento visibilidad
+    // Evento visibilidad
     document.addEventListener('visibilitychange', this.visibilityHandler);
 
-    // comprobación periódica
+    // Comprobación periódica
     this.checkIntervalRef = setInterval(() => {
       if (Date.now() - this.lastActivity > this.inactivityTimeoutMs) {
         this.notificacionService.mostrarError('Sesión cerrada por inactividad.');
@@ -327,7 +329,20 @@ export class AuthService {
     }, this.checkIntervalMs);
   }
 
-  // --- detener detección ---
+  // comprobación periódica
+  // this.checkIntervalRef = setInterval(() => {
+  //   const elapsed = Date.now() - this.lastActivity;
+  //   const restante = Math.max(0, Math.floor((this.inactivityTimeoutMs - elapsed) / 1000));
+
+  //   console.log(`Tiempo restante de sesión: ${restante}s`);
+
+  //   if (elapsed > this.inactivityTimeoutMs) {
+  //     this.notificacionService.mostrarError('Sesión cerrada por inactividad.');
+  //     this.cerrarSesion();
+  //   }}, this.checkIntervalMs);
+  // }
+
+  // Detener detección
   detenerDeteccionInactividad(): void {
     if (!this.detectandoInactividad) return;
 

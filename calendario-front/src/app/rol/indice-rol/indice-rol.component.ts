@@ -70,10 +70,10 @@ export class IndiceRolComponent implements OnInit, AfterViewInit {
   // Métodos
   cargarRoles(): void {
     this.cargando = true;
-    console.log('Cargando roles...');
+    // console.log('Cargando roles...');
     this.rolService.listarRoles().subscribe({
       next: (response) => {
-        console.log('Respuesta recibida:', response);
+        // console.log('Respuesta recibida:', response);
         if (response && Array.isArray(response.data)) {
           this.fuenteDatos.data = response.data;
         } else {
@@ -81,13 +81,13 @@ export class IndiceRolComponent implements OnInit, AfterViewInit {
           this.notificacionService.mostrarError('No se encontraron roles.');
         }
         this.cargando = false;
-        this.cd.markForCheck(); // Asegura que la vista se actualice
+        this.cd.markForCheck();
       },
       error: (error) => {
-        console.error('Error al cargar roles:', error);
+        // console.error('Error al cargar roles:', error);
         this.notificacionService.mostrarError('Error al cargar los roles.');
         this.cargando = false;
-        this.cd.markForCheck(); // Asegura que la vista se actualice
+        this.cd.markForCheck();
       }
     });
   }

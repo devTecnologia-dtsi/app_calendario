@@ -15,9 +15,10 @@ export const msalInstance = new PublicClientApplication({
   system: {
     loggerOptions: {
       loggerCallback: (level, message, containsPii) => {
-        if (!containsPii) console.log(message);
+        if (!containsPii) 
+          console.log(message);
       },
-      logLevel: LogLevel.Info,
+      logLevel: LogLevel.Error,
       piiLoggingEnabled: false
     }
   }

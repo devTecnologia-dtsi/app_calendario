@@ -457,6 +457,12 @@ export class FormularioCalendariosComponent implements OnInit {
   private subactividadService = inject(SubactividadesService);
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
+  private tiposCalendarioMap: Record<string, { id: number; texto: string }> = {
+    academico: { id: 1, texto: 'académico' },
+    financiero: { id: 2, texto: 'financiero' },
+    grados: { id: 3, texto: 'grados' }
+  };
+
 
   constructor() {
     this.form = this.fb.group({
@@ -473,16 +479,16 @@ export class FormularioCalendariosComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // solo setea el título por ruta cuando NO hay modelo (creación)
-    const tipoCalendarioParam = this.route.snapshot.paramMap.get('tipo') ?? '';
-    const tiposTexto: Record<string, string> = {
-      academico: 'académico',
-      financiero: 'financiero',
-      grados: 'grados'
-    };
-
     if (!this._modelo) {
-      this.tituloFormulario = `Crear calendario ${tiposTexto[tipoCalendarioParam] ?? ''}`.trim();
+      const tipoCalendarioParam = this.route.snapshot.paramMap.get('tipo') ?? '';
+      const tipoSeleccionado = this.tiposCalendarioMap[tipoCalendarioParam];
+
+      if (tipoSeleccionado) {
+        this.tituloFormulario = `Crear calendario ${tipoSeleccionado.texto}`;
+        this.form.patchValue({ id_tipo_calendario: tipoSeleccionado.id });
+      } else {
+        this.tituloFormulario = 'Crear calendario';
+      }
     }
 
     this.cargarCatalogos();
@@ -600,7 +606,11 @@ export class FormularioCalendariosComponent implements OnInit {
 
   // Guardar 
   guardar(): void {
-    if (this.form.invalid) return;
+    // if (this.form.invalid) return;
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     const idUsuario = this.authService.getIdUsuario();
     if (!idUsuario) {
