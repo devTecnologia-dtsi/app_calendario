@@ -4,25 +4,40 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class UserSessionService {
-  private usuario: any = null;
+  private tokenKey = 'auth_token'; // nombre único para el token
+  private token: string | null = null;
 
-  setUsuario(usuario: any) {
-    this.usuario = usuario;
-    localStorage.setItem('usuario', JSON.stringify(usuario));
+  // Guarda solo el token
+  setToken(token: string) {
+    this.token = token;
+    localStorage.setItem(this.tokenKey, token);
   }
 
-  getUsuario() {
-    if (!this.usuario) {
-      const stored = localStorage.getItem('usuario');
-      if (stored) {
-        this.usuario = JSON.parse(stored);
-      }
+  // Obtiene el token (de memoria o localStorage)
+  getToken(): string | null {
+    if (!this.token) {
+      this.token = localStorage.getItem(this.tokenKey);
     }
-    return this.usuario;
+    return this.token;
   }
 
+  // Limpia la sesión (por logout o expiración)
   limpiarSesion() {
-    this.usuario = null;
-    localStorage.removeItem('usuario');
+    this.token = null;
+    localStorage.removeItem(this.tokenKey);
+  }
+
+  // Método opcional: saber si el usuario está autenticado
+  isAuthenticated(): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const now = Math.floor(Date.now() / 1000);
+      return payload.exp && payload.exp > now;
+    } catch {
+      return false;
+    }
   }
 }

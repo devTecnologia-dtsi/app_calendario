@@ -1,46 +1,82 @@
-<form (submit)="guardarCambios()" [formGroup]="form">
-  <mat-form-field appearance="outline">
-    <mat-label>Correo</mat-label>
-    <input matInput [formControl]="form.controls.correo_nuevo" placeholder="ejemplo@uniminuto.edu" maxlength="40">
-    <mat-error>{{obtenerErrorCampoCorreo()}}</mat-error>
-  </mat-form-field>
+<mat-card>
+  <!-- <mat-card-title>Formulario de Usuario</mat-card-title> -->
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="guardarCambios()">
+      <!-- Correo -->
+      <div class="form-grid">
+        <mat-form-field appearance="fill">
+          <mat-label>Correo institucional</mat-label>
+          <input matInput formControlName="correo" placeholder="correo@uniminuto.edu" />
+          <mat-error *ngIf="form.get('correo')?.invalid && form.get('correo')?.touched">
+            Ingrese un correo válido
+          </mat-error>
+        </mat-form-field>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Rol</mat-label>
-    <mat-select [formControl]="form.controls.id_rol">
-      <mat-option *ngFor="let rol of roles" [value]="rol.id">{{rol.nombre}}</mat-option>
-    </mat-select>
-    <mat-error>{{obtenerErrorSelectRol()}}</mat-error>
-  </mat-form-field>
+        <mat-form-field appearance="fill">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="estado">
+            <mat-option [value]="1">Activo</mat-option>
+            <mat-option [value]="0">Inactivo</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
 
-  <mat-form-field appearance="outline">
-    <mat-label>Rectoría</mat-label>
-    <mat-select [formControl]="form.controls.id_rectoria">
-      <mat-option *ngFor="let rectoria of rectorias || []" [value]="rectoria.id">
-        {{ rectoria.nombre }}
-      </mat-option>
-    </mat-select>
-    <mat-error>{{ obtenerErrorSelectRectoria() }}</mat-error>
-  </mat-form-field>
-  
-  <mat-form-field appearance="outline">
-    <mat-label>Sede</mat-label>
-    <mat-select [formControl]="form.controls.id_sede">
-      <mat-option *ngFor="let sede of sedes" [value]="sede.id">{{sede.nombre}}</mat-option>
-    </mat-select>
-    @if (form.controls.id_rectoria.value == 1) {
-      <mat-error>{{obtenerErrorSelectSede()}}</mat-error>
-    }
-    @else {
-      <mat-error>{{obtenerFaltaSeleccionRectoria()}}</mat-error>
-    }
+      <h3>Permisos</h3>
+      <div formArrayName="permisos">
+        <div *ngFor="let permiso of permisos.controls; let i = index" [formGroupName]="i" class="permiso-item">
+          <h4>Permiso {{ i + 1 }}</h4>
 
-  </mat-form-field>
+          <mat-form-field appearance="fill">
+            <mat-label>Rectoría</mat-label>
+            <mat-select formControlName="id_rectoria" (selectionChange)="cargarSedes($event.value, i)">
+              <mat-option *ngFor="let r of rectorias" [value]="r.id_rectoria">{{ r.nombre_rectoria }}</mat-option>
+            </mat-select>
+              <mat-error *ngIf="permiso.get('id_rectoria')?.hasError('required') && permiso.get('id_rectoria')?.touched">
+                La rectoría es obligatoria.
+              </mat-error>
+          </mat-form-field>
 
-  <div class="contenedor-botones">
-    <button mat-raised-button type="submit" [disabled]="form.invalid">Guardar cambios</button>
-    <a mat-raised-button routerLink="/usuarios" color="warn">Cancelar</a>
-  </div>
- 
+          <mat-form-field appearance="fill">
+            <mat-label>Sede</mat-label>
+            <mat-select formControlName="id_sede">
+              <mat-option *ngFor="let s of sedesPorPermiso[i]" [value]="s.id">{{ s.nombre }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="permiso.get('id_rectoria')?.hasError('required') && permiso.get('id_sede')?.touched">
+              Antes de seleccionar una sede, debes seleccionar una rectoría. 
+            </mat-error>
+            <mat-error *ngIf="permiso.get('id_sede')?.hasError('required') && permiso.get('id_sede')?.touched">
+              La sede es obligatoria.
+            </mat-error>
+          </mat-form-field>
 
-</form>
+          <mat-form-field appearance="fill">
+            <mat-label>Rol</mat-label>
+            <mat-select formControlName="id_rol">
+              <mat-option *ngFor="let rol of roles" [value]="rol.id">{{ rol.nombre }}</mat-option>
+            </mat-select>
+            <mat-error *ngIf="permiso.get('id_rol')?.hasError('required') && permiso.get('id_rol')?.touched">
+              El rol es obligatorio.
+            </mat-error>
+          </mat-form-field>
+
+          <button mat-stroked-button color="warn" type="button" (click)="desactivarPermiso(i)">Eliminar permiso</button>
+        </div>
+      </div>
+
+      <div class="agregar-actividad">
+        <button mat-stroked-button color="primary" type="button" (click)="agregarPermiso()">
+          Agregar permiso
+        </button>
+      </div>
+
+      <div class="acciones">
+        <button mat-flat-button color="accent" type="submit" [disabled]="form.invalid">
+          Guardar
+        </button>
+        <button mat-stroked-button color="basic" type="button" class="boton-cancelar" (click)="cancelar()">
+          Cancelar
+        </button>
+      </div>
+    </form>
+  </mat-card-content>
+</mat-card>

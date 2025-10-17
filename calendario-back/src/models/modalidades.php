@@ -129,29 +129,5 @@ class Modalidades extends BaseModelo
             ]);
         }
     }
-
-    public function eliminarModalidad($id)
-    {
-        try {
-            // Obtener correo desde el token
-            $usuarioAuth = $this->obtenerCorreoDesdeToken();
-
-            $result = $this->ejecutarSp("CALL sp_modalidades('eliminar', ?, NULL, NULL, ?)",
-                ["is",
-                $id,
-                $usuarioAuth
-            ]);
-
-            // Capturar respuesta del SP
-            $respuesta = $result->fetch_assoc();
-            $this->responderJson($respuesta);
-            
-        } catch (Exception $e) {
-            $this->responderJson([
-                'status' => 0,
-                'message' => 'Error al eliminar la modalidad: ' . $e->getMessage()
-            ]);
-        }
-    }
 }
 ?>

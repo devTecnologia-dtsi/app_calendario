@@ -3,23 +3,34 @@
   <!-- BOTONES DE CREACIÓN -->
   <div class="botones-crear mb-4" style="display: flex; gap: 10px; flex-wrap: wrap;">
     @if (puedeCrear('academico')) {
-      <button mat-raised-button color="primary" [routerLink]="['/calendarios/crear', 'academico']">
+      <button 
+        mat-raised-button 
+        color="primary" 
+        [routerLink]="['/calendarios/crear', 'academico']"
+        (click)="debugNavegacion('academico')">
         Crear Calendario Académico
       </button>
     }
 
     @if (puedeCrear('financiero')) {
-      <button mat-raised-button color="accent" [routerLink]="['/calendarios/crear', 'financiero']">
+      <button 
+        mat-raised-button 
+        color="accent" 
+        [routerLink]="['/calendarios/crear', 'financiero']"
+        (click)="debugNavegacion('financiero')">
         Crear Calendario Financiero
       </button>
     }
 
     @if (puedeCrear('grados')) {
-      <button mat-raised-button color="warn" [routerLink]="['/calendarios/crear', 'grados']">
+      <button 
+        mat-raised-button 
+        color="warn" 
+        [routerLink]="['/calendarios/crear', 'grados']"
+        (click)="debugNavegacion('grados')">
         Crear Calendario de Grados
       </button>
     }
-
   </div>
 
   <!-- CALENDARIOS ACADÉMICOS -->

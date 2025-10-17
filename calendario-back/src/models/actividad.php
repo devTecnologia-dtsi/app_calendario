@@ -149,28 +149,4 @@ class Actividad extends BaseModelo
             ]);
         }
     }
-
-    public function eliminarActividad($id)
-    {
-        try {
-
-            // Obtener correo desde el token
-            $usuarioAuth = $this->obtenerCorreoDesdeToken();
-
-            $result = $this->ejecutarSp("CALL sp_actividad('eliminar', ?, NULL, NULL, NULL, ?)",
-                ["is", 
-                $id,
-                $usuarioAuth
-            ]);
-
-            // Capturar respuesta del SP
-            $respuesta = $result->fetch_assoc();
-            $this->responderJson($respuesta);
-        } catch (Exception $e) {
-            $this->responderJson([
-                'status' => 0,
-                'message' => 'Error al eliminar actividad: ' . $e->getMessage()
-            ]);
-        }
-    }
 }

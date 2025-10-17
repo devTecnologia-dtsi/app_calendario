@@ -1,10 +1,22 @@
+<!-- <ng-template #cargandoTpl>
+  <div class="cargando">Cargando usuario...</div>
+</ng-template> -->
+
 <h2>Editar usuario</h2>
+<mat-card>
+  <!-- <mat-card-title><strong>Editar usuario</strong></mat-card-title> -->
+  <mat-card-content>
+    <ng-container *ngIf="usuario; else cargandoTpl">
+      <app-mostrar-errores [errores]="errores"></app-mostrar-errores>
 
-@if (usuario) {
-    <app-mostrar-errores [errores]="errores"></app-mostrar-errores>
-    <app-formulario-usuarios [modelo]="usuario" (posteoFormulario)="guardarCambios($event)"></app-formulario-usuarios>
-} @else {
-    <app-cargando></app-cargando>
+      <app-formulario-usuarios
+        [modelo]="usuario"
+        (posteoFormulario)="guardarCambios($event)">
+      </app-formulario-usuarios>
+    </ng-container>
 
-}
-
+    <ng-template #cargandoTpl>
+      <div class="cargando">Cargando usuario...</div>
+    </ng-template>
+</mat-card-content>
+</mat-card>

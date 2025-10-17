@@ -1,0 +1,160 @@
+/* Contenedor principal */
+.contenedor {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 24px;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 16px;
+}
+
+/* Formulario */
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Campos generales */
+.campo {
+  display: flex;
+  flex-direction: column;
+}
+
+.campo label {
+  font-weight: 500;
+  color: #37474f;
+  margin-bottom: 6px;
+}
+
+.campo input,
+.campo select {
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 15px;
+  transition: border-color 0.2s;
+}
+
+.campo input:focus,
+.campo select:focus {
+  border-color: #1976d2;
+  outline: none;
+}
+
+/* Permisos */
+h3 {
+  color: #1565c0;
+  font-weight: 500;
+  margin-bottom: 12px;
+}
+
+.permisos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.permiso-item {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  padding: 16px;
+  background-color: #fafafa;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.permiso-item:hover {
+  background-color: #f5f7fa;
+}
+
+.permiso-item label {
+  font-weight: 500;
+  color: #455a64;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.permiso-item select {
+  width: 100%;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  padding: 8px;
+}
+
+/* Botones */
+button {
+  border: none;
+  border-radius: 6px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+/* Botón principal (Guardar) */
+button[type="submit"] {
+  background-color: #1565c0;
+  color: white;
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  background-color: #0d47a1;
+}
+
+/* Botón Cancelar */
+button[type="button"] {
+  background-color: #e0e0e0;
+  color: #424242;
+}
+
+button[type="button"]:hover {
+  background-color: #d5d5d5;
+}
+
+/* Botón eliminar permiso */
+.btn-eliminar {
+  background-color: #d32f2f !important;
+  color: white !important;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+.btn-eliminar:hover {
+  background-color: #b71c1c !important;
+}
+
+/* Botón agregar permiso */
+.btn-agregar {
+  background-color: #388e3c;
+  color: white;
+  align-self: flex-start;
+  margin-top: 8px;
+}
+
+.btn-agregar:hover {
+  background-color: #2e7d32;
+}
+
+/* Acciones */
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 24px;
+}
+
+/* Cargando */
+.cargando {
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+  color: #607d8b;
+}

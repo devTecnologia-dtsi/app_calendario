@@ -32,7 +32,7 @@ if (!$tabla) {
 // Manejo de métodos
 switch ($metodo) {
     case 'GET':
-
+        
         if ($tabla === 'rectoria') {
             //Consultar rectorías
             $rectoria = new Rectoria();
@@ -45,7 +45,9 @@ switch ($metodo) {
 
         elseif ($tabla === 'rectoriasPorUsuario') {
             $rectoria = new Rectoria();
-            $rectoria->listarRectoriasPorUsuario();
+            // Pasamos el parámetro rol del query string si viene
+            $rol = $_GET['rol'] ?? null;
+            $rectoria->listarRectoriasPorUsuario($rol);
         }
 
         elseif ($tabla === 'sede') {
@@ -84,14 +86,33 @@ switch ($metodo) {
             } else {
                 $rol->listarRol();
             }
-        } 
+        }
+
+        elseif ($tabla === 'rolesPorUsuario') {
+            // Listar roles por usuario
+            $rol = new Rol();
+            $rol->listarRolesPorUsuario();
+        }
         
         elseif ($tabla === 'usuario') {
-            // Consultar usuario específico o todos
+            // Instancia del controlador de usuario
             $usuario = new CrudUsuario();
+
+            // Detectar si el ID viene en la ruta o en los parámetros GET
+            $id = isset($partesPath[2]) && is_numeric($partesPath[2])
+                ? intval($partesPath[2])
+                : (isset($_GET['id']) && is_numeric($_GET['id']) ? intval($_GET['id']) : null);
+
+            // Acciones según si hay o no ID
             if ($id) {
+                // Consultar un usuario específico
                 $usuario->consultarUsuario($id);
             } else {
+                // Parámetros de paginación
+                $limite = isset($_GET['limite']) ? intval($_GET['limite']) : 10;
+                $offset = isset($_GET['offset']) ? intval($_GET['offset']) : 0;
+
+                // Listar usuarios
                 $usuario->listarUsuarios($limite, $offset);
             }
         }
@@ -314,6 +335,13 @@ switch ($metodo) {
             $usuario->desactivarUsuario($id);
         }
 
+        elseif ($tabla === 'permiso') {
+            // Deshabilitar permiso de usuario
+            $idPermiso = isset($partesPath[2]) ? intval($partesPath[2]) : null;
+            $usuario = new CrudUsuario();
+            $usuario->desactivarPermiso($idPermiso);
+        }
+
         elseif ($tabla === 'actividad') {
             // Deshabilitar actividad
             $actividad = new Actividad();
@@ -346,54 +374,6 @@ switch ($metodo) {
 
         else {
             desactivar($id, $tabla);
-        }
-        break;
-
-    case 'DELETE':
-        if ($id === null) {
-            http_response_code(400);
-            echo json_encode(["error" => "ID no especificado para eliminación"]);
-            exit;
-        }
-        
-        if( $tabla === 'usuario') {
-            // Eliminar usuario
-            $usuario = new CrudUsuario();
-            $usuario->eliminarUsuario($id);
-        }
-
-        elseif ($tabla === 'actividad') {
-            // Eliminar actividad
-            $actividad = new Actividad();
-            $actividad->eliminarActividad($id);
-        }
-
-        elseif ($tabla === 'subactividad') {
-            // Eliminar subactividad
-            $subactividad = new SubActividad();
-            $subactividad->eliminarSubactividad($id);
-        }
-        
-        elseif ($tabla === 'periodoAcademico') {
-            // Eliminar periodo
-            $periodo = new PeriodoAcademico();
-            $periodo->eliminarPeriodoAcademico($id);
-        }
-
-        elseif ($tabla === 'calendario') {
-            // Eliminar calendario
-            $calendario = new Calendario();
-            $calendario->eliminarCalendario($id);
-        }
-
-        elseif ($tabla === 'modalidad') {
-            // Eliminar modalidad
-            $modalidad = new Modalidades();
-            $modalidad->eliminarModalidad($id);
-        }
-
-        else {
-            eliminar($id, $tabla);
         }
         break;
 

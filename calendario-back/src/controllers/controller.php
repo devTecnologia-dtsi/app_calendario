@@ -32,6 +32,9 @@ function consultar($id, $tabla, $limite = 5, $offset = 0) {
         case 'usuario':
             $modelo = new CrudUsuario();
             break;
+        case 'permiso':
+            $modelo = new CrudUsuario();
+            break;
         case 'rectoria':
             $modelo = new Rectoria();
             break;
@@ -163,34 +166,3 @@ function desactivar($id, $tabla) {
             break;
     }
 }
-
-// ELIMINAR
-function eliminar($id, $tabla) {
-    switch ($tabla) {
-        case 'actividad':
-            $actividad = new Actividad();
-            $actividad->eliminarActividad($id);
-            break;
-        case 'periodoAcademico':
-            $periodo = new PeriodoAcademico();
-            $periodo->eliminarPeriodoAcademico($id);
-            break;
-        case 'calendario':
-            $calendario = new Calendario();
-            $calendario->eliminarCalendario($id);
-            break;
-        case 'usuario':
-            $usuario = new CrudUsuario();
-            $usuario->eliminarUsuario($id);
-            break;
-        case 'modalidad':
-            $modalidad = new Modalidades();
-            $modalidad->eliminarModalidad($id);
-            break;
-        default:
-            echo json_encode(array('ERROR' => 'No se ha encontrado la tabla para eliminar'));
-            break;
-    }
-}
-
-?>

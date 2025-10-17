@@ -9,7 +9,7 @@ export const msalInstance = new PublicClientApplication({
     redirectUri: environment.redirectUri
   },
   cache: {
-    cacheLocation: 'localStorage',
+    cacheLocation: 'sessionStorage',
     storeAuthStateInCookie: false
   },
   system: {

@@ -30,6 +30,30 @@ class Rol extends BaseModelo
         }
     }
 
+    public function listarRolesPorUsuario() {
+        try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+            $idRectoria = $_GET['id_rectoria'] ?? null;
+            $idSede = $_GET['id_sede'] ?? null;
+
+            if (!$idUsuario) throw new Exception("Usuario no identificado");
+
+            $sql = "CALL sp_usuario_roles('listar', ?, ?, ?)";
+            $result = $this->ejecutarSP($sql, ["iii", $idUsuario, $idRectoria, $idSede]);
+            $roles = $result->fetch_all(MYSQLI_ASSOC);
+            $result->close();
+
+            $this->responderJson([
+                'status' => 1,
+                'message' => 'Roles por usuario, listados correctamente.',
+                'data' => $roles
+            ]);
+        } catch (Exception $e) {
+            $this->responderJson(['status' => 0, 'message' => $e->getMessage()]);
+        }
+    }
+
     public function consultarRol($id) {
         try {
 

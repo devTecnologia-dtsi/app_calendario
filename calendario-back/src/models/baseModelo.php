@@ -25,21 +25,70 @@ abstract class BaseModelo
         $this->conexion = $conexionObj->test();
     }
 
+    // protected function ejecutarSp($query, $params = [])
+    // {
+    //     $sql = $this->conexion->prepare($query);
+
+    //     if (!empty($params)) {
+    //         $tipos = array_shift($params);
+    //         $sql->bind_param($tipos, ...$params);
+    //     }
+
+    //     $sql->execute();
+    //     $result = $sql->get_result();
+    //     $sql->close();
+
+    //     return $result;
+    // }
+
     protected function ejecutarSp($query, $params = [])
     {
-        $sql = $this->conexion->prepare($query);
-
-        if (!empty($params)) {
-            $tipos = array_shift($params);
-            $sql->bind_param($tipos, ...$params);
+        // Preparar la sentencia
+        $stmt = $this->conexion->prepare($query);
+        if ($stmt === false) {
+            $err = $this->conexion->error;
+            error_log("Error preparando SP: {$query} -> {$err}");
+            throw new Exception("Error preparando la consulta: $err");
         }
 
-        $sql->execute();
-        $result = $sql->get_result();
-        $sql->close();
+        // Vincular parámetros si existen
+        if (!empty($params)) {
+            // El primer elemento del array es la cadena de tipos (por ejemplo: 'iiss')
+            $types = array_shift($params);
+
+            // Convertir los valores en referencias (bind_param las necesita así)
+            $refs = [];
+            foreach ($params as $key => $value) {
+                $refs[$key] = &$params[$key];
+            }
+
+            // Agregar la cadena de tipos al inicio
+            array_unshift($refs, $types);
+
+            // Llamar a bind_param de forma dinámica
+            if (!call_user_func_array([$stmt, 'bind_param'], $refs)) {
+                $err = $stmt->error;
+                error_log("Error en bind_param: {$err} | Query: {$query} | Tipos: {$types}");
+                throw new Exception("Error al vincular parámetros: $err");
+            }
+        }
+
+        // Ejecutar el procedimiento
+        if (!$stmt->execute()) {
+            $err = $stmt->error;
+            error_log("Error ejecutando SP: {$query} -> {$err}");
+            throw new Exception("Error al ejecutar la consulta: $err");
+        }
+
+        // Obtener resultado si existe
+        $result = @$stmt->get_result();
+
+        // Cerrar el statement para liberar recursos
+        $stmt->close();
 
         return $result;
     }
+
     protected function responderJson($respuesta)
     {
         header('Content-Type: application/json; charset=utf-8');

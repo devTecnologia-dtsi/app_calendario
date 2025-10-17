@@ -9,6 +9,7 @@ import { NotificacionService } from '../compartidos/servicios/notificacion.servi
 import { AuthService } from '../seguridad/auth.service';
 import { CargandoComponent } from "../compartidos/componentes/cargando/cargando.component";
 import { finalize } from 'rxjs/operators';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-landing-page',
@@ -33,6 +34,7 @@ export class LandingPageComponent implements OnInit {
   private calendariosService = inject(CalendariosService);
   private notificacion = inject(NotificacionService);
   private authService = inject(AuthService);
+  private router = inject(Router);
 
   async ngOnInit(): Promise<void> {
     // Validar si han cambiado los permisos del usuario (con caché de 10 min)
@@ -51,9 +53,6 @@ export class LandingPageComponent implements OnInit {
         next: (res) => {
           const calendarios = Array.isArray(res.data) ? res.data : [];
 
-          // console.log('Correo usuario:', correoUsuario);
-          // console.log('Calendarios recibidos:', calendarios);
-
           const visibles = calendarios.filter((cal: any) =>
             cal.correo_organizador === correoUsuario
           );
@@ -70,20 +69,40 @@ export class LandingPageComponent implements OnInit {
       });
   }
 
-  puedeCrear(tipo: 'academico' | 'financiero' | 'grados'): boolean {
-    return this.authService.tienePermisoPara(tipo, 'crear');
+  // Helper que verifica si tiene permiso específico O es admin
+  private tienePermisoOEsAdmin(
+    tipo: 'admin' | 'academico' | 'financiero' | 'grados',
+    accion: 'crear' | 'leer' | 'actualizar' | 'borrar'
+  ): boolean {
+    // Si es admin, tiene todos los permisos sobre todos los tipos
+    if (this.authService.tienePermisoPara('admin', accion)) {
+      return true;
+    }
+    
+    // Si no es admin, verificar el permiso específico del tipo
+    return this.authService.tienePermisoPara(tipo, accion);
   }
 
-  puedeActualizar(tipo: 'academico' | 'financiero' | 'grados'): boolean {
-    return this.authService.tienePermisoPara(tipo, 'actualizar');
+  puedeCrear(tipo: 'admin' | 'academico' | 'financiero' | 'grados'): boolean {
+    return this.tienePermisoOEsAdmin(tipo, 'crear');
   }
 
-  puedeEliminar(tipo: 'academico' | 'financiero' | 'grados'): boolean {
-    return this.authService.tienePermisoPara(tipo, 'borrar');
+  puedeActualizar(tipo: 'admin' | 'academico' | 'financiero' | 'grados'): boolean {
+    return this.tienePermisoOEsAdmin(tipo, 'actualizar');
   }
 
-  puedeVer(tipo: 'academico' | 'financiero' | 'grados'): boolean {
-    return this.authService.tienePermisoPara(tipo, 'leer');
+  puedeEliminar(tipo: 'admin' | 'academico' | 'financiero' | 'grados'): boolean {
+    return this.tienePermisoOEsAdmin(tipo, 'borrar');
+  }
+
+  puedeVer(tipo: 'admin' | 'academico' | 'financiero' | 'grados'): boolean {
+    return this.tienePermisoOEsAdmin(tipo, 'leer');
+  }
+
+  debugNavegacion(tipo: string): void {
+    //console.log('Click en botón crear:', tipo);
+    //console.log('RouterLink apunta a:', `/calendarios/crear/${tipo}`);
+    // console.log('URL actual:', this.router.url);
   }
 
   async desactivarCalendario(id: number) {

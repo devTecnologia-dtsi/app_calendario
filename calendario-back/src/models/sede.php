@@ -90,24 +90,37 @@ class Sede extends BaseModelo
 
     public function listarSedesPorUsuario() {
         try {
+            // Obtener datos desde el token JWT
             $datos = $this->obtenerDatosDesdeToken();
-            $permisos = $datos->permisos ?? [];
-            $ids = array_unique(array_map(fn($p) => $p->id_sede, $permisos));
-            if (empty($ids)) throw new Exception("Sin permisos");
+            $idUsuario = $datos->id ?? null;
 
-            $placeholders = implode(',', array_fill(0, count($ids), '?'));
-            $tipos = str_repeat('i', count($ids));
-            $sql = "SELECT id, nombre, id_rectoria FROM sede WHERE id IN ($placeholders)";
-            $result = $this->ejecutarSP($sql, [$tipos, ...$ids]);
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
+
+            // Llamar al procedimiento almacenado (sin rectoría)
+            $sql = "CALL sp_usuario_sedes('listar', ?)";
+            $result = $this->ejecutarSP($sql, ["i", $idUsuario]);
+
+            // Obtener los resultados
+            $sedes = $result->fetch_all(MYSQLI_ASSOC);
+            $result->close();
+
+            // Enviar la respuesta JSON
             $this->responderJson([
                 'status' => 1,
-                'message' => 'OK',
-                'data' => $result->fetch_all(MYSQLI_ASSOC)
+                'message' => 'Sedes listadas correctamente',
+                'data' => $sedes
             ]);
         } catch (Exception $e) {
-            $this->responderJson(['status' => 0, 'message' => $e->getMessage()]);
+            //  Manejo de errores
+            $this->responderJson([
+                'status' => 0,
+                'message' => 'Error al listar sedes por usuario: ' . $e->getMessage()
+            ]);
         }
     }
+
 }
 
 ?>

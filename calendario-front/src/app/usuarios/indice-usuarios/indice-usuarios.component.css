@@ -1,3 +1,19 @@
 mat-form-field {
   width: 250px;
 }
+
+.estado-activo {
+  color: #2e7d32; /* verde oscuro */
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.estado-inactivo {
+  color: #c62828; /* rojo oscuro */
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}

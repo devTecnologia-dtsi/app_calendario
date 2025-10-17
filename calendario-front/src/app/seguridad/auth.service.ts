@@ -7,15 +7,20 @@ import { firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 import { NotificacionService } from '../compartidos/servicios/notificacion.service';
 
-// Interfaces 
+// Interfaces
+export interface Permiso {
+  id_rectoria: number;
+  nombre_rectoria: string;
+  id_sede: number;
+  nombre_sede: string;
+  id_rol: number;
+  nombre_rol: string;
+}
+
 export interface Usuario {
   id: number;
-  id_rol: number;
-  id_sede: number;
-  id_rectoria: number;
   correo: string;
-  nombre: string;
-  [key: string]: any;
+  permisos: Permiso[];
 }
 
 export interface Rol {
@@ -30,7 +35,7 @@ export interface Rol {
 export interface RespuestaAuth {
   status: number;
   token?: string;
-  usuario?: Usuario[];
+  usuario?: Usuario;
   message?: string;
 }
 
@@ -77,7 +82,7 @@ export class AuthService {
     localStorage.clear();
   }
 
-  // Autenticación  
+  // Autenticación
   get activeAccount(): AccountInfo | null {
     return this.msal.instance.getActiveAccount();
   }
@@ -108,10 +113,9 @@ export class AuthService {
       );
 
       if (respuesta?.token && respuesta?.usuario) {
-        this.guardarLS('jwt_token', respuesta.token);
         this.guardarLS('usuario_info', respuesta.usuario);
+        this.guardarLS('jwt_token', respuesta.token); 
 
-        // Reiniciar detección siempre que la sesión se valide
         this.detenerDeteccionInactividad();
         this.iniciarDeteccionInactividad();
         return true;
@@ -131,7 +135,6 @@ export class AuthService {
     this.detenerDeteccionInactividad();
     this.limpiarLS();
 
-    // detener intervalos/timers
     if (this.validacionInterval) {
       clearInterval(this.validacionInterval);
       this.validacionInterval = null;
@@ -142,39 +145,40 @@ export class AuthService {
       this.inactividadTimer = null;
     }
 
-    // quitar listeners de actividad
     this.eventosActividad.forEach(evento => {
       window.removeEventListener(evento, this.activityHandler);
     });
 
-    // cerrar sesión en MSAL
     this.msal.logoutRedirect({
       postLogoutRedirectUri: `${window.location.origin}/login`
     });
   }
 
-  // Roles y permisos  
+  // Roles y permisos
   async cargarPermisosRoles(): Promise<void> {
     const roles = await firstValueFrom(this.http.get<{ data: Rol[] }>(`${environment.apiUrl}rol`));
     this.guardarLS('permisos_roles', roles.data);
   }
 
-  tieneRol(rol: number): boolean {
-    return this.getRoles().includes(rol);
+  tieneRol(idRol: number): boolean {
+    return this.getRoles().includes(idRol);
   }
 
   getRoles(): number[] {
-    return [...new Set(this.getUsuarioInfo().map(u => u.id_rol))];
+    const usuario = this.getUsuarioInfo();
+    if (!usuario) return [];
+    return usuario.permisos.map(p => p.id_rol);
   }
 
   tienePermisoPara(
-    tipo: 'academico' | 'financiero' | 'grados',
+    tipo: 'admin'| 'academico' | 'financiero' | 'grados',
     permiso: 'crear' | 'leer' | 'actualizar' | 'borrar'
   ): boolean {
     const rolesUsuario = this.getRoles();
     const permisos = this.obtenerLS<Rol[]>('permisos_roles', []);
 
     const rolEsperado: Record<string, string> = {
+      admin: 'admin',
       academico: 'academicos',
       financiero: 'financiero',
       grados: 'grados'
@@ -187,33 +191,122 @@ export class AuthService {
     );
   }
 
-  // Usuario  
+  // Verifica si el usuario tiene permiso para un tipo de calendario específico
+  tienePermisoCalendario(
+    tipoCalendario: 'admin' | 'academico' | 'financiero' | 'grados',
+    idRectoria?: number,
+    idSede?: number
+  ): boolean {
+    const usuario = this.getUsuarioInfo();
+    if (!usuario) return false;
+
+    // Mapeo de tipos de calendario a roles permitidos
+    const rolesPermitidos: Record<string, string[]> = {
+      academico: ['admin', 'academicos'],
+      financiero: ['admin', 'financiero'],
+      grados: ['admin', 'grados']
+    };
+
+    const roles = rolesPermitidos[tipoCalendario] || [];
+
+    return usuario.permisos.some(p => {
+      const tieneRol = roles.includes(p.nombre_rol.toLowerCase());
+      const coincideRectoria = idRectoria ? p.id_rectoria === idRectoria : true;
+      const coincideSede = idSede ? p.id_sede === idSede : true;
+      
+      return tieneRol && coincideRectoria && coincideSede;
+    });
+  }
+
+  // Obtiene IDs de rectorías únicas con al menos un permiso del tipo especificado
+  getRectoriasConPermiso(tipoCalendario: 'admin' | 'academico' | 'financiero' | 'grados'): number[] {
+    const usuario = this.getUsuarioInfo();
+    if (!usuario) return [];
+
+    const rolesPermitidos: Record<string, string[]> = {
+      academico: ['admin', 'academicos'],
+      financiero: ['admin', 'financiero'],
+      grados: ['admin', 'grados']
+    };
+
+    const roles = rolesPermitidos[tipoCalendario] || [];
+    const rectoriasIds = new Set<number>();
+
+    usuario.permisos.forEach(p => {
+      if (roles.includes(p.nombre_rol.toLowerCase())) {
+        rectoriasIds.add(p.id_rectoria);
+      }
+    });
+
+    return Array.from(rectoriasIds);
+  }
+
+  // Obtiene IDs de sedes con permiso para un tipo de calendario y rectoría específica
+  getSedesConPermiso(
+    tipoCalendario: 'admin' | 'academico' | 'financiero' | 'grados',
+    idRectoria: number
+  ): number[] {
+    const usuario = this.getUsuarioInfo();
+    if (!usuario) return [];
+
+    const rolesPermitidos: Record<string, string[]> = {
+      academico: ['admin', 'academicos'],
+      financiero: ['admin', 'financiero'],
+      grados: ['admin', 'grados']
+    };
+
+    const roles = rolesPermitidos[tipoCalendario] || [];
+    const sedesIds = new Set<number>();
+
+    usuario.permisos.forEach(p => {
+      if (
+        roles.includes(p.nombre_rol.toLowerCase()) &&
+        p.id_rectoria === idRectoria
+      ) {
+        sedesIds.add(p.id_sede);
+      }
+    });
+
+    return Array.from(sedesIds);
+  }
+
+  // Obtiene todos los permisos del usuario
+  getPermisos(): Permiso[] {
+    const usuario = this.getUsuarioInfo();
+    return usuario?.permisos ?? [];
+  }
+
+  // Usuario
   getToken(): string | null {
     return this.obtenerLS<string | null>('jwt_token', null);
   }
 
-  getUsuarioInfo(): Usuario[] {
-    return this.obtenerLS<Usuario[]>('usuario_info', []);
+  getUsuarioInfo(): Usuario | null {
+    return this.obtenerLS<Usuario | null>('usuario_info', null);
   }
 
   getIdUsuario(): number | null {
-    const usuarios = this.getUsuarioInfo();
-    return usuarios.length ? usuarios[0].id : null;
+    const usuario = this.getUsuarioInfo();
+    return usuario ? usuario.id : null;
   }
 
   getSedesUnicas(): number[] {
-    return [...new Set(this.getUsuarioInfo().map(u => u.id_sede))];
+    const usuario = this.getUsuarioInfo();
+    if (!usuario) return [];
+    return [...new Set(usuario.permisos.map(p => p.id_sede))];
   }
 
   getRectoriasUnicas(): number[] {
-    return [...new Set(this.getUsuarioInfo().map(u => u.id_rectoria))];
+    const usuario = this.getUsuarioInfo();
+    if (!usuario) return [];
+    return [...new Set(usuario.permisos.map(p => p.id_rectoria))];
   }
 
   estaAutenticado(): boolean {
     return !!this.getToken();
   }
 
-  // Validación periódica  
+  // Validación periódica
   validarSesionPeriodicamente(): void {
     let fallosConsecutivos = 0;
 
@@ -249,10 +342,10 @@ export class AuthService {
           this.cerrarSesion();
         }
       }
-    }, 10 * 60 * 1000); // 10 minutos
+    }, 10 * 60 * 1000); // cada 10 minutos
   }
 
-  // Permisos cacheados  
+  // Permisos cacheados
   async refrescarPermisosSiEsNecesario(): Promise<void> {
     const ultimaCarga = Number(localStorage.getItem('ultima_carga_permisos') || 0);
     const ahora = Date.now();
@@ -269,15 +362,12 @@ export class AuthService {
   }
 
   // Inactividad
-    
-  // Propiedades 
   private detectandoInactividad = false;
   private lastActivity = Date.now();
-  private inactivityTimeoutMs = 5 * 60 * 1000; // 5 minutos
-  private checkIntervalMs = 10 * 1000; // comprobación cada 10s
+  private inactivityTimeoutMs = 5 * 60 * 1000; // 5 min
+  private checkIntervalMs = 10 * 1000; // 10 seg
   private checkIntervalRef: any = null;
 
-  // Eventos que actualizan actividad
   private activityEvents = [
     'click',
     'mousemove',
@@ -292,7 +382,6 @@ export class AuthService {
     this.lastActivity = Date.now();
   };
 
-  // Handler para visibility change
   private visibilityHandler = (): void => {
     if (!document.hidden) {
       const elapsed = Date.now() - this.lastActivity;
@@ -303,24 +392,20 @@ export class AuthService {
     }
   };
 
-  // Iniciar detección
   iniciarDeteccionInactividad(timeoutMs?: number, checkIntervalMs?: number): void {
-    if (this.detectandoInactividad) return; // evita registros duplicados
+    if (this.detectandoInactividad) return;
     if (timeoutMs) this.inactivityTimeoutMs = timeoutMs;
     if (checkIntervalMs) this.checkIntervalMs = checkIntervalMs;
 
     this.detectandoInactividad = true;
     this.lastActivity = Date.now();
 
-    // Registrar listeners de actividad
     this.activityEvents.forEach(evt => {
       document.addEventListener(evt, this.activityHandler, this.listenerOptions);
     });
 
-    // Evento visibilidad
     document.addEventListener('visibilitychange', this.visibilityHandler);
 
-    // Comprobación periódica
     this.checkIntervalRef = setInterval(() => {
       if (Date.now() - this.lastActivity > this.inactivityTimeoutMs) {
         this.notificacionService.mostrarError('Sesión cerrada por inactividad.');
@@ -329,20 +414,6 @@ export class AuthService {
     }, this.checkIntervalMs);
   }
 
-  // comprobación periódica
-  // this.checkIntervalRef = setInterval(() => {
-  //   const elapsed = Date.now() - this.lastActivity;
-  //   const restante = Math.max(0, Math.floor((this.inactivityTimeoutMs - elapsed) / 1000));
-
-  //   console.log(`Tiempo restante de sesión: ${restante}s`);
-
-  //   if (elapsed > this.inactivityTimeoutMs) {
-  //     this.notificacionService.mostrarError('Sesión cerrada por inactividad.');
-  //     this.cerrarSesion();
-  //   }}, this.checkIntervalMs);
-  // }
-
-  // Detener detección
   detenerDeteccionInactividad(): void {
     if (!this.detectandoInactividad) return;
 
@@ -360,13 +431,12 @@ export class AuthService {
     this.detectandoInactividad = false;
   }
 
-  // Métodos  
+  // Métodos auxiliares
   esAdmin(): boolean {
-    return this.getRoles().includes(1); // id_rol = 1 es admin
+    return this.getRoles().includes(1);
   }
 
   getEmailUsuario(): string | null {
     return this.activeAccount?.username ?? null;
   }
-  
 }

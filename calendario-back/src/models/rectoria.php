@@ -27,29 +27,47 @@ class Rectoria extends BaseModelo
         }
     }
 
-    public function listarRectoriasPorUsuario() {
+    public function listarRectoriasPorUsuario($rol = null) {
         try {
             $datos = $this->obtenerDatosDesdeToken();
             $permisos = $datos->permisos ?? [];
-            $ids = array_unique(array_map(fn($p) => $p->id_rectoria, $permisos));
-            if (empty($ids)) throw new Exception("Sin permisos");
 
-            $placeholders = implode(',', array_fill(0, count($ids), '?'));
-            $tipos = str_repeat('i', count($ids));
-            $sql = "SELECT id, nombre FROM rectoria WHERE id IN ($placeholders)";
-            $result = $this->ejecutarSP($sql, [$tipos, ...$ids]);
+            if (empty($permisos)) {
+                throw new Exception("El usuario no tiene permisos asociados.");
+            }
+
+            if ($rol) {
+                $rol = strtolower($rol);
+                $permisos = array_filter($permisos, function ($p) use ($rol) {
+                    return strpos(strtolower($p->nombre_rol), $rol) !== false;
+                });
+            }
+
+            $rectoriasUnicas = [];
+            foreach ($permisos as $permiso) {
+                $id = $permiso->id_rectoria;
+                if (!isset($rectoriasUnicas[$id])) {
+                    $rectoriasUnicas[$id] = [
+                        'id_rectoria' => $permiso->id_rectoria,
+                        'nombre_rectoria' => $permiso->nombre_rectoria
+                    ];
+                }
+            }
+
             $this->responderJson([
                 'status' => 1,
-                'message' => 'OK',
-                'data' => $result->fetch_all(MYSQLI_ASSOC)
+                'message' => 'Rectorías filtradas correctamente',
+                'data' => array_values($rectoriasUnicas)
             ]);
+
         } catch (Exception $e) {
-            $this->responderJson(['status' => 0, 'message' => $e->getMessage()]);
+            $this->responderJson([
+                'status' => 0,
+                'message' => 'Error al listar rectorías por usuario: ' . $e->getMessage()
+            ]);
         }
     }
 
-
-    
     public function consultarRectoria($id) {
         try {
             $result = $this->ejecutarSP("CALL sp_rectoria('listar', ?)", 

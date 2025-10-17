@@ -1,6 +1,5 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject,Injectable } from '@angular/core';
-// import { environment } from '../../../environments/environment.development';
 import { environment } from '../../../environments/environment';
 import { catchError, Observable, throwError } from 'rxjs';
 import { ActividadCreacionDTO, RespuestaAPIActividades } from '../../calendarios/calendarios';
@@ -10,7 +9,7 @@ import { ActividadCreacionDTO, RespuestaAPIActividades } from '../../calendarios
 })
 export class ActividadService {
   private http = inject(HttpClient);
-  private urlBase = `${environment.apiUrl}actividad/`;
+  private urlBase = `${environment.apiUrl}actividad`;
 
   listarActividades(): Observable<RespuestaAPIActividades> {
     return this.http.get<RespuestaAPIActividades>(`${this.urlBase}`).pipe(catchError(this.handleError));

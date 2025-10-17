@@ -515,30 +515,4 @@ class Calendario extends BaseModelo
             ]);
         }
     }
-
-    // No se usa, pero se deja funcional en caso de implementación
-    public function eliminarCalendario($id)
-    {
-        try {
-
-            // Obtener correo desde el token
-            $usuarioAuth = $this->obtenerCorreoDesdeToken();
-
-            $respuestaEliminarCalendario = $this->ejecutarSp("CALL sp_calendario('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
-                ["is", 
-                $id,
-                $usuarioAuth
-            ]);
-
-                // Capturar respuesta del SP
-            $respuesta = $respuestaEliminarCalendario->fetch_assoc();
-            $this->responderJson($respuesta);
-
-        } catch (Exception $e) {
-            $this->responderJson([
-                'status' => 0,
-                'message' => 'Error al eliminar calendario: ' . $e->getMessage()
-            ]);
-        }
-    }
 }

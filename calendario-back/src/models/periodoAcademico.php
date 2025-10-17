@@ -129,27 +129,4 @@ class PeriodoAcademico extends BaseModelo
             ]);
         }
     }
-
-    public function eliminarPeriodoAcademico($id)
-    {
-        try {
-
-            // Obtener correo desde el token
-            $usuarioAuth = $this->obtenerCorreoDesdeToken();
-
-            $result = $this->ejecutarSp("CALL sp_periodo('eliminar', ?, NULL, NULL, NULL, ?)",
-                ["is",
-                $id,
-                $usuarioAuth
-            ]);
-
-            $respuesta = $result->fetch_assoc();
-            $this->responderJson($respuesta);
-        } catch (Exception $e) {
-            $this->responderJson([
-                'status' => 0,
-                'message' => 'Error al eliminar período: ' . $e->getMessage()
-            ]);
-        }
-    }
 }

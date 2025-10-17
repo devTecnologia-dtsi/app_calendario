@@ -1,31 +1,38 @@
-// Creación
+export interface PermisoUsuario {
+  id_permiso?: number;
+  id_rectoria: number;
+  nombre_rectoria?: string;
+  id_sede: number;
+  nombre_sede?: string;
+  id_rol: number;
+  nombre_rol?: string;
+}
+
+export interface UsuarioDTO {
+  id_usuario: number;
+  correo: string;
+  estado: number;
+  fecha_creacion: string;
+  permisos?: Array<{
+    id_permiso?: number;
+    id_rectoria: number;
+    nombre_rectoria: string;
+    id_sede: number;
+    nombre_sede: string;
+    id_rol: number;
+    nombre_rol: string;
+  }>;
+}
+
 export interface UsuarioCreacionDTO {
-    correo_nuevo: string;
-    estado: number;
-    id_rectoria: number;
-    id_sede: number;
-    fechaIngreso: Date;
-    fechaCreacion: Date;
-    id_rol: number;
-  }
-  
-  // Lectura
-  export interface UsuarioDTO {
-    id: number;
-    correo_nuevo: string;
-    estado: 1;
-    id_rectoria: number;
-    id_sede: number;
-    fechaIngreso: Date;
-    fechaCreacion: Date;
-    id_rol: number;
-  }
-  
-  // Respuesta de la API
-  export interface RespuestaAPI {
-    status: number;
-    message: string;
-    data: UsuarioDTO | null;
-    total: number;
-  }
-  
+  correo: string;
+  estado: number;
+  permisos: PermisoUsuario[];
+}
+
+export interface RespuestaAPI {
+  status: number;
+  message: string;
+  total?: number;
+  data: any;
+}
