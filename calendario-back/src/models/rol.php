@@ -9,12 +9,12 @@ class Rol extends BaseModelo
     public function listarRol()
     {
         try {
-            // $datos = $this->obtenerDatosDesdeToken();
-            // $idUsuario = $datos->id ?? null;
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
-            // if (!$idUsuario) {
-            //     throw new Exception("No se pudo obtener el ID del usuario desde el token.");
-            // }
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Llamada al SP
             $result = $this->ejecutarSP("CALL sp_rol('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
 
