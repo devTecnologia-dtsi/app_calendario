@@ -7,8 +7,15 @@ include_once __DIR__ . "/baseModelo.php";
 
 class Rectoria extends BaseModelo
 {
-    public function listarRectorias() {
+    public function listarRectorias()
+    {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $result = $this->ejecutarSP("CALL sp_rectoria('listar', NULL)");
             $rectorias = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
@@ -18,7 +25,6 @@ class Rectoria extends BaseModelo
                 'message' => 'Rectorías listadas correctamente',
                 'data' => $rectorias
             ]);
-
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
@@ -27,7 +33,8 @@ class Rectoria extends BaseModelo
         }
     }
 
-    public function listarRectoriasPorUsuario($rol = null) {
+    public function listarRectoriasPorUsuario($rol = null)
+    {
         try {
             $datos = $this->obtenerDatosDesdeToken();
             $permisos = $datos->permisos ?? [];
@@ -59,7 +66,6 @@ class Rectoria extends BaseModelo
                 'message' => 'Rectorías filtradas correctamente',
                 'data' => array_values($rectoriasUnicas)
             ]);
-
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
@@ -68,10 +74,19 @@ class Rectoria extends BaseModelo
         }
     }
 
-    public function consultarRectoria($id) {
+    public function consultarRectoria($id)
+    {
         try {
-            $result = $this->ejecutarSP("CALL sp_rectoria('listar', ?)", 
-                ["i", $id]);
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
+            $result = $this->ejecutarSP(
+                "CALL sp_rectoria('listar', ?)",
+                ["i", $id]
+            );
             $rectoria = $result->fetch_assoc();
             $result->close();
 
@@ -95,5 +110,3 @@ class Rectoria extends BaseModelo
         }
     }
 }
-
-?>

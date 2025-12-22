@@ -2,15 +2,21 @@
 
 include_once __DIR__ . "/../../config/conexion.php";
 include_once __DIR__ . "/../../config/cors.php";
-include_once __DIR__ ."/baseModelo.php";
+include_once __DIR__ . "/baseModelo.php";
 
 
 class Actividad extends BaseModelo
 {
 
-    public function listarActividad ()
+    public function listarActividad()
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $result = $this->ejecutarSp("CALL sp_actividad('listar', NULL, NULL, NULL, NULL, NULL)");
             $actividades = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
@@ -31,8 +37,16 @@ class Actividad extends BaseModelo
     public function buscarActividadPorCalendario($id_calendario)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_actividad('listar_por_calendario', NULL, ?, NULL, NULL, NULL)",
-            ["i", $id_calendario]);
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
+            $result = $this->ejecutarSp(
+                "CALL sp_actividad('listar_por_calendario', NULL, ?, NULL, NULL, NULL)",
+                ["i", $id_calendario]
+            );
             $actividad = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
 
@@ -58,6 +72,12 @@ class Actividad extends BaseModelo
 
     public function insertarActividad($dato)
     {
+        $datos = $this->obtenerDatosDesdeToken();
+        $idUsuario = $datos->id ?? null;
+
+        if (!$idUsuario) {
+            throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+        }
         if (!isset($dato['id_calendario'], $dato['titulo'], $dato['estado'])) {
             $this->responderJson([
                 'status' => 0,
@@ -70,9 +90,10 @@ class Actividad extends BaseModelo
 
             $result = $this->ejecutarSp(
                 "CALL sp_actividad('insertar', NULL, ?, ?, ?, ?)",
-                ["isss", 
-                    $dato['id_calendario'], 
-                    $dato['titulo'], 
+                [
+                    "isss",
+                    $dato['id_calendario'],
+                    $dato['titulo'],
                     $dato['estado'],
                     $usuarioAuth
                 ]
@@ -87,7 +108,6 @@ class Actividad extends BaseModelo
                 'message' => 'Actividad insertada correctamente',
                 'data' => $respuesta
             ]);
-
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
@@ -99,24 +119,31 @@ class Actividad extends BaseModelo
     public function actualizarActividad($id, $dato)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
             // Validar datos requeridos
-            $result = $this->ejecutarSp("CALL sp_actividad('actualizar', ?, ?, ?, ?, ?)", 
-            ["iisis", 
-                $id, 
-                $dato['id_calendario'], 
-                $dato['titulo'], 
-                $dato['estado'], 
-                $usuarioAuth
-            ]);
-        
+            $result = $this->ejecutarSp(
+                "CALL sp_actividad('actualizar', ?, ?, ?, ?, ?)",
+                [
+                    "iisis",
+                    $id,
+                    $dato['id_calendario'],
+                    $dato['titulo'],
+                    $dato['estado'],
+                    $usuarioAuth
+                ]
+            );
+
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();
             $this->responderJson($respuesta);
-
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
@@ -128,20 +155,27 @@ class Actividad extends BaseModelo
     public function desactivarActividad($id)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $result = $this->ejecutarSp("CALL sp_actividad('deshabilitar', ?, NULL, NULL, NULL, ?)",
-                ["is", 
-                $id,
-                $usuarioAuth
-            ]);
+            $result = $this->ejecutarSp(
+                "CALL sp_actividad('deshabilitar', ?, NULL, NULL, NULL, ?)",
+                [
+                    "is",
+                    $id,
+                    $usuarioAuth
+                ]
+            );
 
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();
             $this->responderJson($respuesta);
-
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,

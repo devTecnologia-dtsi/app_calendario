@@ -7,8 +7,15 @@ include_once __DIR__ . "/baseModelo.php";
 class Sede extends BaseModelo
 {
 
-    public function listarSedes() {
+    public function listarSedes()
+    {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $result = $this->ejecutarSP("CALL sp_sede('listar', NULL, NULL)");
             $sedes = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
@@ -31,13 +38,22 @@ class Sede extends BaseModelo
         }
     }
 
-    public function consultarSede($id) {
+    public function consultarSede($id)
+    {
         try {
-            $result = $this->ejecutarSP("CALL sp_sede('listar', ?, NULL)",
-            ["i", $id]);
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
+            $result = $this->ejecutarSP(
+                "CALL sp_sede('listar', ?, NULL)",
+                ["i", $id]
+            );
             $sede = $result->fetch_assoc();
             $result->close();
-            
+
             if ($sede) {
                 $sede['estado'] = ($sede['estado'] == 0) ? 'Sede deshabilitada' : 'Activa';
 
@@ -60,19 +76,28 @@ class Sede extends BaseModelo
         }
     }
 
-    public function listarSedesPorRectoria($idRectoria) {
+    public function listarSedesPorRectoria($idRectoria)
+    {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Verificar que el parámetro $idRectoria no sea nulo
             if ($idRectoria === null) {
                 throw new Exception("El ID de la rectoría es obligatorio.");
             }
-    
+
             // Llamar al procedimiento almacenado con el parámetro $idRectoria
-            $result = $this->ejecutarSP("CALL sp_sede('listar_por_rectoria', NULL, ?)",
-            ["i", $idRectoria]);
+            $result = $this->ejecutarSP(
+                "CALL sp_sede('listar_por_rectoria', NULL, ?)",
+                ["i", $idRectoria]
+            );
             $sedes = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
-    
+
             // Responder con los datos obtenidos
             $this->responderJson([
                 'status' => 1,
@@ -88,7 +113,8 @@ class Sede extends BaseModelo
         }
     }
 
-    public function listarSedesPorUsuario() {
+    public function listarSedesPorUsuario()
+    {
         try {
             // Obtener datos desde el token JWT
             $datos = $this->obtenerDatosDesdeToken();
@@ -120,7 +146,4 @@ class Sede extends BaseModelo
             ]);
         }
     }
-
 }
-
-?>

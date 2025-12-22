@@ -1,14 +1,20 @@
-<?php 
+<?php
 
 include_once __DIR__ . "/../../config/conexion.php";
 include_once __DIR__ . "/../../config/cors.php";
-include_once __DIR__ ."/baseModelo.php";
+include_once __DIR__ . "/baseModelo.php";
 
 class TiposPeriodo extends BaseModelo
 {
     public function listarTipoPeriodo()
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $resultListarTipoPeriodos = $this->ejecutarSp("CALL sp_tipos_periodo('listar', NULL, NULL, NULL)");
             $tiposPeriodo = $resultListarTipoPeriodos->fetch_all(MYSQLI_ASSOC);
             $resultListarTipoPeriodos->close();
@@ -29,23 +35,31 @@ class TiposPeriodo extends BaseModelo
     public function buscarTipoPeriodo($id)
     {
         try {
-            $resultBuscarTipoPeriodo = $this->ejecutarSp("CALL sp_tipos_periodo('listar', ?, NULL, NULL)",
-                ["i", $id]);
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
+            $resultBuscarTipoPeriodo = $this->ejecutarSp(
+                "CALL sp_tipos_periodo('listar', ?, NULL, NULL)",
+                ["i", $id]
+            );
             $tipoPeriodo = $resultBuscarTipoPeriodo->fetch_assoc();
             $resultBuscarTipoPeriodo->close();
 
-        if($tipoPeriodo) {
-            $this->responderJSON([
-                'status' => 1,
-                'message' => 'Tipo de periodo encontrado.',
-                'data' => $tipoPeriodo
-            ]);
-        } else {
-            $this->responderJSON([
-                'status' => 0,
-                'message' => 'Tipo de periodo no encontrado.',
-            ]);        }
-
+            if ($tipoPeriodo) {
+                $this->responderJSON([
+                    'status' => 1,
+                    'message' => 'Tipo de periodo encontrado.',
+                    'data' => $tipoPeriodo
+                ]);
+            } else {
+                $this->responderJSON([
+                    'status' => 0,
+                    'message' => 'Tipo de periodo no encontrado.',
+                ]);
+            }
         } catch (Exception $e) {
             $this->responderJSON([
                 'status' => 0,
@@ -54,5 +68,3 @@ class TiposPeriodo extends BaseModelo
         }
     }
 }
-
-?>

@@ -1,14 +1,20 @@
-<?php 
+<?php
 
 include_once __DIR__ . "/../../config/conexion.php";
 include_once __DIR__ . "/../../config/cors.php";
-include_once __DIR__ ."/baseModelo.php";
+include_once __DIR__ . "/baseModelo.php";
 
 class PeriodoAcademico extends BaseModelo
 {
     public function listarPeriodosAcademicos()
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $result = $this->ejecutarSp("CALL sp_periodo_academico('listar', NULL, NULL, NULL, NULL, NULL)");
             $periodos = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
@@ -29,10 +35,19 @@ class PeriodoAcademico extends BaseModelo
     public function buscarPeriodoAcademico($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_periodo_academico('listar', ?, NULL, NULL, NULL, NULL)",
-            ["i",
-            $id
-        ]);
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
+            $result = $this->ejecutarSp(
+                "CALL sp_periodo_academico('listar', ?, NULL, NULL, NULL, NULL)",
+                [
+                    "i",
+                    $id
+                ]
+            );
             $periodo = $result->fetch_assoc();
             $result->close();
 
@@ -59,17 +74,25 @@ class PeriodoAcademico extends BaseModelo
     public function crearPeriodoAcademico($data)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $result = $this->ejecutarSp("CALL sp_periodo('insertar', NULL, ?, ?, ?, ?)",
-            ["iiis",
-                $data['anio'],
-                $data['periodo'], 
-                $data['estado'],
-                $usuarioAuth
-            ]);
+            $result = $this->ejecutarSp(
+                "CALL sp_periodo('insertar', NULL, ?, ?, ?, ?)",
+                [
+                    "iiis",
+                    $data['anio'],
+                    $data['periodo'],
+                    $data['estado'],
+                    $usuarioAuth
+                ]
+            );
 
             $respuesta = $result->fetch_assoc();
             $this->responderJson($respuesta);
@@ -84,18 +107,26 @@ class PeriodoAcademico extends BaseModelo
     public function actualizarPeriodoAcademico($id, $data)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $result = $this->ejecutarSp("CALL sp_periodo('actualizar', ?, ?, ?, ?, ?)",
-            ["iiiis", 
-                $id, 
-                $data['anio'], 
-                $data['periodo'], 
-                $data['estado'],
-                $usuarioAuth
-            ]);
+            $result = $this->ejecutarSp(
+                "CALL sp_periodo('actualizar', ?, ?, ?, ?, ?)",
+                [
+                    "iiiis",
+                    $id,
+                    $data['anio'],
+                    $data['periodo'],
+                    $data['estado'],
+                    $usuarioAuth
+                ]
+            );
 
             $respuesta = $result->fetch_assoc();
             $this->responderJson($respuesta);
@@ -110,15 +141,24 @@ class PeriodoAcademico extends BaseModelo
     public function deshabilitarPeriodoAcademico($id)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $result = $this->ejecutarSp("CALL sp_periodo('deshabilitar', ?, NULL, NULL, NULL, ?)",
-            ["is", 
-                $id,
-                $usuarioAuth
-                
-            ]);
+            $result = $this->ejecutarSp(
+                "CALL sp_periodo('deshabilitar', ?, NULL, NULL, NULL, ?)",
+                [
+                    "is",
+                    $id,
+                    $usuarioAuth
+
+                ]
+            );
 
             $respuesta = $result->fetch_assoc();
             $this->responderJson($respuesta);

@@ -2,7 +2,7 @@
 
 include_once __DIR__ . "/../../config/conexion.php";
 include_once __DIR__ . "/../../config/cors.php";
-include_once __DIR__ ."/baseModelo.php";
+include_once __DIR__ . "/baseModelo.php";
 
 
 class Calendario extends BaseModelo
@@ -10,6 +10,12 @@ class Calendario extends BaseModelo
     public function listarCalendario()
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $resulListarCalendario = $this->ejecutarSp("CALL sp_calendario('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
             $calendarios = $resulListarCalendario->fetch_all(MYSQLI_ASSOC);
             $resulListarCalendario->close();
@@ -30,6 +36,12 @@ class Calendario extends BaseModelo
     public function consultarCalendarioParaEdicion($id)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo del usuario autenticado desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
@@ -99,14 +111,13 @@ class Calendario extends BaseModelo
     public function insertarCalendario($data)
     {
         if (
-
-            empty($data['id_usuario']) || 
-            empty($data['id_rectoria']) || 
-            empty($data['id_sede']) || 
-            empty($data['id_tipo_calendario']) || 
-            empty($data['id_modalidad']) || 
-            empty($data['id_periodo_academico']) || 
-            empty($data['id_tipo_periodo']) || 
+            empty($data['id_usuario']) ||
+            empty($data['id_rectoria']) ||
+            empty($data['id_sede']) ||
+            empty($data['id_tipo_calendario']) ||
+            empty($data['id_modalidad']) ||
+            empty($data['id_periodo_academico']) ||
+            empty($data['id_tipo_periodo']) ||
             !isset($data['estado'])
         ) {
             $this->responderJson([
@@ -115,8 +126,14 @@ class Calendario extends BaseModelo
             ]);
             return;
         }
-    
+
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
 
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
@@ -141,7 +158,7 @@ class Calendario extends BaseModelo
             $res = $resultado->fetch_assoc();
             $idCalendario = $res['id_calendario'];
             $resultado->close();
-    
+
             // Crear actividades
             if (isset($data['actividades']) && is_array($data['actividades'])) {
                 foreach ($data['actividades'] as $actividad) {
@@ -158,7 +175,7 @@ class Calendario extends BaseModelo
                     $actividadCreada = $resActividad->fetch_assoc();
                     $idActividad = $actividadCreada['id_actividad'];
                     $resActividad->close();
-    
+
                     // Crear subactividades
                     if (isset($actividad['subactividades']) && is_array($actividad['subactividades'])) {
                         foreach ($actividad['subactividades'] as $subactividad) {
@@ -179,13 +196,12 @@ class Calendario extends BaseModelo
                     }
                 }
             }
-    
+
             $this->responderJson([
                 'status' => 1,
                 'message' => 'Calendario creado exitosamente',
                 'id_calendario' => $idCalendario
             ]);
-    
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
@@ -193,7 +209,7 @@ class Calendario extends BaseModelo
             ]);
         }
     }
- 
+
     // public function actualizarCalendarioCompleto($id, $data)
     // {
     //     if (
@@ -211,7 +227,7 @@ class Calendario extends BaseModelo
     //         ]);
     //         return;
     //     }
-    
+
     //     try {
 
     //         // Obtener correo desde el token
@@ -235,11 +251,11 @@ class Calendario extends BaseModelo
     //                 $usuarioAuth
     //             ]
     //         )->close();
-    
+
     //         // 2. Procesar actividades
     //         if (isset($data['actividades']) && is_array($data['actividades'])) {
     //             foreach ($data['actividades'] as $actividad) {
-    
+
     //                 if (isset($actividad['id']) && $actividad['id'] > 0) {
     //                     // Actualizar actividad
     //                     $this->ejecutarSp(
@@ -270,11 +286,11 @@ class Calendario extends BaseModelo
     //                     $idActividad = $actividadInsertada['id_actividad'];
     //                     $resAct->close();
     //                 }
-    
+
     //                 // 3. Procesar subactividades
     //                 if (isset($actividad['subactividades']) && is_array($actividad['subactividades'])) {
     //                     foreach ($actividad['subactividades'] as $subactividad) {
-    
+
     //                         if (isset($subactividad['id']) && $subactividad['id'] > 0) {
     //                             // Actualizar subactividad
     //                             $this->ejecutarSp(
@@ -311,7 +327,7 @@ class Calendario extends BaseModelo
     //                 }
     //             }
     //         }
-    
+
     //         $this->responderJson([
     //             'status' => 1,
     //             'message' => 'Calendario actualizado exitosamente.'
@@ -327,12 +343,12 @@ class Calendario extends BaseModelo
     public function actualizarCalendarioCompleto($id, $data)
     {
         if (
-            empty($data['id_usuario']) || 
-            empty($data['id_rectoria']) || 
-            empty($data['id_sede']) || 
-            empty($data['id_tipo_calendario']) || 
-            empty($data['id_modalidad']) || 
-            empty($data['id_periodo_academico']) || 
+            empty($data['id_usuario']) ||
+            empty($data['id_rectoria']) ||
+            empty($data['id_sede']) ||
+            empty($data['id_tipo_calendario']) ||
+            empty($data['id_modalidad']) ||
+            empty($data['id_periodo_academico']) ||
             !isset($data['estado'])
         ) {
             $this->responderJson([
@@ -343,6 +359,12 @@ class Calendario extends BaseModelo
         }
 
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // iniciar transacción
             $this->conexion->begin_transaction();
 
@@ -495,19 +517,26 @@ class Calendario extends BaseModelo
     public function deshabilitarCalendario($id)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $resultDesactivarCalendario = $this->ejecutarSp("CALL sp_calendario('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
-                ["is", 
-                $id,
-                $usuarioAuth
-            ]);
-            
+            $resultDesactivarCalendario = $this->ejecutarSp(
+                "CALL sp_calendario('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
+                [
+                    "is",
+                    $id,
+                    $usuarioAuth
+                ]
+            );
+
             $respuesta = $resultDesactivarCalendario->fetch_assoc();
             $this->responderJson($respuesta);
-
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,

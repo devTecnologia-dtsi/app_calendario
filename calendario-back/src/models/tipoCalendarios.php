@@ -6,8 +6,15 @@ include_once __DIR__ . "/baseModelo.php";
 
 class TipoCalendarios extends BaseModelo
 {
-    public function listarTipoCalendario() {
+    public function listarTipoCalendario()
+    {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $result = $this->ejecutarSP("CALL sp_tipoCalendario('listar', NULL)");
             $rectorias = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
@@ -17,7 +24,6 @@ class TipoCalendarios extends BaseModelo
                 'message' => 'Tipos de calendarios listados correctamente',
                 'data' => $rectorias
             ]);
-
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
@@ -25,11 +31,20 @@ class TipoCalendarios extends BaseModelo
             ]);
         }
     }
-    
-    public function consultarTipoCalendario($id) {
+
+    public function consultarTipoCalendario($id)
+    {
         try {
-            $result = $this->ejecutarSP("CALL sp_tipoCalendario('listar', ?)", 
-                ["i", $id]);
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
+            $result = $this->ejecutarSP(
+                "CALL sp_tipoCalendario('listar', ?)",
+                ["i", $id]
+            );
             $rectoria = $result->fetch_assoc();
             $result->close();
 
@@ -53,6 +68,3 @@ class TipoCalendarios extends BaseModelo
         }
     }
 }
-
-
-?>

@@ -1,14 +1,20 @@
 <?php
 
 include_once __DIR__ . "/../../config/conexion.php";
-include_once __DIR__ ."/../..//config/cors.php";
+include_once __DIR__ . "/../..//config/cors.php";
 include_once __DIR__ . "/baseModelo.php";
 
 class Rol extends BaseModelo
 {
-    public function listarRol() {
+    public function listarRol()
+    {
         try {
+            // $datos = $this->obtenerDatosDesdeToken();
+            // $idUsuario = $datos->id ?? null;
 
+            // if (!$idUsuario) {
+            //     throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            // }
             // Llamada al SP
             $result = $this->ejecutarSP("CALL sp_rol('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
 
@@ -20,7 +26,7 @@ class Rol extends BaseModelo
             $this->responderJson([
                 'status' => 1,
                 'message' => 'Roles listados correctamente',
-                'data' => $roles 
+                'data' => $roles
             ]);
         } catch (Exception $e) {
             $this->responderJson([
@@ -30,8 +36,15 @@ class Rol extends BaseModelo
         }
     }
 
-    public function listarRolesPorUsuario() {
+    public function listarRolesPorUsuario()
+    {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $datos = $this->obtenerDatosDesdeToken();
             $idUsuario = $datos->id ?? null;
             $idRectoria = $_GET['id_rectoria'] ?? null;
@@ -54,13 +67,23 @@ class Rol extends BaseModelo
         }
     }
 
-    public function consultarRol($id) {
+    public function consultarRol($id)
+    {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Llamada al SP
-            $result = $this->ejecutarSP("CALL sp_rol('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL)",
-            ["i", 
-                    $id]);
+            $result = $this->ejecutarSP(
+                "CALL sp_rol('listar', ?, NULL, NULL, NULL, NULL, NULL, NULL)",
+                [
+                    "i",
+                    $id
+                ]
+            );
             $rol = $result->fetch_assoc();
             $result->close();
 
@@ -76,19 +99,24 @@ class Rol extends BaseModelo
                     'status' => 0,
                     'message' => 'Rol no encontrado'
                 ]);
-
             }
-         } catch (Exception $e) {
+        } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
                 'message' => 'Error al consultar rol: ' . $e->getMessage()
             ]);
-         }
+        }
     }
 
-    public function actualizarRol($id, $dato) {
+    public function actualizarRol($id, $dato)
+    {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
@@ -105,11 +133,11 @@ class Rol extends BaseModelo
                     $usuarioAuth
                 ]
             );
-    
+
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();
             $result->close();
-    
+
             // Verificar respuesta
             if ($respuesta) {
                 $this->responderJson([
@@ -122,7 +150,6 @@ class Rol extends BaseModelo
                     'message' => 'Error al actualizar el rol'
                 ]);
             }
-    
         } catch (Exception $e) {
             http_response_code(400);
             $this->responderJson([
@@ -131,7 +158,4 @@ class Rol extends BaseModelo
             ]);
         }
     }
-    
 }
-
-?>

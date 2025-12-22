@@ -9,6 +9,12 @@ class Subactividad extends BaseModelo
     public function listarSubactividad()
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $resultListarSubactividad = $this->ejecutarSp("CALL sp_subactividad('listar', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL)");
             $subactividad = $resultListarSubactividad->fetch_all(MYSQLI_ASSOC);
             $resultListarSubactividad->close();
@@ -22,15 +28,23 @@ class Subactividad extends BaseModelo
             $this->responderJson([
                 'status' => 0,
                 'message' => 'Error al listar las subactividades. ' . $e->getMessage()
-            ]);        
+            ]);
         }
     }
 
     public function buscarSubactividadPorActividad($id_actividad)
     {
         try {
-            $resultBuscarSubactividad = $this->ejecutarSp("CALL sp_subactividad('listar_por_actividad', NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL)", 
-            ["i", $id_actividad]);
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
+            $resultBuscarSubactividad = $this->ejecutarSp(
+                "CALL sp_subactividad('listar_por_actividad', NULL, ?, NULL, NULL, NULL, NULL, NULL, NULL)",
+                ["i", $id_actividad]
+            );
             $subactividad = $resultBuscarSubactividad->fetch_all(MYSQLI_ASSOC);
             $resultBuscarSubactividad->close();
 
@@ -64,12 +78,19 @@ class Subactividad extends BaseModelo
         }
 
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $resultado = $this->ejecutarSp("CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, ?)",
-                ["ississs",
+            $resultado = $this->ejecutarSp(
+                "CALL sp_subactividad('insertar', NULL, ?, ?, ?, ?, ?, ?, ?)",
+                [
+                    "ississs",
                     $dato['id_actividad'],
                     $dato['nombre'],
                     $dato['descripcion'],
@@ -77,7 +98,8 @@ class Subactividad extends BaseModelo
                     $dato['fecha_inicio'],
                     $dato['fecha_fin'],
                     $usuarioAuth
-                ]);
+                ]
+            );
             $respuesta = $resultado->fetch_assoc();
             $resultado->close();
 
@@ -100,12 +122,19 @@ class Subactividad extends BaseModelo
         }
 
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $resultado = $this->ejecutarSp("CALL sp_subactividad('actualizar', ?, ?, ?, ?, ?, ?, ?, ?)",
-                ["iississs",
+            $resultado = $this->ejecutarSp(
+                "CALL sp_subactividad('actualizar', ?, ?, ?, ?, ?, ?, ?, ?)",
+                [
+                    "iississs",
                     $id,
                     $dato['id_actividad'],
                     $dato['nombre'],
@@ -114,7 +143,8 @@ class Subactividad extends BaseModelo
                     $dato['fecha_inicio'],
                     $dato['fecha_fin'],
                     $usuarioAuth
-                ]);
+                ]
+            );
             $respuesta = $resultado->fetch_assoc();
             $resultado->close();
 
@@ -130,15 +160,23 @@ class Subactividad extends BaseModelo
     public function deshabilitarSubactividad($id)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $resultado = $this->ejecutarSp("CALL sp_subactividad('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
-            ["is", 
-                $id,
-                $usuarioAuth
-            ]);
+            $resultado = $this->ejecutarSp(
+                "CALL sp_subactividad('deshabilitar', ?, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
+                [
+                    "is",
+                    $id,
+                    $usuarioAuth
+                ]
+            );
             $respuesta = $resultado->fetch_assoc();
             $resultado->close();
 
@@ -154,16 +192,24 @@ class Subactividad extends BaseModelo
     public function eliminarSubactividad($id)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $resultado = $this->ejecutarSp("CALL sp_subactividad('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
-            ["is", 
-                $id,
-                $usuarioAuth
+            $resultado = $this->ejecutarSp(
+                "CALL sp_subactividad('eliminar', ?, NULL, NULL, NULL, NULL, NULL, NULL, ?)",
+                [
+                    "is",
+                    $id,
+                    $usuarioAuth
 
-            ]);
+                ]
+            );
             $respuesta = $resultado->fetch_assoc();
             $resultado->close();
 

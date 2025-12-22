@@ -7,11 +7,17 @@ include_once __DIR__ . "/../seguridad/jwt_utils.php";
 
 class CrudUsuario extends BaseModelo
 {
-    
+
     // Listar usuarios con paginación y filtro
     public function listarUsuarios($limite, $offset)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $filtro = $_GET['filtro'] ?? '';
 
             $sql = "CALL sp_usuario_listar(?, ?, ?)";
@@ -40,11 +46,17 @@ class CrudUsuario extends BaseModelo
         }
     }
 
-    
+
     // Consultar un usuario por ID
     public function consultarUsuario($id)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $sql = "CALL sp_usuario_ver(?)";
             $stmt = $this->conexion->prepare($sql);
             $stmt->bind_param('i', $id);
@@ -82,11 +94,17 @@ class CrudUsuario extends BaseModelo
         }
     }
 
-    
+
     // Crear usuario + permisos
     public function insertarUsuario($data)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $correo = $data['correo'] ?? null;
             $estado = $data['estado'] ?? 1;
             $permisos = $data['permisos'] ?? [];
@@ -137,6 +155,12 @@ class CrudUsuario extends BaseModelo
     public function actualizarUsuario($idUsuario, $data)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $correo = $data['correo'] ?? null;
             $estado = $data['estado'] ?? 1;
             $permisos = $data['permisos'] ?? [];
@@ -245,7 +269,6 @@ class CrudUsuario extends BaseModelo
                     : 'Permisos actualizados correctamente (sin cambios en usuario)'
             ]);
             return;
-
         } catch (Exception $e) {
             http_response_code(400);
             $this->responderJson([
@@ -260,6 +283,12 @@ class CrudUsuario extends BaseModelo
     public function desactivarUsuario($id)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $sp = "CALL sp_usuario_crud('desactivar', ?, NULL, NULL)";
             $result = $this->ejecutarSP($sp, ['i', $id]);
             $respuesta = $result->fetch_assoc();
@@ -279,6 +308,12 @@ class CrudUsuario extends BaseModelo
     public function desactivarPermiso($idPermiso)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $query = "CALL sp_usuario_permiso_crud('eliminar', NULL, NULL, NULL, NULL, ?)";
             $res = $this->ejecutarSp($query, ['i', $idPermiso]);
             $data = $res->fetch_assoc();
@@ -359,7 +394,7 @@ class CrudUsuario extends BaseModelo
         }
     }
 
-    
+
     // Obtener permisos del usuario autenticado (desde token)ks
     public function obtenerPermisosUsuario($idUsuario)
     {
@@ -380,5 +415,3 @@ class CrudUsuario extends BaseModelo
         }
     }
 }
-
-?>

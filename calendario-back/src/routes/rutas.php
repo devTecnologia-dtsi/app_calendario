@@ -7,7 +7,6 @@ include_once __DIR__ . "/../../config/cors.php";
 $metodo = $_SERVER['REQUEST_METHOD'];
 // $path = $_SERVER['PATH_INFO'] ?? '/';
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '/';
-// var_dump($_SERVER['PATH_INFO']);
 
 // Extraer partes del path
 $partesPath = explode('/', trim($path, '/'));
@@ -32,7 +31,7 @@ if (!$tabla) {
 // Manejo de métodos
 switch ($metodo) {
     case 'GET':
-        
+
         if ($tabla === 'rectoria') {
             //Consultar rectorías
             $rectoria = new Rectoria();
@@ -41,16 +40,12 @@ switch ($metodo) {
             } else {
                 $rectoria->listarRectorias();
             }
-        }
-
-        elseif ($tabla === 'rectoriasPorUsuario') {
+        } elseif ($tabla === 'rectoriasPorUsuario') {
             $rectoria = new Rectoria();
             // Pasamos el parámetro rol del query string si viene
             $rol = $_GET['rol'] ?? null;
             $rectoria->listarRectoriasPorUsuario($rol);
-        }
-
-        elseif ($tabla === 'sede') {
+        } elseif ($tabla === 'sede') {
             //Consultar sedes
             $sede = new Sede();
             if ($id) {
@@ -58,9 +53,7 @@ switch ($metodo) {
             } else {
                 $sede->listarSedes();
             }
-        } 
-        
-        elseif ($tabla === 'sedesPorRectoria') {
+        } elseif ($tabla === 'sedesPorRectoria') {
             // Listar sedes por rectoría
             $sede = new Sede();
             if ($id) {
@@ -70,15 +63,11 @@ switch ($metodo) {
                 echo json_encode(["error" => "ID de rectoría no especificado"]);
                 exit;
             }
-        } 
-        
-        elseif ($tabla === 'sedesPorUsuario') {
+        } elseif ($tabla === 'sedesPorUsuario') {
             // Listar sedes por usuario
             $sede = new Sede();
             $sede->listarSedesPorUsuario();
-        }
-
-        elseif ($tabla === 'rol') {
+        } elseif ($tabla === 'rol') {
             // Consultar rol específico o todos
             $rol = new Rol();
             if ($id) {
@@ -86,15 +75,11 @@ switch ($metodo) {
             } else {
                 $rol->listarRol();
             }
-        }
-
-        elseif ($tabla === 'rolesPorUsuario') {
+        } elseif ($tabla === 'rolesPorUsuario') {
             // Listar roles por usuario
             $rol = new Rol();
             $rol->listarRolesPorUsuario();
-        }
-        
-        elseif ($tabla === 'usuario') {
+        } elseif ($tabla === 'usuario') {
             // Instancia del controlador de usuario
             $usuario = new CrudUsuario();
 
@@ -115,9 +100,7 @@ switch ($metodo) {
                 // Listar usuarios
                 $usuario->listarUsuarios($limite, $offset);
             }
-        }
-
-        elseif ($tabla === 'actividad') {
+        } elseif ($tabla === 'actividad') {
             // Ver una actividad específica o todas
             $actividad = new Actividad();
             if ($id) {
@@ -125,9 +108,7 @@ switch ($metodo) {
             } else {
                 $actividad->listarActividad();
             }
-        }
-
-        elseif ($tabla === 'subactividad') {
+        } elseif ($tabla === 'subactividad') {
             // Ver una subactividad específica o todas
             $subactividad = new SubActividad();
             if ($id) {
@@ -135,9 +116,7 @@ switch ($metodo) {
             } else {
                 $subactividad->listarSubActividad();
             }
-        }
-        
-        elseif ($tabla === 'tipoCalendarios') {
+        } elseif ($tabla === 'tipoCalendarios') {
             // Ver un tipo de calendario especifico o todos
             $tipoCalendario = new TipoCalendarios();
             if ($id) {
@@ -147,18 +126,14 @@ switch ($metodo) {
                 // Listar todos los tipos de calendario
                 $tipoCalendario->listarTipoCalendario();
             }
-        } 
-
-        elseif ($tabla === 'tiposPeriodo') {
+        } elseif ($tabla === 'tiposPeriodo') {
             $tiposPeriodo = new TiposPeriodo();
-            if($id){
+            if ($id) {
                 $tiposPeriodo->buscarTipoPeriodo($id);
             } else {
                 $tiposPeriodo->listarTipoPeriodo();
             }
-        }
-        
-        elseif ($tabla === 'calendario') {
+        } elseif ($tabla === 'calendario') {
             // Ver un calendario especifico o todos
             $calendario = new Calendario();
             if ($id) {
@@ -168,9 +143,7 @@ switch ($metodo) {
                 // Listar todos los calendarios
                 $calendario->listarCalendario();
             }
-        } 
-        
-        elseif ($tabla === 'periodoAcademico') {
+        } elseif ($tabla === 'periodoAcademico') {
             // Ver un periodo especifico o todos
             $periodo = new PeriodoAcademico();
             if ($id) {
@@ -180,9 +153,7 @@ switch ($metodo) {
                 // Listar todos los periodos
                 $periodo->listarPeriodosAcademicos();
             }
-        }
-
-        elseif ($tabla === 'modalidad') {
+        } elseif ($tabla === 'modalidad') {
             // Ver una modalidad especifica o todas
             $modalidad = new Modalidades();
             if ($id) {
@@ -192,9 +163,7 @@ switch ($metodo) {
                 // Listar todas las modalidades
                 $modalidad->listarModalidades();
             }
-        }
-
-        elseif ($tabla === 'logs') {
+        } elseif ($tabla === 'logs') {
             // Ver un log especifico o todos
             $logs = new Logs();
             if ($id) {
@@ -204,64 +173,47 @@ switch ($metodo) {
                 // Listar todos los logs
                 $logs->listarLogs($limite, $offset);
             }
-        }
-        
-        else {
+        } else {
             consultar($id, $tabla, $limite, $offset);
         }
         break;
 
     case 'POST':
 
-        if ($tabla === 'usuario'){
+        if ($tabla === 'usuario') {
             //insertar usuario
             $usuario = new CrudUsuario();
             $usuario->insertarUsuario($dato);
-        }
-
-        elseif ($tabla === 'actividad') {
+        } elseif ($tabla === 'actividad') {
             // Insertar actividad
             $actividad = new Actividad();
             $actividad->insertarActividad($dato);
-        }
-
-        elseif ($tabla === 'subactividad') {
+        } elseif ($tabla === 'subactividad') {
             // Insertar subactividad
             $subactividad = new SubActividad();
             $subactividad->crearSubactividad($dato);
-        }
-
-        elseif ($tabla === 'periodo') {
+        } elseif ($tabla === 'periodo') {
             // Insertar periodo
             $periodo = new PeriodoAcademico();
             $periodo->crearPeriodoAcademico($dato);
-        }
-
-        elseif ($tabla === 'calendario') {
+        } elseif ($tabla === 'calendario') {
             // Insertar calendario
             $calendario = new Calendario();
             $calendario->insertarCalendario($dato);
-        }
-
-        elseif ($tabla === 'modalidad') {
+        } elseif ($tabla === 'modalidad') {
             // Insertar modalidad
             $modalidad = new Modalidades();
             $modalidad->crearModalidad($dato);
-        }
-
-        elseif ($tabla === 'usuarioPorCorreo') {
+        } elseif ($tabla === 'usuarioPorCorreo') {
             if (!isset($dato['correo'])) {
                 http_response_code(400);
                 echo json_encode(["error" => "Correo no especificado"]);
                 exit;
             }
-        
+
             $usuario = new CrudUsuario();
             $usuario->obtenerUsuarioPorCorreo($dato['correo']);
-        }
-        
-        
-        else {
+        } else {
             insertar($dato, $tabla);
         }
 
@@ -278,46 +230,32 @@ switch ($metodo) {
             // Actualizar usuario
             $usuario = new CrudUsuario();
             $usuario->actualizarUsuario($id, $dato);
-        }
-
-        elseif ($tabla === 'rol'){
+        } elseif ($tabla === 'rol') {
             // Actualizar rol
             $rol = new Rol();
             $rol->actualizarRol($id, $dato);
-        }
-
-        elseif ($tabla === 'actividad') {
+        } elseif ($tabla === 'actividad') {
             // Actualizar actividad
             $actividad = new Actividad();
             // var_dump($dato); exit;
             $actividad->actualizarActividad($id, $dato);
-        }
-
-        elseif ($tabla === 'subactividad') {
+        } elseif ($tabla === 'subactividad') {
             // Actualizar subactividad
             $subactividad = new SubActividad();
             $subactividad->actualizarSubactividad($id, $dato);
-        }
-
-        else if ($tabla === 'periodoAcademico') {
+        } else if ($tabla === 'periodoAcademico') {
             // Actualizar periodo
             $periodo = new PeriodoAcademico();
             $periodo->actualizarPeriodoAcademico($id, $dato);
-        }
-
-        elseif ($tabla === 'calendario') {
+        } elseif ($tabla === 'calendario') {
             // Actualizar calendario
             $calendario = new Calendario();
             $calendario->actualizarCalendarioCompleto($id, $dato);
-        }
-
-        elseif ($tabla === 'modalidad') {
+        } elseif ($tabla === 'modalidad') {
             // Actualizar modalidad
             $modalidad = new Modalidades();
             $modalidad->actualizarModalidad($id, $dato);
-        }
-        
-        else {
+        } else {
             actualizar($id, $dato, $tabla);
         }
         break;
@@ -333,46 +271,32 @@ switch ($metodo) {
             // Deshabilitar usuario
             $usuario = new CrudUsuario();
             $usuario->desactivarUsuario($id);
-        }
-
-        elseif ($tabla === 'permiso') {
+        } elseif ($tabla === 'permiso') {
             // Deshabilitar permiso de usuario
             $idPermiso = isset($partesPath[2]) ? intval($partesPath[2]) : null;
             $usuario = new CrudUsuario();
             $usuario->desactivarPermiso($idPermiso);
-        }
-
-        elseif ($tabla === 'actividad') {
+        } elseif ($tabla === 'actividad') {
             // Deshabilitar actividad
             $actividad = new Actividad();
             $actividad->desactivarActividad($id);
-        }
-
-        elseif ($tabla === 'subactividad') {
+        } elseif ($tabla === 'subactividad') {
             // Deshabilitar subactividad
             $subactividad = new SubActividad();
             $subactividad->deshabilitarSubactividad($id);
-        }
-        
-        elseif ($tabla === 'calendario') {
+        } elseif ($tabla === 'calendario') {
             // Deshabilitar calendario
             $calendario = new Calendario();
             $calendario->deshabilitarCalendario($id);
-        }
-
-        elseif ($tabla === 'modalidad') {
+        } elseif ($tabla === 'modalidad') {
             // Deshabilitar modalidad
             $modalidad = new Modalidades();
             $modalidad->desactivarModalidad($id);
-        }
-
-        elseif ($tabla === 'periodoAcademico') {
+        } elseif ($tabla === 'periodoAcademico') {
             // Deshabilitar periodo academico
             $periodo = new PeriodoAcademico();
             $periodo->deshabilitarPeriodoAcademico($id);
-        }
-
-        else {
+        } else {
             desactivar($id, $tabla);
         }
         break;

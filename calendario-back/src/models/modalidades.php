@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 include_once __DIR__ . "/../../config/conexion.php";
 include_once __DIR__ . "/../../config/cors.php";
@@ -9,6 +9,12 @@ class Modalidades extends BaseModelo
     public function listarModalidades()
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $result = $this->ejecutarSp("CALL sp_modalidades('listar', NULL, NULL, NULL, NULL)");
             $modalidades = $result->fetch_all(MYSQLI_ASSOC);
             $result->close();
@@ -29,8 +35,16 @@ class Modalidades extends BaseModelo
     public function buscarModalidad($id)
     {
         try {
-            $result = $this->ejecutarSp("CALL sp_modalidades('listar', ?, NULL, NULL, NULL)",
-                ["i", $id]);
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
+            $result = $this->ejecutarSp(
+                "CALL sp_modalidades('listar', ?, NULL, NULL, NULL)",
+                ["i", $id]
+            );
             $modalidad = $result->fetch_assoc();
             $result->close();
 
@@ -57,21 +71,28 @@ class Modalidades extends BaseModelo
     public function crearModalidad($data)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $resultCrearModalidad = $this->ejecutarSp("CALL sp_modalidades('insertar', NULL, ?, ?, ?)",
-                ["sis",
-                $data['nombre'],
-                $data['estado'],
-                $usuarioAuth
-            ]);
-            
+            $resultCrearModalidad = $this->ejecutarSp(
+                "CALL sp_modalidades('insertar', NULL, ?, ?, ?)",
+                [
+                    "sis",
+                    $data['nombre'],
+                    $data['estado'],
+                    $usuarioAuth
+                ]
+            );
+
             // Capturar respuesta del SP
             $respuesta = $resultCrearModalidad->fetch_assoc();
             $this->responderJson($respuesta);
-
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
@@ -83,21 +104,29 @@ class Modalidades extends BaseModelo
     public function actualizarModalidad($id, $data)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $resultActualizarModalidad = $this->ejecutarSp("CALL sp_modalidades('actualizar', ?, ?, ?, ?)",
-                ["isis",
-                $id,
-                $data['nombre'],
-                $data['estado'],
-                $usuarioAuth
-            ]);
+            $resultActualizarModalidad = $this->ejecutarSp(
+                "CALL sp_modalidades('actualizar', ?, ?, ?, ?)",
+                [
+                    "isis",
+                    $id,
+                    $data['nombre'],
+                    $data['estado'],
+                    $usuarioAuth
+                ]
+            );
 
             // Capturar respuesta del SP
             $respuesta = $resultActualizarModalidad->fetch_assoc();
             $this->responderJson($respuesta);
-
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
@@ -109,19 +138,27 @@ class Modalidades extends BaseModelo
     public function desactivarModalidad($id)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             // Obtener correo desde el token
             $usuarioAuth = $this->obtenerCorreoDesdeToken();
 
-            $result = $this->ejecutarSp("CALL sp_modalidades('deshabilitar', ?, NULL, NULL, ?)",
-                ["is",
-                $id,
-                $usuarioAuth
-            ]);
+            $result = $this->ejecutarSp(
+                "CALL sp_modalidades('deshabilitar', ?, NULL, NULL, ?)",
+                [
+                    "is",
+                    $id,
+                    $usuarioAuth
+                ]
+            );
 
             // Capturar respuesta del SP
             $respuesta = $result->fetch_assoc();
             $this->responderJson($respuesta);
-
         } catch (Exception $e) {
             $this->responderJson([
                 'status' => 0,
@@ -130,4 +167,3 @@ class Modalidades extends BaseModelo
         }
     }
 }
-?>
