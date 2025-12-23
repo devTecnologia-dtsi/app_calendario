@@ -6,35 +6,56 @@ include_once __DIR__ . "/baseModelo.php";
 
 class Logs extends BaseModelo
 {
-    public function listarLogs($limite, $offset) {
-        $conexion = new conexion();
-        $sql = $conexion->test()->prepare("CALL sp_logs('listar', NULL, ?, ?)");
-        $sql->bind_param("ii", $limite, $offset);
-        $sql->execute();
-    
-        // Obtener usuarios
-        $result = $sql->get_result();
-        $usuarios = $result->fetch_all(MYSQLI_ASSOC);
-        $result->close();
-        
-        // Mover puntero al siguiente resultado (el total)
-        $sql->next_result();
-        $totalResult = $sql->get_result();
-        $totalUsuarios = $totalResult->fetch_assoc()['total'];
-    
-        // Respuesta
-        $this->responderJson([
-            'status' => 1,
-            'message' => 'Logs listados correctamente',
-            'total' => $totalUsuarios,
-            'data' => $usuarios
-        ]);
+    public function listarLogs($limite, $offset)
+    {
+        try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
+            $conexion = new conexion();
+            $sql = $conexion->test()->prepare("CALL sp_logs('listar', NULL, ?, ?)");
+            $sql->bind_param("ii", $limite, $offset);
+            $sql->execute();
+
+            // Obtener usuarios
+            $result = $sql->get_result();
+            $usuarios = $result->fetch_all(MYSQLI_ASSOC);
+            $result->close();
+
+            // Mover puntero al siguiente resultado (el total)
+            $sql->next_result();
+            $totalResult = $sql->get_result();
+            $totalUsuarios = $totalResult->fetch_assoc()['total'];
+
+            // Respuesta
+            $this->responderJson([
+                'status' => 1,
+                'message' => 'Logs listados correctamente',
+                'total' => $totalUsuarios,
+                'data' => $usuarios
+            ]);
+        } catch (\Exception $e) {
+            http_response_code(400);
+            $this->responderJson([
+                'status' => 0,
+                'message' => 'Error al consultar los logs: ' . $e->getMessage()
+            ]);
+        }
     }
-    
+
 
     public function buscarLogs($id)
     {
         try {
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
+
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $resultBuscarLogs = $this->ejecutarSp("CALL sp_logs('listar', ?, NULL, NULL)", ["i", $id]);
             $log = $resultBuscarLogs->fetch_assoc();
             $resultBuscarLogs->close();
