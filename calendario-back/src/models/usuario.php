@@ -99,12 +99,12 @@ class CrudUsuario extends BaseModelo
     public function insertarUsuario($data)
     {
         try {
-            // $datos = $this->obtenerDatosDesdeToken();
-            // $idUsuario = $datos->id ?? null;
+            $datos = $this->obtenerDatosDesdeToken();
+            $idUsuario = $datos->id ?? null;
 
-            // if (!$idUsuario) {
-            //     throw new Exception("No se pudo obtener el ID del usuario desde el token.");
-            // }
+            if (!$idUsuario) {
+                throw new Exception("No se pudo obtener el ID del usuario desde el token.");
+            }
             $correo = $data['correo'] ?? null;
             $estado = $data['estado'] ?? 1;
             $permisos = $data['permisos'] ?? [];
